@@ -12,33 +12,32 @@ export default function Hero() {
         className="absolute inset-0 w-full h-full object-cover"
         src="/video/hero.mp4"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0A0F1E]/92 via-[#0A0F1E]/75 to-[#0A0F1E]/40 z-10"/>
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0A0F1E]/92 via-[#0A0F1E]/78 to-[#0A0F1E]/45 z-10"/>
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-[#0A0F1E]/20 z-10"/>
 
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-3xl">
 
           <motion.div variants={fadeUp} className="mb-6">
-            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium text-zinc-300">
+            <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium text-zinc-200">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/>
               Movilidad · Confianza · Tecnología
             </span>
           </motion.div>
 
           <motion.div variants={fadeUp} className="mb-8">
-            <div className="inline-block bg-white/95 rounded-3xl px-7 py-5 shadow-2xl shadow-black/40 backdrop-blur-sm">
-              <img
-                src="/logo.png"
-                alt="COOTRANSA"
-                className="h-24 sm:h-28 lg:h-32 w-auto object-contain"
-              />
-            </div>
+            <img
+              src="/logo.png"
+              alt="COOTRANSA"
+              className="h-32 sm:h-44 lg:h-52 w-auto object-contain"
+              style={{ filter: 'drop-shadow(0 6px 24px rgba(0,0,0,0.55))' }}
+            />
           </motion.div>
 
           <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-semibold text-white mb-4 leading-tight">
-            Conectamos personas, empresas<br/><span className="text-zinc-300">y territorios.</span>
+            Conectamos personas, empresas<br/><span className="text-zinc-200">y territorios.</span>
           </motion.h2>
-          <motion.p variants={fadeUp} className="text-zinc-300 text-lg max-w-xl mb-10 leading-relaxed">
+          <motion.p variants={fadeUp} className="text-zinc-200 text-lg max-w-xl mb-10 leading-relaxed">
             Más de 50 años impulsando el desarrollo regional del Caribe colombiano. Flota renovada, monitoreo satelital, calidad certificada ISO.
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
@@ -54,7 +53,7 @@ export default function Hero() {
         animate={{ opacity: 1, y: [0,8,0] }}
         transition={{ delay: 1.5, duration: 1.5, repeat: Infinity }}
       >
-        <span className="text-zinc-400 text-xs tracking-widest uppercase">Explorar</span>
+        <span className="text-zinc-300 text-xs tracking-widest uppercase">Explorar</span>
         <ChevronDown className="text-green-400" size={20}/>
       </motion.div>
     </div>
