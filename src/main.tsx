@@ -5,6 +5,7 @@ import App from './App.tsx'
 import AboutPage from './pages/AboutPage'
 import LegalPage from './pages/LegalPage'
 import PolicyPage from './pages/PolicyPage'
+import NoticiaPage from './pages/NoticiaPage'
 import './index.css'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
@@ -15,6 +16,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/nosotros/:slug" element={<AboutPage />} />
         <Route path="/legal/:slug" element={<LegalPage />} />
         <Route path="/politicas/:slug" element={<PolicyPage />} />
+        <Route path="/noticias/:slug" element={<NoticiaPage />} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>,
