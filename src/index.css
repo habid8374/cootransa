@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;0,14..32,900;1,14..32,400&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -5,14 +7,14 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body {
-  background: #0A0F1E;
-  color: white;
-  font-family: 'Inter', sans-serif;
+  background: #ffffff;
+  color: #111827;
+  font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
 }
 
 ::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: #0A0F1E; }
+::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #16a34a; border-radius: 2px; }
 
 @keyframes marquee {
@@ -37,3 +39,8 @@ body {
   50% { box-shadow: 0 0 40px rgba(22, 163, 74, 0.6); }
 }
 .animate-glow { animation: glow 2s ease-in-out infinite; }
+
+@keyframes shine {
+  from { transform: translateX(-120%) rotate(12deg); }
+  to { transform: translateX(320%) rotate(12deg); }
+}
