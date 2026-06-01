@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, Instagram, Facebook } from 'lucide-react'
 import Brand from './Brand'
 
 const servicesItems = [
@@ -53,10 +53,13 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Color de los enlaces según estado: transparente (sobre el video) -> blanco; con scroll -> gris
   const link = scrolled
     ? 'text-gray-700 hover:text-green-600'
     : 'text-white/90 hover:text-white drop-shadow'
+
+  const socialIcon = scrolled
+    ? 'text-gray-400 hover:text-green-600'
+    : 'text-white/70 hover:text-white drop-shadow'
 
   return (
     <motion.nav
@@ -72,7 +75,9 @@ export default function Navbar() {
           <a href="/#inicio" className="flex items-center">
             <Brand iconClass="h-9 lg:h-11" textClass="text-xl lg:text-2xl" />
           </a>
-          <div className="hidden lg:flex items-center gap-8">
+
+          {/* Desktop links */}
+          <div className="hidden lg:flex items-center gap-7">
             <a href="/#inicio" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Inicio
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
@@ -84,9 +89,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-64 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {servicesItems.map(item => (
-                    <a key={item.label} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.label} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -102,9 +105,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-60 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {nosotrosItems.map(item => (
-                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -116,9 +117,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-72 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {policiesItems.map(item => (
-                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -130,9 +129,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-56 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {noticiasItems.map(item => (
-                    <a key={item.href} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.href} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -142,14 +139,35 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
             </a>
           </div>
-          <div className="hidden lg:block">
+
+          {/* Desktop right side: social icons + CTA */}
+          <div className="hidden lg:flex items-center gap-3">
+            <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Instagram">
+              <Instagram size={17} />
+            </a>
+            <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Facebook">
+              <Facebook size={17} />
+            </a>
+            <div className="w-px h-5 bg-current opacity-20 mx-1" />
             <a href="/#contacto" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105">Solicitar Servicio</a>
           </div>
-          <button className={`lg:hidden p-2 ${scrolled ? 'text-gray-700' : 'text-white drop-shadow'}`} onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+
+          {/* Mobile right side: social icons + hamburger */}
+          <div className="lg:hidden flex items-center gap-3">
+            <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Instagram">
+              <Instagram size={18} />
+            </a>
+            <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Facebook">
+              <Facebook size={18} />
+            </a>
+            <button className={`p-1.5 ${scrolled ? 'text-gray-700' : 'text-white drop-shadow'}`} onClick={() => setMobileOpen(!mobileOpen)}>
+              {mobileOpen ? <X size={23} /> : <Menu size={23} />}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="lg:hidden bg-white border-b border-gray-200 overflow-hidden">
@@ -205,7 +223,9 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
               <a href="/#contacto" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Contacto</a>
-              <a href="/#contacto" onClick={() => setMobileOpen(false)} className="mt-3 px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
+              <div className="mt-3 flex flex-col gap-3">
+                <a href="/#contacto" onClick={() => setMobileOpen(false)} className="px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
+              </div>
             </div>
           </motion.div>
         )}
