@@ -39,6 +39,45 @@ const noticiasItems = [
   { label: 'Convocatoria laboral', href: '/noticias/convocatoria' },
 ]
 
+function SocialIcons({ size = 16 }: { size?: number }) {
+  return (
+    <div className="flex items-center gap-2">
+      <a
+        href="https://www.instagram.com/cootransaoficial"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Instagram"
+        className="group relative flex items-center justify-center w-8 h-8 rounded-xl
+          bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400
+          shadow-[0_2px_8px_rgba(219,39,119,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]
+          hover:shadow-[0_4px_14px_rgba(219,39,119,0.6),inset_0_1px_0_rgba(255,255,255,0.3)]
+          hover:scale-110 hover:-translate-y-0.5
+          active:scale-95 active:translate-y-0
+          transition-all duration-200"
+      >
+        <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <Instagram size={size} className="text-white relative z-10" />
+      </a>
+      <a
+        href="https://www.facebook.com/share/17fNJkiDeV/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Facebook"
+        className="group relative flex items-center justify-center w-8 h-8 rounded-xl
+          bg-gradient-to-br from-blue-600 to-blue-500
+          shadow-[0_2px_8px_rgba(37,99,235,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]
+          hover:shadow-[0_4px_14px_rgba(37,99,235,0.6),inset_0_1px_0_rgba(255,255,255,0.3)]
+          hover:scale-110 hover:-translate-y-0.5
+          active:scale-95 active:translate-y-0
+          transition-all duration-200"
+      >
+        <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <Facebook size={size} className="text-white relative z-10" />
+      </a>
+    </div>
+  )
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -57,10 +96,6 @@ export default function Navbar() {
     ? 'text-gray-700 hover:text-green-600'
     : 'text-white/90 hover:text-white drop-shadow'
 
-  const socialIcon = scrolled
-    ? 'text-gray-400 hover:text-green-600'
-    : 'text-white/70 hover:text-white drop-shadow'
-
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
@@ -76,7 +111,7 @@ export default function Navbar() {
             <Brand iconClass="h-9 lg:h-11" textClass="text-xl lg:text-2xl" />
           </a>
 
-          {/* Desktop links */}
+          {/* Desktop nav links */}
           <div className="hidden lg:flex items-center gap-7">
             <a href="/#inicio" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Inicio
@@ -140,27 +175,20 @@ export default function Navbar() {
             </a>
           </div>
 
-          {/* Desktop right side: social icons + CTA */}
+          {/* Desktop right: social + CTA */}
           <div className="hidden lg:flex items-center gap-3">
-            <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Instagram">
-              <Instagram size={17} />
-            </a>
-            <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Facebook">
-              <Facebook size={17} />
-            </a>
-            <div className="w-px h-5 bg-current opacity-20 mx-1" />
+            <SocialIcons size={15} />
+            <div className="w-px h-5 bg-gray-300 mx-1" />
             <a href="/#contacto" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105">Solicitar Servicio</a>
           </div>
 
-          {/* Mobile right side: social icons + hamburger */}
-          <div className="lg:hidden flex items-center gap-3">
-            <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Instagram">
-              <Instagram size={18} />
-            </a>
-            <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className={`${socialIcon} transition-colors duration-200`} aria-label="Facebook">
-              <Facebook size={18} />
-            </a>
-            <button className={`p-1.5 ${scrolled ? 'text-gray-700' : 'text-white drop-shadow'}`} onClick={() => setMobileOpen(!mobileOpen)}>
+          {/* Mobile right: social + hamburger */}
+          <div className="lg:hidden flex items-center gap-2.5">
+            <SocialIcons size={15} />
+            <button
+              className={`p-1.5 transition-colors ${scrolled ? 'text-gray-700' : 'text-white drop-shadow'}`}
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
               {mobileOpen ? <X size={23} /> : <Menu size={23} />}
             </button>
           </div>
@@ -223,9 +251,7 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
               <a href="/#contacto" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Contacto</a>
-              <div className="mt-3 flex flex-col gap-3">
-                <a href="/#contacto" onClick={() => setMobileOpen(false)} className="px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
-              </div>
+              <a href="/#contacto" onClick={() => setMobileOpen(false)} className="mt-3 px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
             </div>
           </motion.div>
         )}
