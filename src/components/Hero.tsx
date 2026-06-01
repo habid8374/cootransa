@@ -12,20 +12,27 @@ export default function Hero() {
         className="absolute inset-0 w-full h-full object-cover"
         src="/video/hero.mp4"
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-[#0A0F1E]/90 via-[#0A0F1E]/70 to-transparent z-10"/>
-      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-[#0A0F1E]/30 z-10"/>
+      <div className="absolute inset-0 bg-gradient-to-r from-[#0A0F1E]/92 via-[#0A0F1E]/75 to-[#0A0F1E]/40 z-10"/>
+      <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-[#0A0F1E]/20 z-10"/>
 
       <div className="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <motion.div variants={containerVariants} initial="hidden" animate="show" className="max-w-3xl">
+
           <motion.div variants={fadeUp} className="mb-6">
             <span className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium text-zinc-300">
               <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse"/>
               Movilidad · Confianza · Tecnología
             </span>
           </motion.div>
-          <motion.h1 variants={fadeUp} className="text-7xl sm:text-8xl lg:text-9xl font-black font-display tracking-tighter leading-none mb-4">
-            <span className="bg-gradient-to-r from-green-400 via-green-300 to-purple-400 bg-clip-text text-transparent">COOTRANSA</span>
-          </motion.h1>
+
+          <motion.div variants={fadeUp} className="mb-6">
+            <img
+              src="/logo.png"
+              alt="COOTRANSA"
+              className="h-28 sm:h-36 lg:h-44 w-auto object-contain drop-shadow-2xl"
+            />
+          </motion.div>
+
           <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-semibold text-white mb-4 leading-tight">
             Conectamos personas, empresas<br/><span className="text-zinc-300">y territorios.</span>
           </motion.h2>
