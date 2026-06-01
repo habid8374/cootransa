@@ -79,7 +79,7 @@ const fadeUp = { hidden: { opacity: 0, y: 40 }, show: { opacity: 1, y: 0, transi
 export default function Hero() {
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" src="/assets/video/hero.mp4"/>
+      <video autoPlay muted loop playsInline className="absolute inset-0 w-full h-full object-cover" src="/video/hero.mp4"/>
       <div className="absolute inset-0 bg-gradient-to-r from-[#0A0F1E]/90 via-[#0A0F1E]/70 to-transparent z-10"/>
       <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-transparent to-[#0A0F1E]/30 z-10"/>
       <div className="absolute inset-0 z-20 pointer-events-none">
