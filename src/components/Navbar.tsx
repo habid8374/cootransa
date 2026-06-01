@@ -53,13 +53,18 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Color de los enlaces según estado: transparente (sobre el video) -> blanco; con scroll -> gris
+  const link = scrolled
+    ? 'text-gray-700 hover:text-green-600'
+    : 'text-white/90 hover:text-white drop-shadow'
+
   return (
     <motion.nav
       initial={{ y: -80, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-white ${
-        scrolled ? 'shadow-md border-b border-gray-100' : 'border-b border-gray-100/60'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        scrolled ? 'bg-white shadow-md border-b border-gray-100' : 'bg-transparent'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -68,12 +73,12 @@ export default function Navbar() {
             <Brand iconClass="h-9 lg:h-11" textClass="text-xl lg:text-2xl" />
           </a>
           <div className="hidden lg:flex items-center gap-8">
-            <a href="/#inicio" className="text-gray-700 hover:text-green-600 text-sm font-medium transition-colors duration-200 relative group">
+            <a href="/#inicio" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Inicio
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
             </a>
             <div className="relative group">
-              <button className="flex items-center gap-1 text-gray-700 hover:text-green-600 text-sm font-medium transition-colors duration-200">
+              <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
                 Servicios <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
               </button>
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -86,12 +91,12 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-            <a href="/#rutas" className="text-gray-700 hover:text-green-600 text-sm font-medium transition-colors duration-200 relative group">
+            <a href="/#rutas" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Rutas
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
             </a>
             <div className="relative group">
-              <button className="flex items-center gap-1 text-gray-700 hover:text-green-600 text-sm font-medium transition-colors duration-200">
+              <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
                 Nosotros <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
               </button>
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -105,7 +110,7 @@ export default function Navbar() {
               </div>
             </div>
             <div className="relative group">
-              <button className="flex items-center gap-1 text-gray-700 hover:text-green-600 text-sm font-medium transition-colors duration-200">
+              <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
                 Políticas <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
               </button>
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -119,7 +124,7 @@ export default function Navbar() {
               </div>
             </div>
             <div className="relative group">
-              <button className="flex items-center gap-1 text-gray-700 hover:text-green-600 text-sm font-medium transition-colors duration-200">
+              <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
                 Noticias <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
               </button>
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
@@ -132,7 +137,7 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-            <a href="/#contacto" className="text-gray-700 hover:text-green-600 text-sm font-medium transition-colors duration-200 relative group">
+            <a href="/#contacto" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Contacto
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
             </a>
@@ -140,7 +145,7 @@ export default function Navbar() {
           <div className="hidden lg:block">
             <a href="/#contacto" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105">Solicitar Servicio</a>
           </div>
-          <button className="lg:hidden text-gray-700 p-2" onClick={() => setMobileOpen(!mobileOpen)}>
+          <button className={`lg:hidden p-2 ${scrolled ? 'text-gray-700' : 'text-white drop-shadow'}`} onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
