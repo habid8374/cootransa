@@ -6,6 +6,7 @@ import Services from './components/Services'
 import MapSection from './components/MapSection'
 import Fleet from './components/Fleet'
 import Impact from './components/Impact'
+import Policies from './components/Policies'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 
@@ -21,6 +22,7 @@ function App() {
         <section id="servicios"><Services /></section>
         <section id="rutas"><MapSection /></section>
         <section id="nosotros"><Fleet /><Impact /></section>
+        <section id="politicas"><Policies /></section>
         <section id="contacto"><Contact /></section>
       </main>
       <Footer />

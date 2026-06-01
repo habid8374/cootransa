@@ -8,7 +8,12 @@ const impacts = [
   { icon: Users, color: 'from-blue-600 to-blue-400', title: 'Comunidades', description: 'Somos motor de desarrollo regional. Cada ruta que operamos impulsa la economía y calidad de vida de los municipios del Atlántico.' },
 ]
 
-const allies = ['ASOTRANS','ACOLTÉS','Clínica General del Norte','Universidad del Atlántico','ASOTRANS','ACOLTÉS','Clínica General del Norte','Universidad del Atlántico']
+const allies = [
+  { name: 'ACOLTÉS', img: '/acoltes.png' },
+  { name: 'Clínica General del Norte', img: '/clinicageneraldelnorte.png' },
+  { name: 'ASOTRANS', img: '/logo_asotrans.jpg' },
+  { name: 'Universidad del Atlántico', img: '/Logo_de_la_Universidad_del_Atlántico.png' },
+]
 
 export default function Impact() {
   return (
@@ -30,21 +35,44 @@ export default function Impact() {
           </div>
         </div>
       </section>
-      <section className="py-16 bg-[#070C1A] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-10">
+      <section className="py-20 bg-[#070C1A] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-12">
           <motion.p initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="text-center text-zinc-500 text-sm font-semibold tracking-widest uppercase">Nuestros aliados estratégicos</motion.p>
         </div>
-        <div className="relative">
-          <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#070C1A] to-transparent z-10"/>
-          <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#070C1A] to-transparent z-10"/>
-          <div className="flex overflow-hidden">
-            <div className="flex animate-marquee whitespace-nowrap">
-              {allies.map((ally, i) => (
-                <div key={i} className="inline-flex items-center gap-3 mx-10 text-zinc-300 font-semibold text-lg">
-                  <span className="w-2 h-2 rounded-full bg-green-500"/>{ally}
-                </div>
-              ))}
-            </div>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            {allies.map((ally, i) => (
+              <motion.div
+                key={ally.name}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.12 }}
+                className="group"
+              >
+                <motion.div
+                  animate={{ y: [0, -10, 0] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: i * 0.5 }}
+                  className="relative h-32 sm:h-36 rounded-2xl bg-white border border-white/10 shadow-xl flex items-center justify-center p-6 overflow-hidden"
+                >
+                  <span className="pointer-events-none absolute -inset-x-10 -top-1/2 h-[200%] w-1/3 rotate-12 bg-gradient-to-r from-transparent via-white/60 to-transparent opacity-0 group-hover:opacity-100 group-hover:animate-[shine_1.1s_ease-in-out] " />
+                  <img
+                    src={ally.img}
+                    alt={ally.name}
+                    loading="lazy"
+                    className="max-h-20 sm:max-h-24 w-auto max-w-full object-contain transition-transform duration-500 group-hover:scale-105"
+                    onError={(e) => {
+                      const t = e.currentTarget
+                      t.style.display = 'none'
+                      const fb = t.nextElementSibling as HTMLElement | null
+                      if (fb) fb.style.display = 'flex'
+                    }}
+                  />
+                  <span className="hidden absolute inset-0 items-center justify-center text-center px-3 text-zinc-800 font-bold text-sm">{ally.name}</span>
+                </motion.div>
+                <p className="mt-3 text-center text-zinc-400 text-xs sm:text-sm font-medium">{ally.name}</p>
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>

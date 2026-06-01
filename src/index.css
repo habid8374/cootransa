@@ -37,3 +37,8 @@ body {
   50% { box-shadow: 0 0 40px rgba(22, 163, 74, 0.6); }
 }
 .animate-glow { animation: glow 2s ease-in-out infinite; }
+
+@keyframes shine {
+  from { transform: translateX(-120%) rotate(12deg); }
+  to { transform: translateX(320%) rotate(12deg); }
+}
