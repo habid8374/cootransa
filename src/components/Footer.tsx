@@ -1,6 +1,22 @@
 import { Instagram, Facebook, MessageCircle } from 'lucide-react'
 import Brand from './Brand'
 
+const nosotrosItems = [
+  { label: 'Historia', href: '/nosotros/historia' },
+  { label: 'En la Actualidad', href: '/nosotros/actualidad' },
+  { label: 'Nuestra Misión', href: '/nosotros/mision' },
+  { label: 'Nuestra Visión', href: '/nosotros/vision' },
+  { label: 'Nuestra Política', href: '/nosotros/politica' },
+  { label: 'Valores', href: '/nosotros/valores' },
+  { label: 'Nuestro Objetivo', href: '/nosotros/objetivo' },
+]
+
+const legalItems = [
+  { label: 'Política de Privacidad', href: '/legal/privacidad' },
+  { label: 'Política de Cookies', href: '/legal/cookies' },
+  { label: 'Términos y Condiciones', href: '/legal/terminos' },
+]
+
 export default function Footer() {
   return (
     <footer className="bg-[#050810] border-t border-white/5">
@@ -16,12 +32,12 @@ export default function Footer() {
             </div>
           </div>
           <div>
-            <h4 className="text-white font-semibold mb-5">Empresa</h4>
-            <ul className="space-y-3">{['Historia','Misión y Visión','Certificaciones','Nuestros Socios','Responsabilidad Social'].map(item=>(<li key={item}><a href="#nosotros" className="text-zinc-400 hover:text-green-400 text-sm transition-colors">{item}</a></li>))}</ul>
+            <h4 className="text-white font-semibold mb-5">Nosotros</h4>
+            <ul className="space-y-3">{nosotrosItems.map(item=>(<li key={item.href}><a href={item.href} target="_blank" rel="noopener noreferrer" className="text-zinc-400 hover:text-green-400 text-sm transition-colors">{item.label}</a></li>))}</ul>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-5">Servicios</h4>
-            <ul className="space-y-3">{['Transporte Estudiantil','Transporte Empresarial','Transporte Turístico','Rutas Intermunicipales','Convenios Corporativos'].map(item=>(<li key={item}><a href="#servicios" className="text-zinc-400 hover:text-green-400 text-sm transition-colors">{item}</a></li>))}</ul>
+            <ul className="space-y-3">{['Transporte Estudiantil','Transporte Empresarial','Transporte Turístico','Rutas Intermunicipales','Convenios Corporativos'].map(item=>(<li key={item}><a href="/#servicios" className="text-zinc-400 hover:text-green-400 text-sm transition-colors">{item}</a></li>))}</ul>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-5">Contacto</h4>
@@ -30,11 +46,21 @@ export default function Footer() {
               <li className="pt-2"><a href="mailto:cootransaltda1972@cootransa-ltda.com" className="hover:text-green-400 transition-colors break-all">cootransaltda1972@cootransa-ltda.com</a></li>
               <li><a href="mailto:gerenciacootransa@gmail.com" className="hover:text-green-400 transition-colors">gerenciacootransa@gmail.com</a></li>
             </ul>
+            <div className="mt-6">
+              <h4 className="text-white font-semibold mb-3 text-sm">Legal</h4>
+              <ul className="space-y-2">{legalItems.map(item=>(<li key={item.href}><a href={item.href} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-green-400 text-xs transition-colors">{item.label}</a></li>))}</ul>
+            </div>
           </div>
         </div>
-        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-zinc-500 text-sm">© 2026 COOTRANSA Ltda® — Todos los derechos reservados.</p>
-          <p className="text-zinc-600 text-xs">Powered by tecnología moderna al servicio de la movilidad regional · Desarrollado por <a href="#" className="text-green-500 hover:text-green-400 font-medium transition-colors">axentiatech</a></p>
+          <div className="flex items-center gap-2 text-zinc-500 text-xs">
+            <span>Powered by</span>
+            <a href="https://axentiatech.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-white transition-colors font-medium">
+              <img src="/logo_axentia_A.png" alt="axentiatech" className="h-5 w-auto object-contain"/>
+              axentiatech
+            </a>
+          </div>
         </div>
       </div>
     </footer>

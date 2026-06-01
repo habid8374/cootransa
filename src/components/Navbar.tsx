@@ -1,19 +1,28 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X } from 'lucide-react'
+import { Menu, X, ChevronDown } from 'lucide-react'
 import Brand from './Brand'
 
 const navLinks = [
-  { label: 'Inicio', href: '#inicio' },
-  { label: 'Servicios', href: '#servicios' },
-  { label: 'Rutas', href: '#rutas' },
-  { label: 'Nosotros', href: '#nosotros' },
-  { label: 'Contacto', href: '#contacto' },
+  { label: 'Inicio', href: '/#inicio' },
+  { label: 'Servicios', href: '/#servicios' },
+  { label: 'Rutas', href: '/#rutas' },
+]
+
+const nosotrosItems = [
+  { label: 'Historia', href: '/nosotros/historia' },
+  { label: 'En la Actualidad', href: '/nosotros/actualidad' },
+  { label: 'Nuestra Misión', href: '/nosotros/mision' },
+  { label: 'Nuestra Visión', href: '/nosotros/vision' },
+  { label: 'Nuestra Política', href: '/nosotros/politica' },
+  { label: 'Valores', href: '/nosotros/valores' },
+  { label: 'Nuestro Objetivo', href: '/nosotros/objetivo' },
 ]
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [mobileNosotros, setMobileNosotros] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40)
@@ -32,7 +41,7 @@ export default function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
-          <a href="#inicio" className="flex items-center">
+          <a href="/#inicio" className="flex items-center">
             <Brand iconClass="h-9 lg:h-11" textClass="text-xl lg:text-2xl" />
           </a>
           <div className="hidden lg:flex items-center gap-8">
@@ -42,9 +51,27 @@ export default function Navbar() {
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-green-500 to-purple-500 group-hover:w-full transition-all duration-300" />
               </a>
             ))}
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200">
+                Nosotros <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
+              </button>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="w-60 rounded-2xl bg-[#0A0F1E]/95 backdrop-blur-xl border border-white/10 shadow-2xl p-2">
+                  {nosotrosItems.map(item => (
+                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-green-500/10 transition-colors">
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <a href="/#contacto" className="text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200 relative group">
+              Contacto
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-green-500 to-purple-500 group-hover:w-full transition-all duration-300" />
+            </a>
           </div>
           <div className="hidden lg:block">
-            <a href="#contacto" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-900/40 hover:scale-105">Solicitar Servicio</a>
+            <a href="/#contacto" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-900/40 hover:scale-105">Solicitar Servicio</a>
           </div>
           <button className="lg:hidden text-white p-2" onClick={() => setMobileOpen(!mobileOpen)}>
             {mobileOpen ? <X size={24} /> : <Menu size={24} />}
@@ -53,12 +80,25 @@ export default function Navbar() {
       </div>
       <AnimatePresence>
         {mobileOpen && (
-          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="lg:hidden bg-black/95 backdrop-blur-xl border-b border-white/10">
-            <div className="px-4 py-4 flex flex-col gap-4">
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="lg:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 overflow-hidden">
+            <div className="px-4 py-4 flex flex-col gap-1">
               {navLinks.map(link => (
-                <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="text-zinc-200 hover:text-white font-medium py-2 transition-colors">{link.label}</a>
+                <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="text-zinc-200 hover:text-white font-medium py-3 transition-colors">{link.label}</a>
               ))}
-              <a href="#contacto" onClick={() => setMobileOpen(false)} className="mt-2 px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
+              <button onClick={() => setMobileNosotros(!mobileNosotros)} className="flex items-center justify-between text-zinc-200 hover:text-white font-medium py-3 transition-colors">
+                Nosotros <ChevronDown size={16} className={`transition-transform ${mobileNosotros ? 'rotate-180' : ''}`}/>
+              </button>
+              <AnimatePresence>
+                {mobileNosotros && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-4 flex flex-col">
+                    {nosotrosItems.map(item => (
+                      <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-green-400 text-sm py-2.5 transition-colors">{item.label}</a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <a href="/#contacto" onClick={() => setMobileOpen(false)} className="text-zinc-200 hover:text-white font-medium py-3 transition-colors">Contacto</a>
+              <a href="/#contacto" onClick={() => setMobileOpen(false)} className="mt-3 px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
             </div>
           </motion.div>
         )}
