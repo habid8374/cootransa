@@ -11,6 +11,16 @@ const nosotrosItems = [
   { label: 'Nuestro Objetivo', href: '/nosotros/objetivo' },
 ]
 
+const policyItems = [
+  { label: 'Gestión Integral', href: '/politicas/gestion-integral' },
+  { label: 'Seguridad Vial', href: '/politicas/seguridad-vial' },
+  { label: 'Alcohol y Drogas', href: '/politicas/alcohol-drogas' },
+  { label: 'Acoso Sexual y VBG', href: '/politicas/acoso-sexual-vbg' },
+  { label: 'Tratamiento de Datos', href: '/politicas/tratamiento-datos' },
+  { label: 'Desconexión Laboral', href: '/politicas/desconexion-laboral' },
+  { label: 'Salud Mental', href: '/politicas/salud-mental' },
+]
+
 const legalItems = [
   { label: 'Política de Privacidad', href: '/legal/privacidad' },
   { label: 'Política de Cookies', href: '/legal/cookies' },
@@ -38,6 +48,10 @@ export default function Footer() {
           <div>
             <h4 className="text-white font-semibold mb-5">Servicios</h4>
             <ul className="space-y-3">{['Transporte Estudiantil','Transporte Empresarial','Transporte Turístico','Rutas Intermunicipales','Convenios Corporativos'].map(item=>(<li key={item}><a href="/#servicios" className="text-zinc-400 hover:text-green-400 text-sm transition-colors">{item}</a></li>))}</ul>
+            <div className="mt-6">
+              <h4 className="text-white font-semibold mb-3 text-sm">Políticas</h4>
+              <ul className="space-y-2">{policyItems.map(item=>(<li key={item.href}><a href={item.href} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-green-400 text-xs transition-colors">{item.label}</a></li>))}</ul>
+            </div>
           </div>
           <div>
             <h4 className="text-white font-semibold mb-5">Contacto</h4>

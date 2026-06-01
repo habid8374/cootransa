@@ -3,10 +3,23 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronDown } from 'lucide-react'
 import Brand from './Brand'
 
-const navLinks = [
-  { label: 'Inicio', href: '/#inicio' },
-  { label: 'Servicios', href: '/#servicios' },
-  { label: 'Rutas', href: '/#rutas' },
+const servicesItems = [
+  { label: 'Transporte Estudiantil', href: '/#servicios' },
+  { label: 'Transporte Empresarial', href: '/#servicios' },
+  { label: 'Transporte Turístico', href: '/#servicios' },
+  { label: 'Rutas Intermunicipales', href: '/#servicios' },
+  { label: 'Convenios Corporativos', href: '/#servicios' },
+  { label: 'Logística y Movilidad', href: '/#servicios' },
+]
+
+const policiesItems = [
+  { label: 'Política de Gestión Integral', href: '/politicas/gestion-integral' },
+  { label: 'Política de Seguridad Vial', href: '/politicas/seguridad-vial' },
+  { label: 'Prevención de Alcohol y Drogas', href: '/politicas/alcohol-drogas' },
+  { label: 'Acoso Sexual Laboral y VBG', href: '/politicas/acoso-sexual-vbg' },
+  { label: 'Tratamiento de Datos Personales', href: '/politicas/tratamiento-datos' },
+  { label: 'Desconexión Laboral', href: '/politicas/desconexion-laboral' },
+  { label: 'Salud Mental', href: '/politicas/salud-mental' },
 ]
 
 const nosotrosItems = [
@@ -23,6 +36,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
   const [mobileNosotros, setMobileNosotros] = useState(false)
+  const [mobileServicios, setMobileServicios] = useState(false)
+  const [mobilePoliticas, setMobilePoliticas] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40)
@@ -45,12 +60,28 @@ export default function Navbar() {
             <Brand iconClass="h-9 lg:h-11" textClass="text-xl lg:text-2xl" />
           </a>
           <div className="hidden lg:flex items-center gap-8">
-            {navLinks.map(link => (
-              <a key={link.href} href={link.href} className="text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200 relative group">
-                {link.label}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-green-500 to-purple-500 group-hover:w-full transition-all duration-300" />
-              </a>
-            ))}
+            <a href="/#inicio" className="text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200 relative group">
+              Inicio
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-green-500 to-purple-500 group-hover:w-full transition-all duration-300" />
+            </a>
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200">
+                Servicios <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
+              </button>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="w-64 rounded-2xl bg-[#0A0F1E]/95 backdrop-blur-xl border border-white/10 shadow-2xl p-2">
+                  {servicesItems.map(item => (
+                    <a key={item.label} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-green-500/10 transition-colors">
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <a href="/#rutas" className="text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200 relative group">
+              Rutas
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-green-500 to-purple-500 group-hover:w-full transition-all duration-300" />
+            </a>
             <div className="relative group">
               <button className="flex items-center gap-1 text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200">
                 Nosotros <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
@@ -58,6 +89,20 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-60 rounded-2xl bg-[#0A0F1E]/95 backdrop-blur-xl border border-white/10 shadow-2xl p-2">
                   {nosotrosItems.map(item => (
+                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-green-500/10 transition-colors">
+                      {item.label}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+            <div className="relative group">
+              <button className="flex items-center gap-1 text-zinc-200 hover:text-white text-sm font-medium transition-colors duration-200">
+                Políticas <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
+              </button>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="w-72 rounded-2xl bg-[#0A0F1E]/95 backdrop-blur-xl border border-white/10 shadow-2xl p-2">
+                  {policiesItems.map(item => (
                     <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-zinc-300 hover:text-white hover:bg-green-500/10 transition-colors">
                       {item.label}
                     </a>
@@ -82,9 +127,20 @@ export default function Navbar() {
         {mobileOpen && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="lg:hidden bg-black/95 backdrop-blur-xl border-b border-white/10 overflow-hidden">
             <div className="px-4 py-4 flex flex-col gap-1">
-              {navLinks.map(link => (
-                <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)} className="text-zinc-200 hover:text-white font-medium py-3 transition-colors">{link.label}</a>
-              ))}
+              <a href="/#inicio" onClick={() => setMobileOpen(false)} className="text-zinc-200 hover:text-white font-medium py-3 transition-colors">Inicio</a>
+              <button onClick={() => setMobileServicios(!mobileServicios)} className="flex items-center justify-between text-zinc-200 hover:text-white font-medium py-3 transition-colors">
+                Servicios <ChevronDown size={16} className={`transition-transform ${mobileServicios ? 'rotate-180' : ''}`}/>
+              </button>
+              <AnimatePresence>
+                {mobileServicios && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-4 flex flex-col">
+                    {servicesItems.map(item => (
+                      <a key={item.label} href={item.href} onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-green-400 text-sm py-2.5 transition-colors">{item.label}</a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <a href="/#rutas" onClick={() => setMobileOpen(false)} className="text-zinc-200 hover:text-white font-medium py-3 transition-colors">Rutas</a>
               <button onClick={() => setMobileNosotros(!mobileNosotros)} className="flex items-center justify-between text-zinc-200 hover:text-white font-medium py-3 transition-colors">
                 Nosotros <ChevronDown size={16} className={`transition-transform ${mobileNosotros ? 'rotate-180' : ''}`}/>
               </button>
@@ -92,6 +148,18 @@ export default function Navbar() {
                 {mobileNosotros && (
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-4 flex flex-col">
                     {nosotrosItems.map(item => (
+                      <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-green-400 text-sm py-2.5 transition-colors">{item.label}</a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              <button onClick={() => setMobilePoliticas(!mobilePoliticas)} className="flex items-center justify-between text-zinc-200 hover:text-white font-medium py-3 transition-colors">
+                Políticas <ChevronDown size={16} className={`transition-transform ${mobilePoliticas ? 'rotate-180' : ''}`}/>
+              </button>
+              <AnimatePresence>
+                {mobilePoliticas && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-4 flex flex-col">
+                    {policiesItems.map(item => (
                       <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="text-zinc-400 hover:text-green-400 text-sm py-2.5 transition-colors">{item.label}</a>
                     ))}
                   </motion.div>
