@@ -7,12 +7,8 @@ export default defineConfig({
     react(),
     viteStaticCopy({
       targets: [
-        { src: 'assets/video/hero.mp4', dest: 'assets/video' },
-        { src: 'assets/favicon.svg', dest: 'assets' }
+        { src: 'assets/video/hero.mp4', dest: 'assets/video' }
       ]
     })
-  ],
-  optimizeDeps: {
-    exclude: ['@react-three/fiber', '@react-three/drei']
-  }
+  ]
 })
