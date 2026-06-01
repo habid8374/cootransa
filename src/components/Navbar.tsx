@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X } from 'lucide-react'
+import Brand from './Brand'
 
 const navLinks = [
   { label: 'Inicio', href: '#inicio' },
@@ -32,7 +33,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 lg:h-20">
           <a href="#inicio" className="flex items-center">
-            <img src="/logo.png" alt="COOTRANSA" className="h-11 lg:h-14 w-auto object-contain"/>
+            <Brand iconClass="h-9 lg:h-11" textClass="text-xl lg:text-2xl" />
           </a>
           <div className="hidden lg:flex items-center gap-8">
             {navLinks.map(link => (

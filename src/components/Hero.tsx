@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { ChevronDown } from 'lucide-react'
+import Brand from './Brand'
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.15 } } }
 const fadeUp = { hidden: { opacity: 0, y: 40 }, show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: [0.25,0.46,0.45,0.94] } } }
@@ -26,12 +27,7 @@ export default function Hero() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="mb-8">
-            <img
-              src="/logo.png"
-              alt="COOTRANSA"
-              className="h-32 sm:h-44 lg:h-52 w-auto object-contain"
-              style={{ filter: 'drop-shadow(0 6px 24px rgba(0,0,0,0.55))' }}
-            />
+            <Brand iconClass="h-24 sm:h-32 lg:h-36" textClass="text-5xl sm:text-6xl lg:text-7xl" tagline taglineClass="text-xs sm:text-sm" />
           </motion.div>
 
           <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-semibold text-white mb-4 leading-tight">

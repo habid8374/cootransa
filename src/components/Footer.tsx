@@ -1,4 +1,5 @@
 import { Instagram, Facebook, MessageCircle } from 'lucide-react'
+import Brand from './Brand'
 
 export default function Footer() {
   return (
@@ -6,8 +7,8 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           <div className="lg:col-span-1">
-            <div className="mb-4"><img src="/logo.png" alt="COOTRANSA" className="h-14 w-auto object-contain"/></div>
-            <p className="text-zinc-400 text-sm leading-relaxed mb-6">Cooperativa de Transportadores de Sabanalarga Ltda®. Moviendo el Caribe colombiano desde 1972.</p>
+            <div className="mb-4"><Brand iconClass="h-12" textClass="text-2xl" tagline taglineClass="text-[9px]" /></div>
+            <p className="text-zinc-400 text-sm leading-relaxed mb-6 mt-2">Cooperativa de Transportadores de Sabanalarga Ltda®. Moviendo el Caribe colombiano desde 1972.</p>
             <div className="flex gap-3">
               <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/20 transition-all"><Instagram size={16}/></a>
               <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/20 transition-all"><Facebook size={16}/></a>
