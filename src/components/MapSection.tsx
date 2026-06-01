@@ -3,33 +3,46 @@ import { motion } from 'framer-motion'
 
 const routes = [
   {
-    name: 'Sabanalarga → Barranquilla',
+    name: 'Sabanalarga → Barranquilla → Corredor Universitario',
     color: '#22c55e',
-    coords: [[10.6286, -74.9219], [10.7200, -74.9000], [10.8400, -74.8500], [10.9639, -74.7964]] as [number,number][],
-    from: 'Sabanalarga',
-    to: 'Barranquilla'
+    coords: [
+      [10.6306, -74.9181], // Sabanalarga
+      [10.7300, -74.9200], // Campeche
+      [10.7939, -74.9163], // Baranoa
+      [10.8967, -74.8861], // Galapá
+      [10.9685, -74.7813], // Barranquilla
+      [11.0185, -74.8506], // Corredor Universitario
+    ] as [number,number][]
   },
   {
-    name: 'Manatí → Barranquilla',
+    name: 'Sabanalarga → Manatí',
     color: '#eab308',
-    coords: [[10.4411, -74.9636], [10.5500, -74.9400], [10.6800, -74.9000], [10.8000, -74.8600], [10.9639, -74.7964]] as [number,number][],
-    from: 'Manatí',
-    to: 'Barranquilla'
+    coords: [
+      [10.6306, -74.9181], // Sabanalarga
+      [10.5400, -74.9450], // intermedio
+      [10.4486, -74.9586], // Manatí
+    ] as [number,number][]
   },
   {
-    name: 'Villa Rosa → Barranquilla',
+    name: 'Sabanalarga → San Cristóbal (Bolívar)',
     color: '#a855f7',
-    coords: [[10.7100, -74.9450], [10.7900, -74.9000], [10.8800, -74.8400], [10.9639, -74.7964]] as [number,number][],
-    from: 'Villa Rosa',
-    to: 'Barranquilla'
+    coords: [
+      [10.6306, -74.9181], // Sabanalarga
+      [10.5100, -74.9900], // intermedio
+      [10.3961, -75.0639], // San Cristóbal
+    ] as [number,number][]
   }
 ]
 
 const cities = [
-  { name: 'Barranquilla', coords: [10.9639, -74.7964] as [number,number], color: '#22c55e', size: 12 },
-  { name: 'Sabanalarga', coords: [10.6286, -74.9219] as [number,number], color: '#22c55e', size: 9 },
-  { name: 'Manatí', coords: [10.4411, -74.9636] as [number,number], color: '#eab308', size: 9 },
-  { name: 'Villa Rosa', coords: [10.7100, -74.9450] as [number,number], color: '#a855f7', size: 9 },
+  { name: 'Sabanalarga', coords: [10.6306, -74.9181] as [number,number], color: '#22c55e', size: 11 },
+  { name: 'Campeche', coords: [10.7300, -74.9200] as [number,number], color: '#22c55e', size: 7 },
+  { name: 'Baranoa', coords: [10.7939, -74.9163] as [number,number], color: '#22c55e', size: 7 },
+  { name: 'Galapá', coords: [10.8967, -74.8861] as [number,number], color: '#22c55e', size: 7 },
+  { name: 'Barranquilla', coords: [10.9685, -74.7813] as [number,number], color: '#22c55e', size: 12 },
+  { name: 'Corredor Universitario', coords: [11.0185, -74.8506] as [number,number], color: '#22c55e', size: 8 },
+  { name: 'Manatí', coords: [10.4486, -74.9586] as [number,number], color: '#eab308', size: 8 },
+  { name: 'San Cristóbal', coords: [10.3961, -75.0639] as [number,number], color: '#a855f7', size: 8 },
 ]
 
 export default function MapSection() {
@@ -44,26 +57,28 @@ export default function MapSection() {
       await import('leaflet/dist/leaflet.css')
 
       const map = L.map(mapRef.current!, {
-        center: [10.7, -74.88],
-        zoom: 9,
+        center: [10.72, -74.88],
+        zoom: 10,
         zoomControl: true,
         scrollWheelZoom: false,
         attributionControl: false
       })
       mapInstanceRef.current = map
 
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap &copy; CARTO',
-        subdomains: 'abcd',
+      // Satélite (Esri World Imagery, sin API key)
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 19
+      }).addTo(map)
+      // Etiquetas de calles/lugares encima
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
         maxZoom: 19
       }).addTo(map)
 
       routes.forEach(route => {
         const line = L.polyline(route.coords, {
           color: route.color,
-          weight: 4,
-          opacity: 0.9,
-          dashArray: '10, 8',
+          weight: 5,
+          opacity: 0.95,
           className: 'animated-route'
         }).addTo(map)
         line.bindTooltip(route.name, { sticky: true, className: 'route-tooltip' })
@@ -74,12 +89,15 @@ export default function MapSection() {
           radius: city.size,
           fillColor: city.color,
           color: '#fff',
-          weight: 2,
+          weight: 2.5,
           opacity: 1,
           fillOpacity: 0.95
         }).addTo(map)
         marker.bindTooltip(`<b>${city.name}</b>`, { permanent: true, direction: 'top', className: 'city-tooltip' })
       })
+
+      const group = L.featureGroup(routes.map(r => L.polyline(r.coords)))
+      map.fitBounds(group.getBounds().pad(0.15))
     }
 
     loadMap()
@@ -100,9 +118,6 @@ export default function MapSection() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <img src="/logo.png" alt="COOTRANSA" className="h-14 w-auto object-contain opacity-90"/>
-          </div>
           <span className="text-green-400 text-sm font-semibold tracking-widest uppercase">Conectividad regional</span>
           <h2 className="text-4xl lg:text-5xl font-black font-display text-white mt-3 mb-4">
             Nuestras <span className="bg-gradient-to-r from-green-400 to-purple-400 bg-clip-text text-transparent">Rutas</span>
@@ -127,7 +142,7 @@ export default function MapSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
           className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
-          style={{ height: '520px' }}
+          style={{ height: '560px' }}
         >
           <div ref={mapRef} style={{ width: '100%', height: '100%' }}/>
         </motion.div>
@@ -135,23 +150,25 @@ export default function MapSection() {
 
       <style>{`
         .animated-route {
-          stroke-dasharray: 10, 8;
-          animation: dash 1.5s linear infinite;
+          stroke-dasharray: 12, 10;
+          animation: dash 1.2s linear infinite;
+          filter: drop-shadow(0 0 4px rgba(0,0,0,0.6));
         }
         @keyframes dash {
-          to { stroke-dashoffset: -36; }
+          to { stroke-dashoffset: -44; }
         }
         .route-tooltip, .city-tooltip {
-          background: #0A0F1E !important;
-          border: 1px solid rgba(255,255,255,0.15) !important;
+          background: rgba(10,15,30,0.92) !important;
+          border: 1px solid rgba(255,255,255,0.2) !important;
           color: white !important;
           font-family: Inter, sans-serif !important;
-          font-size: 13px !important;
+          font-size: 12px !important;
           border-radius: 8px !important;
-          padding: 4px 10px !important;
-          box-shadow: 0 4px 20px rgba(0,0,0,0.5) !important;
+          padding: 3px 9px !important;
+          box-shadow: 0 4px 20px rgba(0,0,0,0.6) !important;
+          white-space: nowrap;
         }
-        .city-tooltip::before { display: none; }
+        .city-tooltip::before, .route-tooltip::before { display: none; }
         .leaflet-container { background: #070C1A; }
       `}</style>
     </section>

@@ -25,18 +25,20 @@ export default function Hero() {
             </span>
           </motion.div>
 
-          <motion.div variants={fadeUp} className="mb-6">
-            <img
-              src="/logo.png"
-              alt="COOTRANSA"
-              className="h-28 sm:h-36 lg:h-44 w-auto object-contain drop-shadow-2xl"
-            />
+          <motion.div variants={fadeUp} className="mb-8">
+            <div className="inline-block bg-white/95 rounded-3xl px-7 py-5 shadow-2xl shadow-black/40 backdrop-blur-sm">
+              <img
+                src="/logo.png"
+                alt="COOTRANSA"
+                className="h-24 sm:h-28 lg:h-32 w-auto object-contain"
+              />
+            </div>
           </motion.div>
 
           <motion.h2 variants={fadeUp} className="text-2xl sm:text-3xl font-semibold text-white mb-4 leading-tight">
             Conectamos personas, empresas<br/><span className="text-zinc-300">y territorios.</span>
           </motion.h2>
-          <motion.p variants={fadeUp} className="text-zinc-400 text-lg max-w-xl mb-10 leading-relaxed">
+          <motion.p variants={fadeUp} className="text-zinc-300 text-lg max-w-xl mb-10 leading-relaxed">
             Más de 50 años impulsando el desarrollo regional del Caribe colombiano. Flota renovada, monitoreo satelital, calidad certificada ISO.
           </motion.p>
           <motion.div variants={fadeUp} className="flex flex-wrap gap-4">
