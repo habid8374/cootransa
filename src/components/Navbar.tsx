@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, Instagram, Facebook } from 'lucide-react'
 import Brand from './Brand'
 
 const servicesItems = [
@@ -39,6 +39,45 @@ const noticiasItems = [
   { label: 'Convocatoria laboral', href: '/noticias/convocatoria' },
 ]
 
+function SocialIcons({ size = 16 }: { size?: number }) {
+  return (
+    <div className="flex items-center gap-2">
+      <a
+        href="https://www.instagram.com/cootransaoficial"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Instagram"
+        className="group relative flex items-center justify-center w-8 h-8 rounded-xl
+          bg-gradient-to-br from-purple-500 via-pink-500 to-orange-400
+          shadow-[0_2px_8px_rgba(219,39,119,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]
+          hover:shadow-[0_4px_14px_rgba(219,39,119,0.6),inset_0_1px_0_rgba(255,255,255,0.3)]
+          hover:scale-110 hover:-translate-y-0.5
+          active:scale-95 active:translate-y-0
+          transition-all duration-200"
+      >
+        <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <Instagram size={size} className="text-white relative z-10" />
+      </a>
+      <a
+        href="https://www.facebook.com/share/17fNJkiDeV/"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Facebook"
+        className="group relative flex items-center justify-center w-8 h-8 rounded-xl
+          bg-gradient-to-br from-blue-600 to-blue-500
+          shadow-[0_2px_8px_rgba(37,99,235,0.45),inset_0_1px_0_rgba(255,255,255,0.25)]
+          hover:shadow-[0_4px_14px_rgba(37,99,235,0.6),inset_0_1px_0_rgba(255,255,255,0.3)]
+          hover:scale-110 hover:-translate-y-0.5
+          active:scale-95 active:translate-y-0
+          transition-all duration-200"
+      >
+        <span className="absolute inset-0 rounded-xl bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity" />
+        <Facebook size={size} className="text-white relative z-10" />
+      </a>
+    </div>
+  )
+}
+
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -53,7 +92,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  // Color de los enlaces según estado: transparente (sobre el video) -> blanco; con scroll -> gris
   const link = scrolled
     ? 'text-gray-700 hover:text-green-600'
     : 'text-white/90 hover:text-white drop-shadow'
@@ -72,7 +110,9 @@ export default function Navbar() {
           <a href="/#inicio" className="flex items-center">
             <Brand iconClass="h-9 lg:h-11" textClass="text-xl lg:text-2xl" />
           </a>
-          <div className="hidden lg:flex items-center gap-8">
+
+          {/* Desktop nav links */}
+          <div className="hidden lg:flex items-center gap-7">
             <a href="/#inicio" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Inicio
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
@@ -84,9 +124,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-64 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {servicesItems.map(item => (
-                    <a key={item.label} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.label} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -102,9 +140,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-60 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {nosotrosItems.map(item => (
-                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -116,9 +152,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-72 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {policiesItems.map(item => (
-                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -130,9 +164,7 @@ export default function Navbar() {
               <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
                 <div className="w-56 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
                   {noticiasItems.map(item => (
-                    <a key={item.href} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">
-                      {item.label}
-                    </a>
+                    <a key={item.href} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
                   ))}
                 </div>
               </div>
@@ -142,14 +174,28 @@ export default function Navbar() {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
             </a>
           </div>
-          <div className="hidden lg:block">
+
+          {/* Desktop right: social + CTA */}
+          <div className="hidden lg:flex items-center gap-3">
+            <SocialIcons size={15} />
+            <div className="w-px h-5 bg-gray-300 mx-1" />
             <a href="/#contacto" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105">Solicitar Servicio</a>
           </div>
-          <button className={`lg:hidden p-2 ${scrolled ? 'text-gray-700' : 'text-white drop-shadow'}`} onClick={() => setMobileOpen(!mobileOpen)}>
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+
+          {/* Mobile right: social + hamburger */}
+          <div className="lg:hidden flex items-center gap-2.5">
+            <SocialIcons size={15} />
+            <button
+              className={`p-1.5 transition-colors ${scrolled ? 'text-gray-700' : 'text-white drop-shadow'}`}
+              onClick={() => setMobileOpen(!mobileOpen)}
+            >
+              {mobileOpen ? <X size={23} /> : <Menu size={23} />}
+            </button>
+          </div>
         </div>
       </div>
+
+      {/* Mobile menu */}
       <AnimatePresence>
         {mobileOpen && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} className="lg:hidden bg-white border-b border-gray-200 overflow-hidden">
