@@ -14,7 +14,7 @@ function App() {
   useLenis()
 
   return (
-    <div className="min-h-screen bg-[#0A0F1E] text-white overflow-x-hidden">
+    <div className="min-h-screen bg-white overflow-x-hidden">
       <Navbar />
       <main>
         <section id="inicio"><Hero /></section>
