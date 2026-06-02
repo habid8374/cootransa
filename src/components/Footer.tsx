@@ -68,12 +68,22 @@ export default function Footer() {
         </div>
         <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-zinc-500 text-sm">© 2026 COOTRANSA Ltda® — Todos los derechos reservados.</p>
-          <div className="flex items-center gap-2 text-zinc-500 text-xs">
-            <span>Powered by</span>
-            <a href="https://axentiatech.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-white transition-colors font-medium">
-              <img src="/logo_axentia_A.png" alt="axentiatech" className="h-5 w-auto object-contain"/>
-              axentiatech
+          <div className="flex items-center gap-4">
+            <a
+              href="/admin"
+              className="inline-flex items-center gap-1.5 text-zinc-600 hover:text-zinc-400 text-xs transition-colors"
+              title="Acceso administrativo"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Administrar
             </a>
+            <div className="flex items-center gap-2 text-zinc-500 text-xs">
+              <span>Powered by</span>
+              <a href="https://axentiatech.com" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-1.5 text-zinc-300 hover:text-white transition-colors font-medium">
+                <img src="/logo_axentia_A.png" alt="axentiatech" className="h-5 w-auto object-contain"/>
+                axentiatech
+              </a>
+            </div>
           </div>
         </div>
       </div>
