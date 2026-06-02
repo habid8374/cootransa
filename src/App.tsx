@@ -44,11 +44,12 @@ export default function App() {
 
   return (
     <>
-      {!splashDone && <BusSplash onDone={handleSplashDone} />}
+      <BusSplash onDone={handleSplashDone} />
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: splashDone ? 1 : 0 }}
         transition={{ duration: 0.7, ease: 'easeOut' }}
+        style={{ pointerEvents: splashDone ? 'auto' : 'none' }}
       >
         <MainSite />
       </motion.div>
