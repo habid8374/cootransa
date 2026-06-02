@@ -13,7 +13,7 @@ export default function AdminLogin() {
     setLoading(true)
     setError('')
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setError('Credenciales incorrectas. Verifica tu email y contraseña.')
+    if (error) setError(error.message)
     setLoading(false)
   }
 
