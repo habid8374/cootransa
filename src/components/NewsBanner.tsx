@@ -136,29 +136,20 @@ export default function NewsBanner() {
     load()
   }, [])
 
-  // Auto-scroll marquee on a natively-scrollable container.
-  // The user can drag/swipe to advance it manually; auto-scroll resumes after.
   useEffect(() => {
     if (items.length < 2) return
     const el = trackRef.current
     if (!el) return
-    const speed = 0.5
-    const wrap = () => {
-      if (pauseRef.current) return
-      const half = el.scrollWidth / 2
-      if (el.scrollLeft >= half) el.scrollLeft -= half
-      else if (el.scrollLeft <= 0) el.scrollLeft += half
-    }
     const loop = () => {
-      if (!pauseRef.current) { el.scrollLeft += speed; wrap() }
+      if (!pauseRef.current) {
+        el.scrollLeft += 0.5
+        const half = el.scrollWidth / 2
+        if (el.scrollLeft >= half) el.scrollLeft -= half
+      }
       animRef.current = requestAnimationFrame(loop)
     }
-    el.addEventListener('scroll', wrap, { passive: true })
     animRef.current = requestAnimationFrame(loop)
-    return () => {
-      if (animRef.current) cancelAnimationFrame(animRef.current)
-      el.removeEventListener('scroll', wrap)
-    }
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
   }, [items])
 
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
