@@ -66,20 +66,21 @@ function Badge({ n }: { n: Noticia }) {
   )
 }
 
-/* Featured horizontal layout — used when 1-2 items */
-function FeaturedCard({ n }: { n: Noticia }) {
+/* Featured horizontal layout */
+function FeaturedCard({ n, dragging }: { n: Noticia; dragging?: boolean }) {
   const meta = SECTION_META[n.seccion] ?? SECTION_META.General
   return (
     <a
       href={hrefFor(n)}
+      onClick={e => { if (dragging) e.preventDefault() }}
       className="group flex-shrink-0 w-[88vw] max-w-[34rem] grid sm:grid-cols-2 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
     >
       {isSpecial(n) ? (
         <SpecialGraphic n={n} big />
       ) : n.image_url ? (
         <div className="relative h-56 sm:h-auto sm:min-h-[16rem] bg-gray-900 flex items-center justify-center overflow-hidden">
-          <img src={n.image_url} alt={n.title} className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-40"/>
-          <img src={n.image_url} alt={n.title} className="relative max-h-full w-auto object-contain z-10"/>
+          <img draggable={false} src={n.image_url} alt={n.title} className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-40"/>
+          <img draggable={false} src={n.image_url} alt={n.title} className="relative max-h-full w-auto object-contain z-10"/>
         </div>
       ) : (
         <div className={`h-56 sm:h-auto flex items-center justify-center ${meta.bg}`}>
@@ -102,9 +103,11 @@ function FeaturedCard({ n }: { n: Noticia }) {
 export default function NewsBanner() {
   const [items, setItems] = useState<Noticia[]>([])
   const [loading, setLoading] = useState(true)
-  const trackRef = useRef<HTMLDivElement>(null)
-  const animRef  = useRef<number>()
-  const pauseRef = useRef(false)
+  const trackRef   = useRef<HTMLDivElement>(null)
+  const animRef    = useRef<number>()
+  const pauseRef   = useRef(false)
+  const dragRef    = useRef({ active: false, startX: 0, scrollLeft: 0 })
+  const [dragging, setDragging] = useState(false)
 
   useEffect(() => {
     async function load() {
@@ -158,6 +161,30 @@ export default function NewsBanner() {
     }
   }, [items])
 
+  const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    const el = trackRef.current
+    if (!el) return
+    dragRef.current = { active: true, startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft }
+    pauseRef.current = true
+    setDragging(true)
+  }
+
+  const onMouseUp = () => {
+    dragRef.current.active = false
+    setDragging(false)
+    setTimeout(() => { pauseRef.current = false }, 500)
+  }
+
+  const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!dragRef.current.active) return
+    e.preventDefault()
+    const el = trackRef.current
+    if (!el) return
+    const x = e.pageX - el.offsetLeft
+    const walk = (x - dragRef.current.startX) * 1.5
+    el.scrollLeft = dragRef.current.scrollLeft - walk
+  }
+
   const nudge = (dir: 'left' | 'right') => {
     const el = trackRef.current
     if (!el) return
@@ -199,14 +226,16 @@ export default function NewsBanner() {
           ><ChevronRight size={20}/></button>
           <div
             ref={trackRef}
-            className="flex gap-5 px-4 sm:px-16 overflow-x-auto cursor-grab active:cursor-grabbing"
+            className={`flex gap-5 px-4 sm:px-16 overflow-x-auto select-none ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-            onMouseEnter={() => { pauseRef.current = true }}
-            onMouseLeave={() => { pauseRef.current = false }}
+            onMouseDown={onMouseDown}
+            onMouseUp={onMouseUp}
+            onMouseLeave={() => { onMouseUp(); pauseRef.current = false }}
+            onMouseMove={onMouseMove}
             onTouchStart={() => { pauseRef.current = true }}
             onTouchEnd={() => { setTimeout(() => { pauseRef.current = false }, 2500) }}
           >
-            {list.map((n, i) => <FeaturedCard key={`${n.id}-${i}`} n={n} />)}
+            {list.map((n, i) => <FeaturedCard key={`${n.id}-${i}`} n={n} dragging={dragging} />)}
           </div>
         </div>
       ) : (
