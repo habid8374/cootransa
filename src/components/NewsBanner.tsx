@@ -1,7 +1,6 @@
-import { useEffect, useState } from 'react'
-import { supabase, type Noticia } from '../lib/supabase'
+import { useEffect, useState, useRef } from 'react'
+import { supabase, type Noticia, type Tarifa, type Horario } from '../lib/supabase'
 import { Clock, Briefcase, DollarSign, CalendarClock, Newspaper, ChevronRight, ChevronLeft } from 'lucide-react'
-import { useRef } from 'react'
 
 const SECTION_META: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string }> = {
   Tarifas:      { label: 'Tarifas',     icon: <DollarSign size={11}/>,    color: 'text-emerald-700', bg: 'bg-emerald-50'  },
@@ -62,8 +61,47 @@ export default function NewsBanner() {
   const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    supabase.from('noticias').select('*').eq('estado', 'publicado').order('created_at', { ascending: false }).limit(20)
-      .then(({ data }) => { setItems(data ?? []); setLoading(false) })
+    async function load() {
+      const [{ data: noticias }, { data: tarifas }, { data: horarios }] = await Promise.all([
+        supabase.from('noticias').select('*').eq('estado', 'publicado').order('created_at', { ascending: false }).limit(20),
+        supabase.from('tarifas').select('*').eq('activa', true).limit(50),
+        supabase.from('horarios').select('*').limit(50),
+      ])
+
+      const cards: Noticia[] = [...(noticias ?? [])]
+
+      if ((tarifas as Tarifa[] | null)?.length) {
+        const sample = (tarifas as Tarifa[]).slice(0, 4)
+        const preview = sample.map(t => `${t.origen} → ${t.destino}: $${t.precio}`).join(' · ')
+        cards.push({
+          id: 'tarifas-card',
+          slug: 'tarifas',
+          eyebrow: 'Tarifas vigentes',
+          title: 'Consulta nuestras tarifas actualizadas',
+          summary: preview,
+          seccion: 'Tarifas',
+          estado: 'publicado',
+        })
+      }
+
+      if ((horarios as Horario[] | null)?.length) {
+        const sample = (horarios as Horario[]).slice(0, 3)
+        const preview = sample.map(h => `${h.estacion}: ${h.primera_salida}–${h.ultima_salida}`).join(' · ')
+        cards.push({
+          id: 'horarios-card',
+          slug: 'horarios',
+          eyebrow: 'Horarios de salida',
+          title: 'Horarios de estaciones COOTRANSA',
+          summary: preview,
+          seccion: 'Horarios',
+          estado: 'publicado',
+        })
+      }
+
+      setItems(cards)
+      setLoading(false)
+    }
+    load()
   }, [])
 
   const scroll = (dir: 'left' | 'right') => {
