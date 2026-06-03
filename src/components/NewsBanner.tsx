@@ -144,6 +144,7 @@ export default function NewsBanner() {
     if (!el) return
     const speed = 0.5
     const wrap = () => {
+      if (pauseRef.current) return
       const half = el.scrollWidth / 2
       if (el.scrollLeft >= half) el.scrollLeft -= half
       else if (el.scrollLeft <= 0) el.scrollLeft += half
