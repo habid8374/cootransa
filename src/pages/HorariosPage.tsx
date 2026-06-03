@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Clock } from 'lucide-react'
+import { ArrowLeft, Clock, MapPin } from 'lucide-react'
 import { supabase, getConfig, type Horario } from '../lib/supabase'
 import Brand from '../components/Brand'
 import Footer from '../components/Footer'
@@ -51,25 +51,29 @@ export default function HorariosPage() {
           ) : rows.length === 0 ? (
             <div className="text-center py-16 text-sm text-gray-400">No hay horarios disponibles por el momento.</div>
           ) : (
-            <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-lg bg-white">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left border-collapse">
-                  <thead><tr className="bg-gradient-to-r from-green-600 to-green-500 text-white">
-                    <th className="px-5 py-4 text-sm font-semibold">Estación</th>
-                    <th className="px-5 py-4 text-sm font-semibold">Primera salida</th>
-                    <th className="px-5 py-4 text-sm font-semibold">Última salida</th>
-                    <th className="px-5 py-4 text-sm font-semibold">Frecuencia</th>
-                  </tr></thead>
-                  <tbody>{rows.map((row, i) => (
-                    <tr key={row.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                      <td className="px-5 py-4 text-sm font-semibold text-gray-900 flex items-center gap-2"><Clock size={15} className="text-green-500"/>{row.estacion}</td>
-                      <td className="px-5 py-4 text-sm text-gray-600">{row.primera_salida}</td>
-                      <td className="px-5 py-4 text-sm text-gray-600">{row.ultima_salida}</td>
-                      <td className="px-5 py-4 text-sm text-gray-600">{row.frecuencia}</td>
-                    </tr>
-                  ))}</tbody>
-                </table>
-              </div>
+            <div className="grid gap-5 sm:grid-cols-2">
+              {rows.map((row) => (
+                <div key={row.id} className="rounded-2xl border border-gray-200 shadow-sm bg-white overflow-hidden">
+                  <div className="bg-gradient-to-r from-green-600 to-green-500 px-5 py-4 flex items-center gap-2">
+                    <MapPin size={18} className="text-white shrink-0"/>
+                    <h3 className="text-base font-bold text-white">Estación {row.estacion}</h3>
+                  </div>
+                  <div className="p-5 grid grid-cols-3 gap-3">
+                    <div>
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Primera salida</p>
+                      <p className="text-sm font-semibold text-gray-900">{row.primera_salida || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Última salida</p>
+                      <p className="text-sm font-semibold text-gray-900">{row.ultima_salida || '—'}</p>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest mb-1">Frecuencia</p>
+                      <p className="text-sm font-semibold text-gray-900">{row.frecuencia || '—'}</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
           {leyenda && <div className="mt-8 p-5 rounded-xl bg-gray-50 border border-gray-200"><p className="text-gray-500 text-sm leading-relaxed">{leyenda}</p></div>}
