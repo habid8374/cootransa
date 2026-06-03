@@ -161,7 +161,9 @@ export default function NewsBanner() {
   const nudge = (dir: 'left' | 'right') => {
     const el = trackRef.current
     if (!el) return
+    pauseRef.current = true
     el.scrollBy({ left: dir === 'left' ? -360 : 360, behavior: 'smooth' })
+    setTimeout(() => { pauseRef.current = false }, 700)
   }
 
   if (loading || items.length === 0) return null
