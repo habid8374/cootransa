@@ -13,6 +13,7 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import BusSplash from './components/BusSplash'
 import NewsBanner from './components/NewsBanner'
+import WhatsAppButton from './components/WhatsAppButton'
 
 function MainSite() {
   useLenis()
@@ -30,6 +31,7 @@ function MainSite() {
         <section id="contacto"><Contact /></section>
       </main>
       <Footer />
+      <WhatsAppButton />
     </div>
   )
 }

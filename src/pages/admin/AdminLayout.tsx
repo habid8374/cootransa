@@ -2,13 +2,14 @@ import { useState } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import Brand from '../../components/Brand'
-import { LayoutDashboard, Newspaper, DollarSign, Clock, Users, Settings, LogOut, Menu } from 'lucide-react'
+import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu } from 'lucide-react'
 
 const navItems = [
   { to: '/admin', label: 'Dashboard',      icon: LayoutDashboard, end: true },
   { to: '/admin/noticias', label: 'Noticias', icon: Newspaper },
   { to: '/admin/tarifas',  label: 'Tarifas',  icon: DollarSign },
   { to: '/admin/horarios', label: 'Horarios', icon: Clock },
+  { to: '/admin/mensajes', label: 'Mensajes', icon: Mail },
 ]
 const configItems = [
   { to: '/admin/usuarios', label: 'Usuarios', icon: Users },

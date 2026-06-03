@@ -1,11 +1,36 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Mail, MessageCircle, Instagram, Facebook, Send, CheckCircle } from 'lucide-react'
+import { supabase, getConfig } from '../lib/supabase'
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [error, setError] = useState('')
+  const [waHref, setWaHref] = useState('https://wa.me/573000000000')
   const [formData, setFormData] = useState({ nombre:'', email:'', telefono:'', servicio:'', mensaje:'' })
-  const handleSubmit = (e: React.FormEvent) => { e.preventDefault(); setSubmitted(true) }
+
+  useEffect(() => {
+    getConfig('whatsapp_numero', '573000000000').then(num =>
+      setWaHref(`https://wa.me/${num.replace(/[^0-9]/g, '')}`)
+    )
+  }, [])
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setSending(true); setError('')
+    const { error } = await supabase.from('mensajes').insert({
+      nombre: formData.nombre,
+      email: formData.email,
+      telefono: formData.telefono,
+      servicio: formData.servicio,
+      mensaje: formData.mensaje,
+    })
+    setSending(false)
+    if (error) { setError('No se pudo enviar el mensaje. Intenta de nuevo.'); return }
+    setSubmitted(true)
+    setFormData({ nombre:'', email:'', telefono:'', servicio:'', mensaje:'' })
+  }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => setFormData({...formData,[e.target.name]:e.target.value})
 
   return (
@@ -37,7 +62,8 @@ export default function Contact() {
                   <div><label className="block text-sm font-medium text-gray-700 mb-2">Servicio</label><select name="servicio" value={formData.servicio} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"><option value="">Seleccionar...</option><option value="estudiantil">Estudiantil</option><option value="empresarial">Empresarial</option><option value="turistico">Turístico</option><option value="rutas">Rutas intermunicipales</option><option value="convenio">Convenio corporativo</option><option value="otro">Otro</option></select></div>
                 </div>
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Mensaje</label><textarea name="mensaje" value={formData.mensaje} onChange={handleChange} rows={4} placeholder="Cuéntenos sobre su necesidad de transporte..." className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all resize-none"/></div>
-                <button type="submit" className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-semibold text-base shadow-lg shadow-green-500/25 hover:scale-[1.02] transition-all duration-200"><Send size={18}/>Enviar mensaje</button>
+                {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">{error}</p>}
+                <button type="submit" disabled={sending} className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-semibold text-base shadow-lg shadow-green-500/25 hover:scale-[1.02] transition-all duration-200 disabled:opacity-60 disabled:hover:scale-100"><Send size={18}/>{sending ? 'Enviando...' : 'Enviar mensaje'}</button>
               </form>
             )}
           </motion.div>
@@ -47,7 +73,7 @@ export default function Contact() {
             <div className="pt-4 border-t border-gray-200">
               <div className="text-gray-900 font-semibold mb-5">Redes sociales y WhatsApp</div>
               <div className="flex flex-col gap-3">
-                <a href="https://wa.me/573000000000" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 font-medium"><MessageCircle size={18}/>Escribir por WhatsApp</a>
+                <a href={waHref} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 font-medium"><MessageCircle size={18}/>Escribir por WhatsApp</a>
                 <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 hover:shadow-sm transition-all duration-200"><Instagram size={18}/>@cootransaoficial</a>
                 <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 hover:shadow-sm transition-all duration-200"><Facebook size={18}/>COOTRANSA en Facebook</a>
               </div>
