@@ -67,12 +67,12 @@ function Badge({ n }: { n: Noticia }) {
 }
 
 /* Featured horizontal layout */
-function FeaturedCard({ n, dragging }: { n: Noticia; dragging?: boolean }) {
+function FeaturedCard({ n }: { n: Noticia }) {
   const meta = SECTION_META[n.seccion] ?? SECTION_META.General
   return (
     <a
       href={hrefFor(n)}
-      onClick={e => { if (dragging) e.preventDefault() }}
+      draggable={false}
       className="group flex-shrink-0 w-[88vw] max-w-[34rem] grid sm:grid-cols-2 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
     >
       {isSpecial(n) ? (
@@ -106,8 +106,7 @@ export default function NewsBanner() {
   const trackRef   = useRef<HTMLDivElement>(null)
   const animRef    = useRef<number>()
   const pauseRef   = useRef(false)
-  const dragRef    = useRef({ active: false, startX: 0, scrollLeft: 0 })
-  const [dragging, setDragging] = useState(false)
+  const dragRef    = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false })
 
   useEffect(() => {
     async function load() {
@@ -164,25 +163,32 @@ export default function NewsBanner() {
   const onMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = trackRef.current
     if (!el) return
-    dragRef.current = { active: true, startX: e.pageX - el.offsetLeft, scrollLeft: el.scrollLeft }
+    e.preventDefault()
+    dragRef.current = { active: true, startX: e.pageX, scrollLeft: el.scrollLeft, moved: false }
     pauseRef.current = true
-    setDragging(true)
   }
 
   const onMouseUp = () => {
     dragRef.current.active = false
-    setDragging(false)
     setTimeout(() => { pauseRef.current = false }, 500)
   }
 
   const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!dragRef.current.active) return
-    e.preventDefault()
     const el = trackRef.current
     if (!el) return
-    const x = e.pageX - el.offsetLeft
-    const walk = (x - dragRef.current.startX) * 1.5
-    el.scrollLeft = dragRef.current.scrollLeft - walk
+    const dx = e.pageX - dragRef.current.startX
+    if (Math.abs(dx) > 5) dragRef.current.moved = true
+    el.scrollLeft = dragRef.current.scrollLeft - dx
+  }
+
+  // Capture phase: kill click if the user actually dragged
+  const onClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (dragRef.current.moved) {
+      e.preventDefault()
+      e.stopPropagation()
+      dragRef.current.moved = false
+    }
   }
 
   const nudge = (dir: 'left' | 'right') => {
@@ -226,16 +232,17 @@ export default function NewsBanner() {
           ><ChevronRight size={20}/></button>
           <div
             ref={trackRef}
-            className={`flex gap-5 px-4 sm:px-16 overflow-x-auto select-none ${dragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            className="flex gap-5 px-4 sm:px-16 overflow-x-auto select-none cursor-grab active:cursor-grabbing"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
-            onMouseLeave={() => { onMouseUp(); pauseRef.current = false }}
+            onMouseLeave={onMouseUp}
             onMouseMove={onMouseMove}
+            onClickCapture={onClickCapture}
             onTouchStart={() => { pauseRef.current = true }}
             onTouchEnd={() => { setTimeout(() => { pauseRef.current = false }, 2500) }}
           >
-            {list.map((n, i) => <FeaturedCard key={`${n.id}-${i}`} n={n} dragging={dragging} />)}
+            {list.map((n, i) => <FeaturedCard key={`${n.id}-${i}`} n={n} />)}
           </div>
         </div>
       ) : (
