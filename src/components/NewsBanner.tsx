@@ -171,29 +171,33 @@ export default function NewsBanner() {
 
   return (
     <section className="bg-gradient-to-b from-gray-50 to-white border-y border-gray-200 py-12 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-7 flex items-end justify-between">
-        <div>
-          <div className="flex items-center gap-2 mb-1">
-            <Clock size={15} className="text-green-600"/>
-            <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-7">
+        <div className="flex items-center gap-2 mb-1">
+          <Clock size={15} className="text-green-600"/>
+          <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
         </div>
-        {scrolls && (
-          <div className="hidden sm:flex items-center gap-2">
-            <button onClick={() => nudge('left')}  aria-label="Anterior" className="w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 transition-all shadow-sm"><ChevronLeft size={18}/></button>
-            <button onClick={() => nudge('right')} aria-label="Siguiente" className="w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 transition-all shadow-sm"><ChevronRight size={18}/></button>
-          </div>
-        )}
+        <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
       </div>
 
       {scrolls ? (
         <div className="relative">
+          {/* fade edges */}
           <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"/>
           <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"/>
+          {/* desktop arrows — centred vertically over the track */}
+          <button
+            onClick={() => nudge('left')}
+            aria-label="Anterior"
+            className="hidden sm:flex absolute left-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border border-gray-200 shadow-md items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 hover:shadow-lg transition-all"
+          ><ChevronLeft size={20}/></button>
+          <button
+            onClick={() => nudge('right')}
+            aria-label="Siguiente"
+            className="hidden sm:flex absolute right-3 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border border-gray-200 shadow-md items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 hover:shadow-lg transition-all"
+          ><ChevronRight size={20}/></button>
           <div
             ref={trackRef}
-            className="flex gap-5 px-4 sm:px-8 overflow-x-auto cursor-grab active:cursor-grabbing"
+            className="flex gap-5 px-4 sm:px-16 overflow-x-auto cursor-grab active:cursor-grabbing"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
             onMouseEnter={() => { pauseRef.current = true }}
             onMouseLeave={() => { pauseRef.current = false }}
