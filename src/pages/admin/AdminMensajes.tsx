@@ -103,7 +103,11 @@ export default function AdminMensajes() {
             </div>
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between">
               <button onClick={() => setDelId(open.id)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition"><Trash2 size={15}/> Eliminar</button>
-              <a href={`mailto:${open.email}`} className="text-sm font-semibold text-white px-4 py-2 rounded-lg" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}>Responder por correo</a>
+              <a
+                href={`mailto:${open.email}?subject=${encodeURIComponent('Respuesta a su mensaje – COOTRANSA')}&body=${encodeURIComponent(`Hola ${open.nombre},\n\nGracias por contactar a COOTRANSA.\n\n— En respuesta a su mensaje:\n"${open.mensaje}"\n\n`)}`}
+                className="text-sm font-semibold text-white px-4 py-2 rounded-lg"
+                style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}
+              >Responder por correo</a>
             </div>
           </div>
         </div>
