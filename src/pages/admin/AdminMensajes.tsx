@@ -44,6 +44,15 @@ export default function AdminMensajes() {
   const fmt = (d?: string) => d ? new Date(d).toLocaleString('es-CO', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : ''
   const noLeidos = rows.filter(r => !r.leido).length
 
+  const replyHref = (m: Mensaje) => {
+    const subject = 'Respuesta a su mensaje – COOTRANSA'
+    const body = `Hola ${m.nombre},\n\nGracias por contactar a COOTRANSA.\n\n— En respuesta a su mensaje:\n"${m.mensaje}"\n\n`
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+    return isMobile
+      ? `mailto:${m.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+      : `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(m.email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+  }
+
   return (
     <div>
       <div className="mb-6 flex items-center justify-between">
@@ -104,7 +113,7 @@ export default function AdminMensajes() {
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between">
               <button onClick={() => setDelId(open.id)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition"><Trash2 size={15}/> Eliminar</button>
               <a
-                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(open.email)}&su=${encodeURIComponent('Respuesta a su mensaje – COOTRANSA')}&body=${encodeURIComponent(`Hola ${open.nombre},\n\nGracias por contactar a COOTRANSA.\n\n— En respuesta a su mensaje:\n"${open.mensaje}"\n\n`)}`}
+                href={replyHref(open)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-sm font-semibold text-white px-4 py-2 rounded-lg"
