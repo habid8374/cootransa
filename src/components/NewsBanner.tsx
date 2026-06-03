@@ -105,7 +105,6 @@ export default function NewsBanner() {
   const trackRef = useRef<HTMLDivElement>(null)
   const animRef  = useRef<number>()
   const pauseRef = useRef(false)
-  const posRef   = useRef(0)
 
   useEffect(() => {
     async function load() {
@@ -135,23 +134,28 @@ export default function NewsBanner() {
     load()
   }, [])
 
-  // Auto-scroll marquee (only when there are enough cards to scroll)
+  // Auto-scroll marquee on a natively-scrollable container.
+  // The user can drag/swipe to advance it manually; auto-scroll resumes after.
   useEffect(() => {
     if (items.length < 2) return
-    const track = trackRef.current
-    if (!track) return
-    const speed = 0.4
+    const el = trackRef.current
+    if (!el) return
+    const speed = 0.5
+    const wrap = () => {
+      const half = el.scrollWidth / 2
+      if (el.scrollLeft >= half) el.scrollLeft -= half
+      else if (el.scrollLeft <= 0) el.scrollLeft += half
+    }
     const loop = () => {
-      if (!pauseRef.current) {
-        posRef.current -= speed
-        const half = track.scrollWidth / 2
-        if (Math.abs(posRef.current) >= half) posRef.current = 0
-        track.style.transform = `translateX(${posRef.current}px)`
-      }
+      if (!pauseRef.current) { el.scrollLeft += speed; wrap() }
       animRef.current = requestAnimationFrame(loop)
     }
+    el.addEventListener('scroll', wrap, { passive: true })
     animRef.current = requestAnimationFrame(loop)
-    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
+    return () => {
+      if (animRef.current) cancelAnimationFrame(animRef.current)
+      el.removeEventListener('scroll', wrap)
+    }
   }, [items])
 
   if (loading || items.length === 0) return null
@@ -170,16 +174,18 @@ export default function NewsBanner() {
       </div>
 
       {scrolls ? (
-        <div
-          className="relative"
-          onMouseEnter={() => { pauseRef.current = true }}
-          onMouseLeave={() => { pauseRef.current = false }}
-          onTouchStart={() => { pauseRef.current = true }}
-          onTouchEnd={() => { setTimeout(() => { pauseRef.current = false }, 2000) }}
-        >
+        <div className="relative">
           <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"/>
           <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"/>
-          <div ref={trackRef} className="flex gap-5 px-4 sm:px-8 will-change-transform" style={{ width: 'max-content' }}>
+          <div
+            ref={trackRef}
+            className="flex gap-5 px-4 sm:px-8 overflow-x-auto cursor-grab active:cursor-grabbing"
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            onMouseEnter={() => { pauseRef.current = true }}
+            onMouseLeave={() => { pauseRef.current = false }}
+            onTouchStart={() => { pauseRef.current = true }}
+            onTouchEnd={() => { setTimeout(() => { pauseRef.current = false }, 2500) }}
+          >
             {list.map((n, i) => <FeaturedCard key={`${n.id}-${i}`} n={n} />)}
           </div>
         </div>
