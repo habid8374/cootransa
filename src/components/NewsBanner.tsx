@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { supabase, type Noticia, type Tarifa, type Horario } from '../lib/supabase'
 import { Clock, Briefcase, DollarSign, CalendarClock, Newspaper, ArrowRight } from 'lucide-react'
 
@@ -72,7 +72,7 @@ function FeaturedCard({ n }: { n: Noticia }) {
   return (
     <a
       href={hrefFor(n)}
-      className="group grid sm:grid-cols-2 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
+      className="group flex-shrink-0 w-[88vw] max-w-[34rem] grid sm:grid-cols-2 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
     >
       {isSpecial(n) ? (
         <SpecialGraphic n={n} big />
@@ -102,6 +102,10 @@ function FeaturedCard({ n }: { n: Noticia }) {
 export default function NewsBanner() {
   const [items, setItems] = useState<Noticia[]>([])
   const [loading, setLoading] = useState(true)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const animRef  = useRef<number>()
+  const pauseRef = useRef(false)
+  const posRef   = useRef(0)
 
   useEffect(() => {
     async function load() {
@@ -131,23 +135,59 @@ export default function NewsBanner() {
     load()
   }, [])
 
+  // Auto-scroll marquee (only when there are enough cards to scroll)
+  useEffect(() => {
+    if (items.length < 2) return
+    const track = trackRef.current
+    if (!track) return
+    const speed = 0.4
+    const loop = () => {
+      if (!pauseRef.current) {
+        posRef.current -= speed
+        const half = track.scrollWidth / 2
+        if (Math.abs(posRef.current) >= half) posRef.current = 0
+        track.style.transform = `translateX(${posRef.current}px)`
+      }
+      animRef.current = requestAnimationFrame(loop)
+    }
+    animRef.current = requestAnimationFrame(loop)
+    return () => { if (animRef.current) cancelAnimationFrame(animRef.current) }
+  }, [items])
+
   if (loading || items.length === 0) return null
 
-  return (
-    <section className="bg-gradient-to-b from-gray-50 to-white border-y border-gray-200 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-7">
-          <div className="flex items-center gap-2 mb-1">
-            <Clock size={15} className="text-green-600"/>
-            <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
-          </div>
-          <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
-        </div>
+  const scrolls = items.length >= 2
+  const list = scrolls ? [...items, ...items] : items
 
-        <div className={`grid gap-5 ${items.length === 1 ? 'max-w-3xl' : 'lg:grid-cols-2'}`}>
+  return (
+    <section className="bg-gradient-to-b from-gray-50 to-white border-y border-gray-200 py-12 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-7">
+        <div className="flex items-center gap-2 mb-1">
+          <Clock size={15} className="text-green-600"/>
+          <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
+        </div>
+        <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
+      </div>
+
+      {scrolls ? (
+        <div
+          className="relative"
+          onMouseEnter={() => { pauseRef.current = true }}
+          onMouseLeave={() => { pauseRef.current = false }}
+          onTouchStart={() => { pauseRef.current = true }}
+          onTouchEnd={() => { setTimeout(() => { pauseRef.current = false }, 2000) }}
+        >
+          <div className="absolute left-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"/>
+          <div className="absolute right-0 top-0 bottom-0 w-12 sm:w-20 bg-gradient-to-l from-white to-transparent z-10 pointer-events-none"/>
+          <div ref={trackRef} className="flex gap-5 px-4 sm:px-8 will-change-transform" style={{ width: 'max-content' }}>
+            {list.map((n, i) => <FeaturedCard key={`${n.id}-${i}`} n={n} />)}
+          </div>
+        </div>
+      ) : (
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           {items.map((n) => <FeaturedCard key={n.id} n={n} />)}
         </div>
-      </div>
+      )}
     </section>
   )
 }
