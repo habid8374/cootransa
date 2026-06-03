@@ -91,7 +91,10 @@ export default function NewsBanner() {
 
   if (loading || items.length === 0) return null
 
-  const doubled = [...items, ...items]
+  const minCards = 6
+  const repeated = items.length < minCards
+    ? Array.from({ length: Math.ceil(minCards / items.length) * 2 }, (_, i) => items[i % items.length])
+    : [...items, ...items]
 
   return (
     <section className="bg-gray-50 border-y border-gray-200 py-10 overflow-hidden">
@@ -121,7 +124,7 @@ export default function NewsBanner() {
           className="flex gap-4 px-8 will-change-transform"
           style={{ width: 'max-content' }}
         >
-          {doubled.map((n, i) => <Card key={`${n.id}-${i}`} n={n} />)}
+          {repeated.map((n, i) => <Card key={`${n.id}-${i}`} n={n} />)}
         </motion.div>
       </div>
     </section>
