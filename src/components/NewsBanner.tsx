@@ -11,6 +11,12 @@ const SECTION_META: Record<string, { label: string; icon: React.ReactNode; color
   General:      { label: 'General',     icon: <Newspaper size={11}/>,     color: 'text-gray-600',    bg: 'bg-gray-100',    ring: 'ring-gray-100'    },
 }
 
+function hrefFor(n: Noticia) {
+  if (n.id === 'tarifas-card') return '/tarifas'
+  if (n.id === 'horarios-card') return '/horarios'
+  return `/noticias/${n.slug}`
+}
+
 function isNew(created_at?: string) {
   if (!created_at) return false
   return Date.now() - new Date(created_at).getTime() < 1000 * 60 * 60 * 24 * 7
@@ -42,7 +48,7 @@ function FeaturedCard({ n }: { n: Noticia }) {
   const meta = SECTION_META[n.seccion] ?? SECTION_META.General
   return (
     <a
-      href={`/noticias/${n.slug}`}
+      href={hrefFor(n)}
       className="group grid sm:grid-cols-2 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
     >
       {n.image_url ? (
@@ -73,7 +79,7 @@ function Card({ n }: { n: Noticia }) {
   const meta = SECTION_META[n.seccion] ?? SECTION_META.General
   return (
     <a
-      href={`/noticias/${n.slug}`}
+      href={hrefFor(n)}
       className="group flex-shrink-0 w-72 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
     >
       {n.image_url ? (

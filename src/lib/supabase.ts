@@ -45,3 +45,13 @@ export interface Horario {
   ultima_salida: string
   frecuencia: string
 }
+
+// ── Config key/value helpers (tabla `config`) ───────────────────────────
+export async function getConfig(key: string, fallback = ''): Promise<string> {
+  const { data } = await supabase.from('config').select('value').eq('key', key).single()
+  return data?.value ?? fallback
+}
+
+export async function setConfig(key: string, value: string): Promise<void> {
+  await supabase.from('config').upsert({ key, value }, { onConflict: 'key' })
+}

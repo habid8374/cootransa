@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react'
-import { supabase, type Tarifa } from '../../lib/supabase'
+import { supabase, getConfig, setConfig, type Tarifa } from '../../lib/supabase'
 import { Plus, Trash2, Save } from 'lucide-react'
 
 const EMPTY_ROW: Omit<Tarifa, 'id'> = { origen: '', destino: '', precio: '', tipo: 'Regular', activa: true }
 
 export default function AdminTarifas() {
   const [rows, setRows]       = useState<Tarifa[]>([])
+  const [titulo, setTitulo]   = useState('')
+  const [leyenda, setLeyenda] = useState('')
   const [loading, setLoading] = useState(true)
   const [saving, setSaving]   = useState(false)
   const [saved, setSaved]     = useState(false)
@@ -14,6 +16,8 @@ export default function AdminTarifas() {
     setLoading(true)
     const { data } = await supabase.from('tarifas').select('*').order('origen')
     setRows(data ?? [])
+    setTitulo(await getConfig('tarifas_titulo', 'Tarifas Año 2026'))
+    setLeyenda(await getConfig('tarifas_leyenda', ''))
     setLoading(false)
   }
 
@@ -37,6 +41,8 @@ export default function AdminTarifas() {
       if (id) { await supabase.from('tarifas').update(data).eq('id', id) }
       else { const { data: ins } = await supabase.from('tarifas').insert(data).select().single(); if (ins) row.id = ins.id }
     }
+    await setConfig('tarifas_titulo', titulo)
+    await setConfig('tarifas_leyenda', leyenda)
     setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2500); load()
   }
 
@@ -47,6 +53,16 @@ export default function AdminTarifas() {
         <button onClick={handleSave} disabled={saving} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition disabled:opacity-60" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}>
           <Save size={15} /> {saving ? 'Guardando...' : saved ? '¡Guardado!' : 'Guardar cambios'}
         </button>
+      </div>
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5 mb-4 space-y-4">
+        <div>
+          <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Título de la sección</label>
+          <input value={titulo} onChange={e => setTitulo(e.target.value)} placeholder="Ej: Tarifas Año 2026" className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition"/>
+        </div>
+        <div>
+          <label className="block text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Leyenda / nota</label>
+          <textarea value={leyenda} onChange={e => setLeyenda(e.target.value)} rows={2} placeholder="Ej: Tarifas autorizadas y vigentes a partir del 1 de enero de 2026. Sujetas a cambios sin previo aviso." className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition resize-none"/>
+        </div>
       </div>
       <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
         <table className="w-full">
