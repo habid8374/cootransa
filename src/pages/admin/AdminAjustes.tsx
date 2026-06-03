@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { getConfig, setConfig } from '../../lib/supabase'
-import { ExternalLink, Database, MessageCircle } from 'lucide-react'
+import { MessageCircle, LifeBuoy, Mail } from 'lucide-react'
 
 export default function AdminAjustes() {
   const [numero, setNumero]   = useState('')
@@ -58,14 +58,14 @@ export default function AdminAjustes() {
         </div>
         <div className="space-y-4">
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-            <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2"><Database size={16} className="text-blue-600"/> Base de datos</h2>
-            <p className="text-xs text-gray-500 mb-4">Gestiona tablas, usuarios y storage desde el dashboard de Supabase.</p>
-            <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-sm font-semibold text-gray-700 border border-gray-200 hover:bg-gray-50 transition"><ExternalLink size={14}/> Abrir Supabase Dashboard</a>
+            <h2 className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2"><LifeBuoy size={16} className="text-green-600"/> Soporte técnico</h2>
+            <p className="text-xs text-gray-500 mb-4 leading-relaxed">¿Necesitas ayuda, un cambio en el sitio o reportar un problema? Contacta al equipo de soporte que administra y mantiene la plataforma.</p>
+            <a href="mailto:soporte@axentiatech.com" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-sm font-semibold text-white transition" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}><Mail size={14}/> soporte@axentiatech.com</a>
           </div>
           <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
-            <h2 className="text-sm font-bold text-gray-900 mb-3">Sitio web en producción</h2>
-            <p className="text-xs text-gray-500 mb-4">El sitio se despliega automáticamente en Vercel con cada cambio.</p>
-            <a href="https://vercel.com/dashboard" target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full py-2.5 rounded-lg text-sm font-semibold text-gray-700 border border-gray-200 hover:bg-gray-50 transition"><ExternalLink size={14}/> Abrir Vercel Dashboard</a>
+            <h2 className="text-sm font-bold text-gray-900 mb-2">Acerca del sitio</h2>
+            <p className="text-xs text-gray-500 leading-relaxed">Los cambios que realizas en este panel (noticias, tarifas, horarios, WhatsApp) se publican automáticamente en el sitio web en pocos minutos.</p>
+            <p className="text-[11px] text-gray-400 mt-3">Desarrollado y mantenido por <strong className="text-gray-500">axentiatech</strong></p>
           </div>
         </div>
       </div>
