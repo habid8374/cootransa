@@ -91,11 +91,6 @@ export default function NewsBanner() {
 
   if (loading || items.length === 0) return null
 
-  const minCards = 6
-  const repeated = items.length < minCards
-    ? Array.from({ length: Math.ceil(minCards / items.length) * 2 }, (_, i) => items[i % items.length])
-    : [...items, ...items]
-
   return (
     <section className="bg-gray-50 border-y border-gray-200 py-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-6">
@@ -108,25 +103,31 @@ export default function NewsBanner() {
         </div>
       </div>
 
-      <div
-        className="relative"
-        onMouseEnter={() => { pauseRef.current = true }}
-        onMouseLeave={() => { pauseRef.current = false }}
-        onTouchStart={() => { pauseRef.current = true }}
-        onTouchEnd={() => { setTimeout(() => { pauseRef.current = false }, 1500) }}
-      >
-        {/* fade edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"/>
-        <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"/>
-
-        <motion.div
-          ref={trackRef}
-          className="flex gap-4 px-8 will-change-transform"
-          style={{ width: 'max-content' }}
+      {items.length <= 3 ? (
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex gap-4 flex-wrap justify-center">
+            {items.map((n) => <Card key={n.id} n={n} />)}
+          </div>
+        </div>
+      ) : (
+        <div
+          className="relative"
+          onMouseEnter={() => { pauseRef.current = true }}
+          onMouseLeave={() => { pauseRef.current = false }}
+          onTouchStart={() => { pauseRef.current = true }}
+          onTouchEnd={() => { setTimeout(() => { pauseRef.current = false }, 1500) }}
         >
-          {repeated.map((n, i) => <Card key={`${n.id}-${i}`} n={n} />)}
-        </motion.div>
-      </div>
+          <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-gray-50 to-transparent z-10 pointer-events-none"/>
+          <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-gray-50 to-transparent z-10 pointer-events-none"/>
+          <motion.div
+            ref={trackRef}
+            className="flex gap-4 px-8 will-change-transform"
+            style={{ width: 'max-content' }}
+          >
+            {[...items, ...items].map((n, i) => <Card key={`${n.id}-${i}`} n={n} />)}
+          </motion.div>
+        </div>
+      )}
     </section>
   )
 }
