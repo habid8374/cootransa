@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import Brand from '../../components/Brand'
-import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu } from 'lucide-react'
+import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X } from 'lucide-react'
 
 const navItems = [
   { to: '/admin', label: 'Dashboard',      icon: LayoutDashboard, end: true },
@@ -16,9 +16,38 @@ const configItems = [
   { to: '/admin/ajustes',  label: 'Ajustes',  icon: Settings },
 ]
 
+interface ToastData { nombre: string; mensaje: string }
+
 export default function AdminLayout({ userEmail }: { userEmail: string }) {
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const [unread, setUnread] = useState(0)
+  const [toast, setToast] = useState<ToastData | null>(null)
+
+  // Initial unread count
+  useEffect(() => {
+    supabase.from('mensajes').select('id', { count: 'exact', head: true }).eq('leido', false)
+      .then(({ count }) => setUnread(count ?? 0))
+  }, [])
+
+  // Realtime: nuevos mensajes + marcados como leídos
+  useEffect(() => {
+    const channel = supabase
+      .channel('mensajes-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, (payload) => {
+        const m = payload.new as { nombre: string; mensaje: string }
+        setUnread(u => u + 1)
+        setToast({ nombre: m.nombre, mensaje: m.mensaje })
+        try { new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ==').play().catch(() => {}) } catch {}
+        setTimeout(() => setToast(null), 6000)
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'mensajes' }, () => {
+        supabase.from('mensajes').select('id', { count: 'exact', head: true }).eq('leido', false)
+          .then(({ count }) => setUnread(count ?? 0))
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -52,6 +81,9 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
           >
             <Icon size={16} className="shrink-0" />
             {label}
+            {to === '/admin/mensajes' && unread > 0 && (
+              <span className="ml-auto text-[10px] font-bold text-white bg-green-500 rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">{unread}</span>
+            )}
           </NavLink>
         ))}
 
@@ -123,6 +155,27 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
           <Outlet />
         </main>
       </div>
+
+      {/* Toast de nuevo mensaje */}
+      {toast && (
+        <div className="fixed top-4 right-4 z-[80] w-80 max-w-[calc(100vw-2rem)] animate-[slideIn_.3s_ease-out]">
+          <button
+            onClick={() => { setToast(null); navigate('/admin/mensajes') }}
+            className="w-full text-left bg-white rounded-xl shadow-2xl border border-gray-100 p-4 flex items-start gap-3 hover:shadow-xl transition"
+          >
+            <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
+              <Mail size={16} className="text-green-600" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold text-green-600 uppercase tracking-wide">Nuevo mensaje</p>
+              <p className="text-sm font-semibold text-gray-900 truncate mt-0.5">{toast.nombre}</p>
+              <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{toast.mensaje}</p>
+            </div>
+            <span onClick={(e) => { e.stopPropagation(); setToast(null) }} className="p-1 rounded-lg text-gray-300 hover:text-gray-600 hover:bg-gray-100 transition shrink-0"><X size={15}/></span>
+          </button>
+        </div>
+      )}
+      <style>{`@keyframes slideIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}`}</style>
     </div>
   )
 }
