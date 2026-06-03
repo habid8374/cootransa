@@ -17,6 +17,29 @@ function hrefFor(n: Noticia) {
   return `/noticias/${n.slug}`
 }
 
+const isSpecial = (n: Noticia) => n.id === 'tarifas-card' || n.id === 'horarios-card'
+
+/* Decorative graphic panel for tarifas/horarios cards (no real image) */
+function SpecialGraphic({ n, big }: { n: Noticia; big?: boolean }) {
+  const isTarifa = n.id === 'tarifas-card'
+  const grad = isTarifa
+    ? 'from-emerald-500 via-green-500 to-teal-600'
+    : 'from-blue-500 via-sky-500 to-cyan-600'
+  return (
+    <div className={`relative h-full w-full bg-gradient-to-br ${grad} flex flex-col items-center justify-center overflow-hidden ${big ? 'min-h-[16rem] p-8' : 'min-h-[10rem] p-5'}`}>
+      <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full bg-white/10"/>
+      <div className="absolute -bottom-10 -left-6 w-40 h-40 rounded-full bg-white/10"/>
+      <div className="relative text-white/90 mb-2">
+        {isTarifa ? <DollarSign size={big ? 44 : 32}/> : <CalendarClock size={big ? 44 : 32}/>}
+      </div>
+      <span className={`relative font-black text-white tracking-tight ${big ? 'text-3xl' : 'text-xl'}`}>
+        {isTarifa ? 'Tarifas' : 'Horarios'}
+      </span>
+      <span className="relative text-white/80 text-[11px] font-semibold uppercase tracking-widest mt-1">COOTRANSA</span>
+    </div>
+  )
+}
+
 function isNew(created_at?: string) {
   if (!created_at) return false
   return Date.now() - new Date(created_at).getTime() < 1000 * 60 * 60 * 24 * 7
@@ -51,7 +74,9 @@ function FeaturedCard({ n }: { n: Noticia }) {
       href={hrefFor(n)}
       className="group grid sm:grid-cols-2 rounded-3xl border border-gray-200 bg-white shadow-sm hover:shadow-lg transition-all duration-300 overflow-hidden"
     >
-      {n.image_url ? (
+      {isSpecial(n) ? (
+        <SpecialGraphic n={n} big />
+      ) : n.image_url ? (
         <div className="relative h-56 sm:h-auto sm:min-h-[16rem] bg-gray-900 flex items-center justify-center overflow-hidden">
           <img src={n.image_url} alt={n.title} className="absolute inset-0 w-full h-full object-cover blur-xl scale-110 opacity-40"/>
           <img src={n.image_url} alt={n.title} className="relative max-h-full w-auto object-contain z-10"/>
@@ -82,7 +107,9 @@ function Card({ n }: { n: Noticia }) {
       href={hrefFor(n)}
       className="group flex-shrink-0 w-72 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
     >
-      {n.image_url ? (
+      {isSpecial(n) ? (
+        <div className="h-40"><SpecialGraphic n={n} /></div>
+      ) : n.image_url ? (
         <div className="relative h-40 bg-gray-900 flex items-center justify-center overflow-hidden">
           <img src={n.image_url} alt={n.title} className="absolute inset-0 w-full h-full object-cover blur-lg scale-110 opacity-40"/>
           <img src={n.image_url} alt={n.title} className="relative max-h-full w-auto object-contain z-10"/>
