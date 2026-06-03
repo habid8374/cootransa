@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase, type Noticia, type Tarifa, type Horario } from '../lib/supabase'
-import { Clock, Briefcase, DollarSign, CalendarClock, Newspaper, ArrowRight, ChevronRight, ChevronLeft } from 'lucide-react'
+import { Clock, Briefcase, DollarSign, CalendarClock, Newspaper, ArrowRight } from 'lucide-react'
 
 const SECTION_META: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string; ring: string }> = {
   Tarifas:      { label: 'Tarifas',     icon: <DollarSign size={11}/>,    color: 'text-emerald-700', bg: 'bg-emerald-50',  ring: 'ring-emerald-100' },
@@ -99,42 +99,9 @@ function FeaturedCard({ n }: { n: Noticia }) {
   )
 }
 
-/* Compact vertical card — used in carousel when 3+ items */
-function Card({ n }: { n: Noticia }) {
-  const meta = SECTION_META[n.seccion] ?? SECTION_META.General
-  return (
-    <a
-      href={hrefFor(n)}
-      className="group flex-shrink-0 w-72 rounded-2xl border border-gray-200 bg-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200 overflow-hidden"
-    >
-      {isSpecial(n) ? (
-        <div className="h-40"><SpecialGraphic n={n} /></div>
-      ) : n.image_url ? (
-        <div className="relative h-40 bg-gray-900 flex items-center justify-center overflow-hidden">
-          <img src={n.image_url} alt={n.title} className="absolute inset-0 w-full h-full object-cover blur-lg scale-110 opacity-40"/>
-          <img src={n.image_url} alt={n.title} className="relative max-h-full w-auto object-contain z-10"/>
-        </div>
-      ) : (
-        <div className={`h-40 flex items-center justify-center ${meta.bg}`}>
-          <span className={`${meta.color} opacity-20 scale-[4] block`}>{meta.icon}</span>
-        </div>
-      )}
-      <div className="p-4">
-        <Badge n={n} />
-        <h3 className="mt-2.5 text-sm font-semibold text-gray-900 leading-snug line-clamp-2 group-hover:text-green-700 transition-colors">{n.title}</h3>
-        <p className="mt-1 text-xs text-gray-500 line-clamp-2">{n.summary}</p>
-        <span className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-green-600 group-hover:gap-2 transition-all">
-          Leer más <ChevronRight size={12}/>
-        </span>
-      </div>
-    </a>
-  )
-}
-
 export default function NewsBanner() {
   const [items, setItems] = useState<Noticia[]>([])
   const [loading, setLoading] = useState(true)
-  const scrollRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     async function load() {
@@ -164,49 +131,22 @@ export default function NewsBanner() {
     load()
   }, [])
 
-  const scroll = (dir: 'left' | 'right') =>
-    scrollRef.current?.scrollBy({ left: dir === 'left' ? -320 : 320, behavior: 'smooth' })
-
   if (loading || items.length === 0) return null
-
-  const useFeatured = items.length <= 2
 
   return (
     <section className="bg-gradient-to-b from-gray-50 to-white border-y border-gray-200 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-end justify-between mb-7">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Clock size={15} className="text-green-600"/>
-              <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
+        <div className="mb-7">
+          <div className="flex items-center gap-2 mb-1">
+            <Clock size={15} className="text-green-600"/>
+            <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
           </div>
-          {!useFeatured && (
-            <div className="hidden sm:flex items-center gap-2">
-              <button onClick={() => scroll('left')}  className="w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 transition-all shadow-sm"><ChevronLeft size={17}/></button>
-              <button onClick={() => scroll('right')} className="w-9 h-9 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 transition-all shadow-sm"><ChevronRight size={17}/></button>
-            </div>
-          )}
+          <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
         </div>
 
-        {useFeatured ? (
-          <div className={`grid gap-5 ${items.length === 2 ? 'lg:grid-cols-2' : 'max-w-3xl'}`}>
-            {items.map((n) => <FeaturedCard key={n.id} n={n} />)}
-          </div>
-        ) : (
-          <div
-            ref={scrollRef}
-            className="flex gap-5 overflow-x-auto pb-2 snap-x snap-mandatory"
-            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-          >
-            {items.map((n) => (
-              <div key={n.id} className="snap-start">
-                <Card n={n} />
-              </div>
-            ))}
-          </div>
-        )}
+        <div className={`grid gap-5 ${items.length === 1 ? 'max-w-3xl' : 'lg:grid-cols-2'}`}>
+          {items.map((n) => <FeaturedCard key={n.id} n={n} />)}
+        </div>
       </div>
     </section>
   )
