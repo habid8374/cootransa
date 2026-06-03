@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
 import { supabase, type Noticia, type Tarifa, type Horario } from '../lib/supabase'
-import { Clock, Briefcase, DollarSign, CalendarClock, Newspaper, ArrowRight } from 'lucide-react'
+import { Clock, Briefcase, DollarSign, CalendarClock, Newspaper, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react'
 
 const SECTION_META: Record<string, { label: string; icon: React.ReactNode; color: string; bg: string; ring: string }> = {
   Tarifas:      { label: 'Tarifas',     icon: <DollarSign size={11}/>,    color: 'text-emerald-700', bg: 'bg-emerald-50',  ring: 'ring-emerald-100' },
@@ -158,6 +158,12 @@ export default function NewsBanner() {
     }
   }, [items])
 
+  const nudge = (dir: 'left' | 'right') => {
+    const el = trackRef.current
+    if (!el) return
+    el.scrollBy({ left: dir === 'left' ? -360 : 360, behavior: 'smooth' })
+  }
+
   if (loading || items.length === 0) return null
 
   const scrolls = items.length >= 2
@@ -165,12 +171,20 @@ export default function NewsBanner() {
 
   return (
     <section className="bg-gradient-to-b from-gray-50 to-white border-y border-gray-200 py-12 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-7">
-        <div className="flex items-center gap-2 mb-1">
-          <Clock size={15} className="text-green-600"/>
-          <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-7 flex items-end justify-between">
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Clock size={15} className="text-green-600"/>
+            <span className="text-xs font-bold text-green-600 uppercase tracking-widest">Actualidad</span>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
         </div>
-        <h2 className="text-2xl font-bold text-gray-900">Noticias y avisos COOTRANSA</h2>
+        {scrolls && (
+          <div className="hidden sm:flex items-center gap-2">
+            <button onClick={() => nudge('left')}  aria-label="Anterior" className="w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 transition-all shadow-sm"><ChevronLeft size={18}/></button>
+            <button onClick={() => nudge('right')} aria-label="Siguiente" className="w-10 h-10 rounded-full border border-gray-200 bg-white flex items-center justify-center text-gray-500 hover:text-green-600 hover:border-green-300 transition-all shadow-sm"><ChevronRight size={18}/></button>
+          </div>
+        )}
       </div>
 
       {scrolls ? (
