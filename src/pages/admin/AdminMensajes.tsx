@@ -104,7 +104,9 @@ export default function AdminMensajes() {
             <div className="px-6 py-4 border-t border-gray-100 flex justify-between">
               <button onClick={() => setDelId(open.id)} className="inline-flex items-center gap-1.5 text-sm font-semibold text-red-600 hover:bg-red-50 px-3 py-2 rounded-lg transition"><Trash2 size={15}/> Eliminar</button>
               <a
-                href={`mailto:${open.email}?subject=${encodeURIComponent('Respuesta a su mensaje – COOTRANSA')}&body=${encodeURIComponent(`Hola ${open.nombre},\n\nGracias por contactar a COOTRANSA.\n\n— En respuesta a su mensaje:\n"${open.mensaje}"\n\n`)}`}
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(open.email)}&su=${encodeURIComponent('Respuesta a su mensaje – COOTRANSA')}&body=${encodeURIComponent(`Hola ${open.nombre},\n\nGracias por contactar a COOTRANSA.\n\n— En respuesta a su mensaje:\n"${open.mensaje}"\n\n`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="text-sm font-semibold text-white px-4 py-2 rounded-lg"
                 style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}
               >Responder por correo</a>
