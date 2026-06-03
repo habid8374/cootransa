@@ -187,8 +187,18 @@ export default function NewsBanner() {
     const el = trackRef.current
     if (!el) return
     pauseRef.current = true
-    el.scrollBy({ left: dir === 'left' ? -360 : 360, behavior: 'smooth' })
-    setTimeout(() => { pauseRef.current = false }, 700)
+    const distance = dir === 'left' ? -420 : 420
+    const start = el.scrollLeft
+    const startTime = performance.now()
+    const duration = 420 // ms
+    const ease = (t: number) => t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t // easeInOutQuad
+    const animate = (now: number) => {
+      const t = Math.min((now - startTime) / duration, 1)
+      el.scrollLeft = start + distance * ease(t)
+      if (t < 1) requestAnimationFrame(animate)
+      else setTimeout(() => { pauseRef.current = false }, 80)
+    }
+    requestAnimationFrame(animate)
   }
 
   if (loading || items.length === 0) return null
