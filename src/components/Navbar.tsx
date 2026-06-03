@@ -32,12 +32,6 @@ const nosotrosItems = [
   { label: 'Nuestro Objetivo', href: '/nosotros/objetivo' },
 ]
 
-const noticiasItems = [
-  { label: 'Tarifas', href: '/noticias/tarifas' },
-  { label: 'Horarios de estaciones', href: '/noticias/horarios' },
-  { label: 'Noticias', href: '/noticias/noticias' },
-  { label: 'Convocatoria laboral', href: '/noticias/convocatoria' },
-]
 
 function SocialIcons({ size = 16 }: { size?: number }) {
   return (
@@ -84,7 +78,6 @@ export default function Navbar() {
   const [mobileNosotros, setMobileNosotros] = useState(false)
   const [mobileServicios, setMobileServicios] = useState(false)
   const [mobilePoliticas, setMobilePoliticas] = useState(false)
-  const [mobileNoticias, setMobileNoticias] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40)
@@ -157,18 +150,6 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
-            <div className="relative group">
-              <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
-                Noticias <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
-              </button>
-              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                <div className="w-56 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
-                  {noticiasItems.map(item => (
-                    <a key={item.href} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
-                  ))}
-                </div>
-              </div>
-            </div>
             <a href="/#contacto" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Contacto
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
@@ -234,18 +215,6 @@ export default function Navbar() {
                   <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-4 flex flex-col">
                     {policiesItems.map(item => (
                       <a key={item.href} href={item.href} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="text-gray-500 hover:text-green-600 text-sm py-2.5 transition-colors">{item.label}</a>
-                    ))}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              <button onClick={() => setMobileNoticias(!mobileNoticias)} className="flex items-center justify-between text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">
-                Noticias <ChevronDown size={16} className={`transition-transform ${mobileNoticias ? 'rotate-180' : ''}`}/>
-              </button>
-              <AnimatePresence>
-                {mobileNoticias && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-4 flex flex-col">
-                    {noticiasItems.map(item => (
-                      <a key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className="text-gray-500 hover:text-green-600 text-sm py-2.5 transition-colors">{item.label}</a>
                     ))}
                   </motion.div>
                 )}

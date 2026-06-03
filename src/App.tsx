@@ -12,6 +12,7 @@ import Policies from './components/Policies'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import BusSplash from './components/BusSplash'
+import NewsBanner from './components/NewsBanner'
 
 function MainSite() {
   useLenis()
@@ -20,6 +21,7 @@ function MainSite() {
       <Navbar />
       <main>
         <section id="inicio"><Hero /></section>
+        <NewsBanner />
         <section id="stats"><Stats /></section>
         <section id="servicios"><Services /></section>
         <section id="rutas"><MapSection /></section>
