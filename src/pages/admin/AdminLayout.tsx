@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import Brand from '../../components/Brand'
-import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X } from 'lucide-react'
+import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink } from 'lucide-react'
+
+const ASISTENCIA_URL = 'https://cootransa-asistencia.vercel.app'
 
 const navItems = [
   { to: '/admin', label: 'Dashboard',      icon: LayoutDashboard, end: true },
@@ -105,6 +107,19 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
             {label}
           </NavLink>
         ))}
+
+        <p className="text-[10px] font-semibold text-gray-400 uppercase tracking-widest px-2 py-2 mt-3">Herramientas</p>
+        <a
+          href={ASISTENCIA_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setMobileOpen(false)}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
+        >
+          <Fingerprint size={16} className="shrink-0" />
+          Asistencia
+          <ExternalLink size={12} className="ml-auto text-gray-300" />
+        </a>
       </nav>
 
       <div className="px-4 py-3 border-t border-gray-100 flex items-center gap-3">
