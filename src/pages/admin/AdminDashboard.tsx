@@ -63,11 +63,12 @@ export default function AdminDashboard() {
             Ver todas <ArrowRight size={12} />
           </Link>
         </div>
-        <table className="w-full">
+        {/* Tabla — solo desktop */}
+        <table className="w-full hidden sm:table">
           <thead>
             <tr className="bg-gray-50 border-b border-gray-100">
               <th className="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-5 py-3">Título</th>
-              <th className="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-5 py-3 hidden sm:table-cell">Sección</th>
+              <th className="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-5 py-3">Sección</th>
               <th className="text-left text-[11px] font-semibold text-gray-400 uppercase tracking-wide px-5 py-3">Estado</th>
             </tr>
           </thead>
@@ -79,7 +80,7 @@ export default function AdminDashboard() {
             ) : noticias.map(n => (
               <tr key={n.id} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/50 transition">
                 <td className="px-5 py-3 text-sm text-gray-800 font-medium">{n.title}</td>
-                <td className="px-5 py-3 text-sm text-gray-500 hidden sm:table-cell">{n.seccion}</td>
+                <td className="px-5 py-3 text-sm text-gray-500">{n.seccion}</td>
                 <td className="px-5 py-3">
                   <span className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full ${
                     n.estado === 'publicado' ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-600'
@@ -92,6 +93,28 @@ export default function AdminDashboard() {
             ))}
           </tbody>
         </table>
+
+        {/* Lista de tarjetas — solo móvil */}
+        <div className="sm:hidden divide-y divide-gray-50">
+          {loading ? (
+            <p className="px-5 py-8 text-center text-sm text-gray-400">Cargando...</p>
+          ) : noticias.length === 0 ? (
+            <p className="px-5 py-8 text-center text-sm text-gray-400">No hay noticias. <Link to="/admin/noticias" className="text-green-600 font-semibold">Crear primera →</Link></p>
+          ) : noticias.map(n => (
+            <div key={n.id} className="px-5 py-3.5 flex items-center gap-3">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-gray-800 truncate">{n.title}</p>
+                <p className="text-xs text-gray-400 mt-0.5 capitalize">{n.seccion}</p>
+              </div>
+              <span className={`inline-flex items-center gap-1.5 text-[10px] font-semibold px-2.5 py-1 rounded-full shrink-0 ${
+                n.estado === 'publicado' ? 'bg-green-50 text-green-700' : 'bg-orange-50 text-orange-600'
+              }`}>
+                <span className="w-1.5 h-1.5 rounded-full bg-current" />
+                {n.estado === 'publicado' ? 'Publicado' : 'Borrador'}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
