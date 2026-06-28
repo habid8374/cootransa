@@ -36,14 +36,23 @@ export default function AdminDashboard() {
         <h1 className="text-xl font-bold text-gray-900">Dashboard</h1>
         <p className="text-sm text-gray-500 mt-0.5">Resumen general del sitio COOTRANSA</p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
         {statCards.map(({ label, value, icon: Icon, color, bg, href }) => (
-          <Link key={label} to={href} className="bg-white rounded-xl border border-gray-100 p-5 shadow-sm hover:shadow-md transition">
-            <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center mb-3`}>
-              <Icon size={18} className={color} />
+          <Link
+            key={label}
+            to={href}
+            className="group relative bg-white rounded-2xl border border-gray-100 p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col justify-between aspect-square sm:aspect-auto sm:min-h-[9rem]"
+          >
+            <div className="flex items-start justify-between">
+              <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center`}>
+                <Icon size={20} className={color} />
+              </div>
+              <ArrowRight size={15} className="text-gray-300 group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all" />
             </div>
-            <p className="text-xs text-gray-500 font-medium">{label}</p>
-            <p className="text-3xl font-black text-gray-900 mt-1">{loading ? '—' : value}</p>
+            <div>
+              <p className="text-3xl font-black text-gray-900 leading-none">{loading ? '—' : value}</p>
+              <p className="text-xs text-gray-500 font-medium mt-1.5 leading-tight">{label}</p>
+            </div>
           </Link>
         ))}
       </div>
