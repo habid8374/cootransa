@@ -13,6 +13,7 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import BusSplash from './components/BusSplash'
 import NewsBanner from './components/NewsBanner'
+import TicketsCTA from './components/TicketsCTA'
 import WhatsAppButton from './components/WhatsAppButton'
 
 function MainSite() {
@@ -23,6 +24,7 @@ function MainSite() {
       <main>
         <section id="inicio"><Hero /></section>
         <NewsBanner />
+        <TicketsCTA />
         <section id="stats"><Stats /></section>
         <section id="servicios"><Services /></section>
         <section id="rutas"><MapSection /></section>

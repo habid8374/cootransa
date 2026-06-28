@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, ChevronDown, Instagram, Facebook } from 'lucide-react'
+import { Menu, X, ChevronDown, Instagram, Facebook, Ticket } from 'lucide-react'
 import Brand from './Brand'
+
+const TIQUETES_URL = 'https://cootransa-asistencia.vercel.app/tiquetes'
 
 const servicesItems = [
   { label: 'Transporte Estudiantil', href: '/#servicios' },
@@ -160,7 +162,10 @@ export default function Navbar() {
           <div className="hidden lg:flex items-center gap-3">
             <SocialIcons size={15} />
             <div className="w-px h-5 bg-gray-300 mx-1" />
-            <a href="/#contacto" className="px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105">Solicitar Servicio</a>
+            <a href="/#contacto" className={`text-sm font-medium transition-colors duration-200 ${link}`}>Solicitar Servicio</a>
+            <a href={TIQUETES_URL} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105">
+              <Ticket size={16} /> Comprar Tiquetes
+            </a>
           </div>
 
           {/* Mobile right: social + hamburger */}
@@ -220,7 +225,10 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
               <a href="/#contacto" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Contacto</a>
-              <a href="/#contacto" onClick={() => setMobileOpen(false)} className="mt-3 px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
+              <a href={TIQUETES_URL} target="_blank" rel="noopener noreferrer" onClick={() => setMobileOpen(false)} className="mt-3 flex items-center justify-center gap-2 px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">
+                <Ticket size={18} /> Comprar Tiquetes
+              </a>
+              <a href="/#contacto" onClick={() => setMobileOpen(false)} className="mt-2 px-5 py-3 rounded-full border border-green-500 text-green-700 font-semibold text-center">Solicitar Servicio</a>
             </div>
           </motion.div>
         )}
