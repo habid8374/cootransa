@@ -154,7 +154,7 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
         </div>
       )}
 
-      <div className="flex-1 lg:ml-60 flex flex-col min-h-screen">
+      <div className="flex-1 min-w-0 lg:ml-60 flex flex-col min-h-screen">
         <div className="sticky top-0 z-10 bg-white border-b border-gray-100 px-4 lg:px-6 h-14 flex items-center justify-between">
           <button className="lg:hidden p-1.5 rounded-lg text-gray-500 hover:bg-gray-100" onClick={() => setMobileOpen(true)}>
             <Menu size={20} />
