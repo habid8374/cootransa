@@ -73,17 +73,16 @@ export default function AdminMensajes() {
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden divide-y divide-gray-50">
           {rows.map(m => (
-            <button key={m.id} onClick={() => openMsg(m)} className="w-full flex items-center gap-3 px-5 py-4 hover:bg-gray-50/60 transition text-left">
-              {!m.leido && <span className="w-2 h-2 rounded-full bg-green-500 shrink-0" />}
-              {m.leido && <span className="w-2 h-2 shrink-0" />}
+            <button key={m.id} onClick={() => openMsg(m)} className="w-full flex items-start gap-3 px-5 py-4 hover:bg-gray-50/60 transition text-left">
+              <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${m.leido ? '' : 'bg-green-500'}`} />
               <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className={`text-sm truncate ${m.leido ? 'font-medium text-gray-700' : 'font-bold text-gray-900'}`}>{m.nombre}</span>
                   {m.servicio && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 capitalize shrink-0">{m.servicio}</span>}
+                  <span className="text-[11px] text-gray-400 shrink-0 ml-auto">{fmt(m.created_at)}</span>
                 </div>
-                <p className="text-xs text-gray-500 truncate mt-0.5">{m.mensaje}</p>
+                <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{m.mensaje}</p>
               </div>
-              <span className="text-[11px] text-gray-400 shrink-0 hidden sm:block">{fmt(m.created_at)}</span>
             </button>
           ))}
         </div>
