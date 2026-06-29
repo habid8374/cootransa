@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Mail, MessageCircle, Instagram, Facebook, Send, CheckCircle } from 'lucide-react'
+import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle } from 'lucide-react'
+import WhatsappIcon from './WhatsappIcon'
 import { supabase, getConfig } from '../lib/supabase'
 
 export default function Contact() {
@@ -73,7 +74,7 @@ export default function Contact() {
             <div className="pt-4 border-t border-gray-200">
               <div className="text-gray-900 font-semibold mb-5">Redes sociales y WhatsApp</div>
               <div className="flex flex-col gap-3">
-                <a href={waHref} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 font-medium"><MessageCircle size={18}/>Escribir por WhatsApp</a>
+                <a href={waHref} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 font-medium"><WhatsappIcon size={18}/>Escribir por WhatsApp</a>
                 <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 hover:shadow-sm transition-all duration-200"><Instagram size={18}/>@cootransaoficial</a>
                 <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 px-5 py-3 rounded-xl bg-white border border-gray-200 text-gray-600 hover:text-gray-900 hover:border-gray-300 hover:shadow-sm transition-all duration-200"><Facebook size={18}/>COOTRANSA en Facebook</a>
               </div>

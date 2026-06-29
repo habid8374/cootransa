@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { getConfig, setConfig } from '../../lib/supabase'
-import { MessageCircle, LifeBuoy, Mail } from 'lucide-react'
+import { LifeBuoy, Mail } from 'lucide-react'
+import WhatsappIcon from '../../components/WhatsappIcon'
 
 export default function AdminAjustes() {
   const [numero, setNumero]   = useState('')
@@ -34,7 +35,7 @@ export default function AdminAjustes() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2"><MessageCircle size={16} className="text-green-600"/> Botón flotante de WhatsApp</h2>
+            <h2 className="text-sm font-bold text-gray-900 flex items-center gap-2"><WhatsappIcon size={16} className="text-green-600"/> Botón flotante de WhatsApp</h2>
             <button onClick={() => setActivo(a => !a)} className={`relative w-11 h-6 rounded-full transition ${activo ? 'bg-green-500' : 'bg-gray-300'}`}>
               <span className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${activo ? 'translate-x-5' : ''}`} />
             </button>

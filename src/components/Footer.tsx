@@ -1,4 +1,5 @@
-import { Instagram, Facebook, MessageCircle } from 'lucide-react'
+import { Instagram, Facebook } from 'lucide-react'
+import WhatsappIcon from './WhatsappIcon'
 import Brand from './Brand'
 
 const nosotrosItems = [
@@ -38,7 +39,7 @@ export default function Footer() {
             <div className="flex gap-3">
               <a href="https://www.instagram.com/cootransaoficial" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/20 transition-all"><Instagram size={16}/></a>
               <a href="https://www.facebook.com/share/17fNJkiDeV/" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/20 transition-all"><Facebook size={16}/></a>
-              <a href="https://wa.me/573000000000" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/20 transition-all"><MessageCircle size={16}/></a>
+              <a href="https://wa.me/573000000000" target="_blank" rel="noopener noreferrer" className="w-9 h-9 rounded-lg bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 hover:text-white hover:border-white/20 transition-all"><WhatsappIcon size={16}/></a>
             </div>
           </div>
           <div>
