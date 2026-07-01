@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import Brand from '../../components/Brand'
-import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink } from 'lucide-react'
+import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink, Ticket } from 'lucide-react'
 
 const ASISTENCIA_URL = 'https://cootransa-asistencia.vercel.app'
+const TIQUETES_URL = 'https://cootransa-asistencia.vercel.app/tiquetes'
 
 const navItems = [
   { to: '/admin', label: 'Dashboard',      icon: LayoutDashboard, end: true },
@@ -120,6 +121,18 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
           <Fingerprint size={16} className="shrink-0" />
           Asistencia
           <ExternalLink size={12} className="ml-auto text-gray-300" />
+        </a>
+        <a
+          href={TIQUETES_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setMobileOpen(false)}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all"
+        >
+          <Ticket size={16} className="shrink-0" />
+          Tiquetes
+          <span className="text-[9px] font-bold px-1.5 py-0.5 rounded bg-amber-100 text-amber-700 uppercase tracking-wide">Prueba</span>
+          <ExternalLink size={12} className="ml-1 text-gray-300" />
         </a>
       </nav>
 
