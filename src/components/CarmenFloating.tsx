@@ -38,7 +38,7 @@ export default function CarmenFloating() {
           exit={{ opacity: 0, x: -40 }}
           transition={{ duration: 0.9, ease: 'easeOut' }}
           className="fixed bottom-0 left-0 z-40 pointer-events-none select-none"
-          style={{ width: 'min(42vw, 300px)' }}
+          style={{ width: 'min(32vw, 230px)' }}
         >
           <div className="relative">
             {/* Resplandor dorado detrás */}

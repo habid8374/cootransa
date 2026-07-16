@@ -61,7 +61,7 @@ export default function CarmenModal() {
                   transition={{ delay: 0.1, duration: 0.5 }}
                   className="relative overflow-hidden sm:h-full"
                 >
-                  <img src="/carmen-eucaristia.jpg" alt="Nuestra Señora del Carmen" className="w-full h-56 sm:h-full object-cover" draggable={false} />
+                  <img src="/carmen-eucaristia.jpg" alt="Nuestra Señora del Carmen" className="w-full h-auto sm:h-full sm:object-cover object-top" draggable={false} />
                 </motion.div>
 
                 {/* Contenido */}
