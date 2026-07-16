@@ -14,17 +14,13 @@ export default function CarmenModal() {
   useEffect(() => {
     const hoy = new Date()
     const esDiaDelCarmen = hoy.getMonth() === 6 && hoy.getDate() === 16 // mes 6 = julio
-    const yaVisto = (() => { try { return sessionStorage.getItem('carmen_2026') === '1' } catch { return false } })()
-    if (esDiaDelCarmen && !yaVisto) {
-      const t = setTimeout(() => setOpen(true), 900) // aparece tras el splash
+    if (esDiaDelCarmen) {
+      const t = setTimeout(() => setOpen(true), 900) // aparece tras el splash, cada vez que se abre/recarga
       return () => clearTimeout(t)
     }
   }, [])
 
-  const cerrar = () => {
-    setOpen(false)
-    try { sessionStorage.setItem('carmen_2026', '1') } catch {}
-  }
+  const cerrar = () => setOpen(false)
 
   return (
     <AnimatePresence>
