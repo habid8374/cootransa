@@ -14,6 +14,7 @@ import Footer from './components/Footer'
 import BusSplash from './components/BusSplash'
 import NewsBanner from './components/NewsBanner'
 import WhatsAppButton from './components/WhatsAppButton'
+import CarmenModal from './components/CarmenModal'
 
 function MainSite() {
   useLenis()
@@ -32,6 +33,7 @@ function MainSite() {
       </main>
       <Footer />
       <WhatsAppButton />
+      <CarmenModal />
     </div>
   )
 }
