@@ -8,6 +8,9 @@ import PolicyPage from './pages/PolicyPage'
 import NoticiaPage from './pages/NoticiaPage'
 import TarifasPage from './pages/TarifasPage'
 import HorariosPage from './pages/HorariosPage'
+import TarifaPreferencialPage from './pages/TarifaPreferencialPage'
+import CarnetPage from './pages/CarnetPage'
+import VerificarPage from './pages/VerificarPage'
 import AdminApp from './pages/admin/AdminApp'
 import './index.css'
 
@@ -22,6 +25,9 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/noticias/:slug" element={<NoticiaPage />} />
         <Route path="/tarifas" element={<TarifasPage />} />
         <Route path="/horarios" element={<HorariosPage />} />
+        <Route path="/tarifa-preferencial" element={<TarifaPreferencialPage />} />
+        <Route path="/carnet/:codigo" element={<CarnetPage />} />
+        <Route path="/verificar/:codigo" element={<VerificarPage />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
     </BrowserRouter>

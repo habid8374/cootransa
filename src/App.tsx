@@ -13,6 +13,7 @@ import Contact from './components/Contact'
 import Footer from './components/Footer'
 import BusSplash from './components/BusSplash'
 import NewsBanner from './components/NewsBanner'
+import CarnetCTA from './components/CarnetCTA'
 import WhatsAppButton from './components/WhatsAppButton'
 import CarmenModal from './components/CarmenModal'
 import CarmenFloating from './components/CarmenFloating'
@@ -27,6 +28,7 @@ function MainSite() {
         <NewsBanner />
         <section id="stats"><Stats /></section>
         <section id="servicios"><Services /></section>
+        <CarnetCTA />
         <section id="rutas"><MapSection /></section>
         <section id="nosotros"><Fleet /><Impact /></section>
         <section id="politicas"><Policies /></section>

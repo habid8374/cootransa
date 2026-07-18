@@ -126,6 +126,10 @@ export default function Navbar() {
               Rutas
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
             </a>
+            <a href="/tarifa-preferencial" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
+              Tarifa Preferencial
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
+            </a>
             <div className="relative group">
               <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
                 Nosotros <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
@@ -195,6 +199,7 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
               <a href="/#rutas" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Rutas</a>
+              <a href="/tarifa-preferencial" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Tarifa Preferencial</a>
               <button onClick={() => setMobileNosotros(!mobileNosotros)} className="flex items-center justify-between text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">
                 Nosotros <ChevronDown size={16} className={`transition-transform ${mobileNosotros ? 'rotate-180' : ''}`}/>
               </button>

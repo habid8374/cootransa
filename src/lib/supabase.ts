@@ -46,6 +46,59 @@ export interface Horario {
   frecuencia: string
 }
 
+// ── Carnets de tarifa preferencial ──────────────────────────────────────
+export type EstadoSolicitud = 'pendiente' | 'aprobado' | 'rechazado'
+
+export interface CarnetCategoria {
+  id?: string
+  nombre: string
+  descripcion?: string
+  activa: boolean
+  created_at?: string
+}
+
+export interface CarnetDocumento {
+  id?: string
+  nombre: string
+  descripcion?: string
+  obligatorio: boolean
+  activo: boolean
+  orden?: number
+  created_at?: string
+}
+
+export interface CarnetSolicitud {
+  id?: string
+  codigo: string                 // código único para el QR
+  nombre: string
+  cedula: string
+  institucion: string
+  direccion: string
+  codigo_postal?: string
+  telefono: string
+  correo: string
+  categoria_id?: string
+  categoria_nombre?: string      // desnormalizado para el carnet
+  foto_url?: string
+  documentos?: { nombre: string; url: string }[]
+  estado: EstadoSolicitud
+  motivo_rechazo?: string
+  vigencia_inicio?: string
+  vigencia_fin?: string
+  created_at?: string
+  aprobado_at?: string
+}
+
+/** Genera un código único y legible para el carnet (base del QR) */
+export function generarCodigoCarnet(): string {
+  const alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let s = ''
+  const arr = new Uint32Array(8)
+  crypto.getRandomValues(arr)
+  for (let i = 0; i < 8; i++) s += alfabeto[arr[i] % alfabeto.length]
+  return `COO-${s.slice(0, 4)}-${s.slice(4, 8)}`
+}
+
 // ── Config key/value helpers (tabla `config`) ───────────────────────────
 export async function getConfig(key: string, fallback = ''): Promise<string> {
   const { data } = await supabase.from('config').select('value').eq('key', key).single()

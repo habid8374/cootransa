@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import Brand from '../../components/Brand'
-import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink, Ticket } from 'lucide-react'
+import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink, Ticket, CreditCard } from 'lucide-react'
 
 const ASISTENCIA_URL = 'https://cootransa-asistencia.vercel.app'
 const TIQUETES_URL = 'https://cootransa-asistencia.vercel.app/tiquetes'
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/admin/tarifas',  label: 'Tarifas',  icon: DollarSign },
   { to: '/admin/horarios', label: 'Horarios', icon: Clock },
   { to: '/admin/mensajes', label: 'Mensajes', icon: Mail },
+  { to: '/admin/carnets',  label: 'Carnets',  icon: CreditCard },
 ]
 const configItems = [
   { to: '/admin/usuarios', label: 'Usuarios', icon: Users },
