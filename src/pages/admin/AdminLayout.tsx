@@ -21,34 +21,58 @@ const configItems = [
   { to: '/admin/ajustes',  label: 'Ajustes',  icon: Settings },
 ]
 
-interface ToastData { nombre: string; mensaje: string }
+interface ToastData { titulo: string; nombre: string; mensaje: string; to: string }
 
 export default function AdminLayout({ userEmail }: { userEmail: string }) {
   const navigate = useNavigate()
   const [mobileOpen, setMobileOpen] = useState(false)
   const [unread, setUnread] = useState(0)
+  const [carnetsPend, setCarnetsPend] = useState(0)
   const [toast, setToast] = useState<ToastData | null>(null)
 
-  // Initial unread count
+  const beep = () => { try { new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ==').play().catch(() => {}) } catch {} }
+
+  // Conteos iniciales
   useEffect(() => {
     supabase.from('mensajes').select('id', { count: 'exact', head: true }).eq('leido', false)
       .then(({ count }) => setUnread(count ?? 0))
+    supabase.from('carnet_solicitudes').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente')
+      .then(({ count }) => setCarnetsPend(count ?? 0))
   }, [])
 
-  // Realtime: nuevos mensajes + marcados como leídos
+  // Realtime: mensajes
   useEffect(() => {
     const channel = supabase
       .channel('mensajes-realtime')
       .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'mensajes' }, (payload) => {
         const m = payload.new as { nombre: string; mensaje: string }
         setUnread(u => u + 1)
-        setToast({ nombre: m.nombre, mensaje: m.mensaje })
-        try { new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ==').play().catch(() => {}) } catch {}
+        setToast({ titulo: 'Nuevo mensaje', nombre: m.nombre, mensaje: m.mensaje, to: '/admin/mensajes' })
+        beep()
         setTimeout(() => setToast(null), 6000)
       })
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'mensajes' }, () => {
         supabase.from('mensajes').select('id', { count: 'exact', head: true }).eq('leido', false)
           .then(({ count }) => setUnread(count ?? 0))
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [])
+
+  // Realtime: solicitudes de carnet
+  useEffect(() => {
+    const channel = supabase
+      .channel('carnets-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'carnet_solicitudes' }, (payload) => {
+        const s = payload.new as { nombre: string; institucion: string }
+        setCarnetsPend(n => n + 1)
+        setToast({ titulo: 'Nueva solicitud de carnet', nombre: s.nombre, mensaje: s.institucion, to: '/admin/carnets' })
+        beep()
+        setTimeout(() => setToast(null), 6000)
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'carnet_solicitudes' }, () => {
+        supabase.from('carnet_solicitudes').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente')
+          .then(({ count }) => setCarnetsPend(count ?? 0))
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
@@ -88,6 +112,9 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
             {label}
             {to === '/admin/mensajes' && unread > 0 && (
               <span className="ml-auto text-[10px] font-bold text-white bg-green-500 rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">{unread}</span>
+            )}
+            {to === '/admin/carnets' && carnetsPend > 0 && (
+              <span className="ml-auto text-[10px] font-bold text-white bg-amber-500 rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">{carnetsPend}</span>
             )}
           </NavLink>
         ))}
@@ -208,18 +235,18 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
         </main>
       </div>
 
-      {/* Toast de nuevo mensaje */}
+      {/* Toast de notificación (mensaje o solicitud de carnet) */}
       {toast && (
         <div className="fixed top-4 right-4 z-[80] w-80 max-w-[calc(100vw-2rem)] animate-[slideIn_.3s_ease-out]">
           <button
-            onClick={() => { setToast(null); navigate('/admin/mensajes') }}
+            onClick={() => { setToast(null); navigate(toast.to) }}
             className="w-full text-left bg-white rounded-xl shadow-2xl border border-gray-100 p-4 flex items-start gap-3 hover:shadow-xl transition"
           >
             <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
-              <Mail size={16} className="text-green-600" />
+              {toast.to === '/admin/carnets' ? <CreditCard size={16} className="text-green-600" /> : <Mail size={16} className="text-green-600" />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-bold text-green-600 uppercase tracking-wide">Nuevo mensaje</p>
+              <p className="text-xs font-bold text-green-600 uppercase tracking-wide">{toast.titulo}</p>
               <p className="text-sm font-semibold text-gray-900 truncate mt-0.5">{toast.nombre}</p>
               <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{toast.mensaje}</p>
             </div>
