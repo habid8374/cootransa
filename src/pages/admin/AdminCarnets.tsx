@@ -375,10 +375,10 @@ function Categorias() {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-50">
       {rows.map(c => (
-        <div key={c.id} className="flex items-center gap-3 px-5 py-3">
-          <input defaultValue={c.nombre} onBlur={e => upd(c.id!, { nombre: e.target.value })} className="flex-1 text-sm font-medium text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1" />
-          <button onClick={() => upd(c.id!, { activa: !c.activa })} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${c.activa ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{c.activa ? '● Activa' : '○ Inactiva'}</button>
-          <button onClick={() => del(c.id!)} className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
+        <div key={c.id} className="flex items-center gap-2 px-5 py-3">
+          <input defaultValue={c.nombre} onBlur={e => upd(c.id!, { nombre: e.target.value })} className="flex-1 min-w-0 text-sm font-medium text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1.5 border border-transparent focus:border-green-200" />
+          <button onClick={() => upd(c.id!, { activa: !c.activa })} className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full ${c.activa ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{c.activa ? '● Activa' : '○ Inactiva'}</button>
+          <button onClick={() => del(c.id!)} className="shrink-0 p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
         </div>
       ))}
       <button onClick={add} className="flex items-center gap-2 w-full px-5 py-3 text-sm font-semibold text-green-600 hover:bg-green-50 transition"><Plus size={15}/> Agregar categoría</button>
@@ -399,11 +399,11 @@ function Documentos() {
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-50">
       {rows.map(d => (
         <div key={d.id} className="px-5 py-3 space-y-2">
-          <div className="flex items-center gap-3">
-            <input defaultValue={d.nombre} onBlur={e => upd(d.id!, { nombre: e.target.value })} className="flex-1 text-sm font-medium text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1" />
+          <input defaultValue={d.nombre} onBlur={e => upd(d.id!, { nombre: e.target.value })} className="w-full text-sm font-semibold text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1.5 border border-transparent focus:border-green-200" />
+          <div className="flex flex-wrap items-center gap-2 px-2">
             <button onClick={() => upd(d.id!, { obligatorio: !d.obligatorio })} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${d.obligatorio ? 'bg-amber-50 text-amber-700' : 'bg-gray-100 text-gray-500'}`}>{d.obligatorio ? 'Obligatorio' : 'Opcional'}</button>
             <button onClick={() => upd(d.id!, { activo: !d.activo })} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${d.activo ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{d.activo ? '● Activo' : '○ Inactivo'}</button>
-            <button onClick={() => del(d.id!)} className="p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
+            <button onClick={() => del(d.id!)} className="ml-auto p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
           </div>
           <input defaultValue={d.descripcion ?? ''} onBlur={e => upd(d.id!, { descripcion: e.target.value })} placeholder="Descripción / instrucción (opcional)" className="w-full text-xs text-gray-500 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1" />
         </div>
