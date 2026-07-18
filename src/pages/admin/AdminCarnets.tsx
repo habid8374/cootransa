@@ -135,8 +135,9 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
     setBusy(true)
     await supabase.from('carnet_solicitudes').update({ ...f, estado: 'aprobado', aprobado_at: new Date().toISOString() }).eq('id', sol.id)
     // Notifica al estudiante (correo/SMS) si Brevo está configurado
-    await notificarCarnetAprobado({ nombre: f.nombre, correo: f.correo, telefono: f.telefono, codigo: sol.codigo, vigencia_inicio: f.vigencia_inicio, vigencia_fin: f.vigencia_fin })
+    const enviado = await notificarCarnetAprobado({ nombre: f.nombre, correo: f.correo, telefono: f.telefono, codigo: sol.codigo, vigencia_inicio: f.vigencia_inicio, vigencia_fin: f.vigencia_fin })
     setBusy(false); onChange(); onClose()
+    if (!enviado) alert('Carnet aprobado ✓\n\nNota: el correo al estudiante no se pudo enviar (Brevo no configurado o error). Revisa Ajustes → Notificaciones → Probar el envío.')
   }
   const rechazar = async () => {
     setBusy(true)

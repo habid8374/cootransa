@@ -64,6 +64,36 @@ export async function notificarCarnetAprobado(c: CarnetAprobado): Promise<boolea
     const r = await fetch('/api/send-notification', {
       method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
     })
-    return r.ok
-  } catch { return false }
+    const json = await r.json().catch(() => ({}))
+    if (!r.ok) console.error('Notificación falló:', r.status, json)
+    else console.log('Notificación:', json)
+    return r.ok && json?.results?.email === 'ok'
+  } catch (e) { console.error('Notificación error:', e); return false }
+}
+
+/** Envía un correo de prueba con las credenciales actuales y devuelve el resultado detallado (para diagnóstico). */
+export async function probarBrevo(destino: string): Promise<{ ok: boolean; detalle: string }> {
+  const apiKey = await getSecret('brevo_api_key')
+  if (!apiKey) return { ok: false, detalle: 'No hay API Key de Brevo guardada.' }
+  const senderEmail = await getSecret('brevo_sender_email')
+  const senderName  = await getSecret('brevo_sender_name', 'COOTRANSA')
+  if (!senderEmail) return { ok: false, detalle: 'Falta el correo remitente.' }
+
+  try {
+    const r = await fetch('/api/send-notification', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        apiKey, senderEmail, senderName,
+        to: destino, toName: destino,
+        subject: 'Prueba de notificación · COOTRANSA',
+        html: '<p>Este es un <strong>correo de prueba</strong> de COOTRANSA. Si lo recibiste, la configuración de Brevo funciona correctamente. ✅</p>',
+      }),
+    })
+    const json = await r.json().catch(() => ({}))
+    if (!r.ok) return { ok: false, detalle: `Error ${r.status}: ${JSON.stringify(json)}` }
+    if (json?.results?.email !== 'ok') return { ok: false, detalle: `Brevo respondió: ${json?.results?.email ?? JSON.stringify(json)}` }
+    return { ok: true, detalle: 'Correo de prueba enviado. Revisa tu bandeja (y spam).' }
+  } catch (e: any) {
+    return { ok: false, detalle: 'No se pudo llamar a la función: ' + (e?.message ?? e) }
+  }
 }

@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { getConfig, setConfig, getSecret, setSecret } from '../../lib/supabase'
-import { LifeBuoy, Mail, Send } from 'lucide-react'
+import { LifeBuoy, Mail, Send, Loader2 } from 'lucide-react'
 import WhatsappIcon from '../../components/WhatsappIcon'
+import { probarBrevo } from '../../lib/notify'
 
 export default function AdminAjustes() {
   const [numero, setNumero]   = useState('')
@@ -51,6 +52,18 @@ export default function AdminAjustes() {
     await setSecret('brevo_sms_sender', smsSender.trim().slice(0, 11) || 'COOTRANSA')
     await setSecret('brevo_sms_activo', smsActivo ? 'true' : 'false')
     setBrevoSaving(false); setBrevoSaved(true); setTimeout(() => setBrevoSaved(false), 2500)
+  }
+
+  // Prueba de Brevo
+  const [testEmail, setTestEmail] = useState('')
+  const [testing, setTesting]     = useState(false)
+  const [testResult, setTestResult] = useState<{ ok: boolean; detalle: string } | null>(null)
+  const probar = async () => {
+    if (!testEmail.trim()) return
+    setTesting(true); setTestResult(null)
+    await saveBrevo() // guarda lo que esté en pantalla antes de probar
+    const res = await probarBrevo(testEmail.trim())
+    setTestResult(res); setTesting(false)
   }
 
   return (
@@ -121,6 +134,23 @@ export default function AdminAjustes() {
               <button onClick={saveBrevo} disabled={brevoSaving} className="sm:col-span-2 mt-1 w-full py-2.5 rounded-lg text-sm font-semibold text-white transition disabled:opacity-60" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}>
                 {brevoSaving ? 'Guardando...' : brevoSaved ? '¡Guardado!' : 'Guardar credenciales de Brevo'}
               </button>
+
+              {/* Prueba de envío */}
+              <div className="sm:col-span-2 mt-2 rounded-lg border border-gray-100 bg-gray-50 p-3">
+                <p className="text-xs font-semibold text-gray-600 mb-2">Probar el envío</p>
+                <div className="flex gap-2">
+                  <input type="email" value={testEmail} onChange={e => setTestEmail(e.target.value)} placeholder="tu-correo@ejemplo.com" className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-500"/>
+                  <button onClick={probar} disabled={testing} className="px-4 py-2 rounded-lg text-sm font-semibold text-white bg-gray-800 hover:bg-gray-900 disabled:opacity-60 flex items-center gap-1.5">
+                    {testing ? <Loader2 size={14} className="animate-spin"/> : <Send size={14}/>} Enviar prueba
+                  </button>
+                </div>
+                {testResult && (
+                  <div className={`mt-2 text-xs rounded-lg px-3 py-2 ${testResult.ok ? 'bg-green-50 text-green-700 border border-green-200' : 'bg-red-50 text-red-600 border border-red-200'}`}>
+                    <strong>{testResult.ok ? '✓ Éxito' : '✗ Falló'}:</strong> {testResult.detalle}
+                  </div>
+                )}
+                <p className="text-[11px] text-gray-400 mt-2">Guarda primero tus credenciales y luego envía una prueba. El resultado te dirá si Brevo aceptó el correo o cuál fue el error exacto.</p>
+              </div>
             </div>
           )}
         </div>
