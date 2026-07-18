@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { supabase, type CarnetSolicitud, type CarnetCategoria, type CarnetDocumento, type EstadoSolicitud } from '../../lib/supabase'
-import { CreditCard, Tags, FileCheck2, Plus, Trash2, X, Check, Ban, ExternalLink, Copy, Search, FileText, Pencil } from 'lucide-react'
+import { CreditCard, Tags, FileCheck2, Plus, Trash2, X, Check, Ban, ExternalLink, Copy, Search, FileText, Pencil, BarChart3 } from 'lucide-react'
+import { notificarCarnetAprobado } from '../../lib/notify'
 
-type Tab = 'solicitudes' | 'categorias' | 'documentos'
+type Tab = 'solicitudes' | 'estadisticas' | 'categorias' | 'documentos'
 type Filtro = 'todas' | EstadoSolicitud
 
 const PAGE = 20
@@ -16,11 +17,12 @@ export default function AdminCarnets() {
         <p className="text-sm text-gray-500 mt-0.5">Solicitudes, categorías y documentos requeridos</p>
       </div>
       <div className="flex gap-1 mb-5 bg-gray-100 p-1 rounded-lg w-fit overflow-x-auto">
-        {([['solicitudes', CreditCard, 'Solicitudes'], ['categorias', Tags, 'Categorías'], ['documentos', FileCheck2, 'Documentos']] as const).map(([k, Icon, label]) => (
+        {([['solicitudes', CreditCard, 'Solicitudes'], ['estadisticas', BarChart3, 'Estadísticas'], ['categorias', Tags, 'Categorías'], ['documentos', FileCheck2, 'Documentos']] as const).map(([k, Icon, label]) => (
           <button key={k} onClick={() => setTab(k)} className={`px-4 py-1.5 rounded-md text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition ${tab === k ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}><Icon size={15}/> {label}</button>
         ))}
       </div>
       {tab === 'solicitudes' && <Solicitudes />}
+      {tab === 'estadisticas' && <Estadisticas />}
       {tab === 'categorias' && <Categorias />}
       {tab === 'documentos' && <Documentos />}
     </div>
@@ -132,6 +134,8 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
     if (!f.vigencia_inicio || !f.vigencia_fin) return alert('Define la vigencia (inicio y fin).')
     setBusy(true)
     await supabase.from('carnet_solicitudes').update({ ...f, estado: 'aprobado', aprobado_at: new Date().toISOString() }).eq('id', sol.id)
+    // Notifica al estudiante (correo/SMS) si Brevo está configurado
+    await notificarCarnetAprobado({ nombre: f.nombre, correo: f.correo, telefono: f.telefono, codigo: sol.codigo, vigencia_inicio: f.vigencia_inicio, vigencia_fin: f.vigencia_fin })
     setBusy(false); onChange(); onClose()
   }
   const rechazar = async () => {
@@ -247,6 +251,116 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
 }
 function Field({ label, value }: { label: string; value: string }) {
   return <div><p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">{label}</p><p className="text-gray-800">{value}</p></div>
+}
+
+/* ─────────────── ESTADÍSTICAS ─────────────── */
+function Estadisticas() {
+  const [rows, setRows] = useState<CarnetSolicitud[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    supabase.from('carnet_solicitudes').select('estado,categoria_nombre,institucion,created_at,vigencia_inicio,vigencia_fin').limit(5000)
+      .then(({ data }) => { setRows((data as any) ?? []); setLoading(false) })
+  }, [])
+
+  if (loading) return <div className="py-16 text-center text-sm text-gray-400">Cargando estadísticas...</div>
+
+  const total = rows.length
+  const pend = rows.filter(r => r.estado === 'pendiente').length
+  const apro = rows.filter(r => r.estado === 'aprobado').length
+  const rech = rows.filter(r => r.estado === 'rechazado').length
+
+  const hoy = new Date(); hoy.setHours(0, 0, 0, 0)
+  const aprobados = rows.filter(r => r.estado === 'aprobado')
+  const activos = aprobados.filter(r => {
+    const ini = r.vigencia_inicio ? new Date(r.vigencia_inicio + 'T00:00:00') : null
+    const fin = r.vigencia_fin ? new Date(r.vigencia_fin + 'T23:59:59') : null
+    return (!ini || hoy >= ini) && (!fin || hoy <= fin)
+  }).length
+  const vencidos = aprobados.length - activos
+
+  // Últimos 7 días
+  const dias: { label: string; n: number }[] = []
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(hoy); d.setDate(d.getDate() - i)
+    const key = d.toISOString().slice(0, 10)
+    const n = rows.filter(r => (r.created_at ?? '').slice(0, 10) === key).length
+    dias.push({ label: d.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric' }), n })
+  }
+  const maxDia = Math.max(1, ...dias.map(d => d.n))
+
+  // Agrupar por institución y categoría
+  const agrupar = (campo: 'institucion' | 'categoria_nombre') => {
+    const m: Record<string, number> = {}
+    rows.forEach(r => { const k = (r[campo] || '—').trim(); m[k] = (m[k] ?? 0) + 1 })
+    return Object.entries(m).sort((a, b) => b[1] - a[1]).slice(0, 8)
+  }
+  const porInst = agrupar('institucion')
+  const porCat = agrupar('categoria_nombre')
+  const maxInst = Math.max(1, ...porInst.map(x => x[1]))
+
+  const Card = ({ label, value, color }: { label: string; value: number; color: string }) => (
+    <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
+      <p className={`text-3xl font-black ${color}`}>{value}</p>
+      <p className="text-xs text-gray-500 font-medium mt-1">{label}</p>
+    </div>
+  )
+
+  return (
+    <div className="space-y-5">
+      {/* Tarjetas */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <Card label="Total solicitudes" value={total} color="text-gray-900" />
+        <Card label="Pendientes" value={pend} color="text-amber-600" />
+        <Card label="Aprobadas" value={apro} color="text-green-600" />
+        <Card label="Rechazadas" value={rech} color="text-red-500" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <Card label="Carnets activos (vigentes)" value={activos} color="text-green-600" />
+        <Card label="Carnets vencidos" value={vencidos} color="text-orange-500" />
+      </div>
+
+      {/* Solicitudes últimos 7 días */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+        <h3 className="text-sm font-bold text-gray-900 mb-4">Solicitudes últimos 7 días</h3>
+        <div className="flex items-end justify-between gap-2 h-32">
+          {dias.map((d, i) => (
+            <div key={i} className="flex-1 flex flex-col items-center gap-1.5">
+              <span className="text-[11px] font-bold text-gray-700">{d.n}</span>
+              <div className="w-full rounded-t-lg bg-green-500 transition-all" style={{ height: `${(d.n / maxDia) * 100}%`, minHeight: d.n > 0 ? 6 : 2, opacity: d.n > 0 ? 1 : 0.3 }} />
+              <span className="text-[10px] text-gray-400 capitalize">{d.label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Por institución + categoría */}
+      <div className="grid lg:grid-cols-2 gap-3">
+        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-900 mb-3">Por institución educativa</h3>
+          <div className="space-y-2.5">
+            {porInst.length === 0 ? <p className="text-sm text-gray-400">Sin datos</p> : porInst.map(([nombre, n]) => (
+              <div key={nombre}>
+                <div className="flex justify-between text-xs mb-1"><span className="text-gray-600 truncate">{nombre}</span><span className="font-bold text-gray-800">{n}</span></div>
+                <div className="h-2 rounded-full bg-gray-100 overflow-hidden"><div className="h-full rounded-full bg-green-500" style={{ width: `${(n / maxInst) * 100}%` }} /></div>
+              </div>
+            ))}
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-900 mb-3">Por categoría de tarifa</h3>
+          <div className="space-y-2">
+            {porCat.length === 0 ? <p className="text-sm text-gray-400">Sin datos</p> : porCat.map(([nombre, n]) => (
+              <div key={nombre} className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50">
+                <span className="text-sm text-gray-700">{nombre}</span>
+                <span className="text-sm font-bold text-green-600">{n}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }
 
 /* ─────────────── CATEGORÍAS ─────────────── */

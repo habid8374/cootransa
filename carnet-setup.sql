@@ -91,3 +91,18 @@ on conflict do nothing;
 -- IMPORTANTE: el bucket de storage 'cootransa-media' ya existe y es público.
 -- Las fotos y documentos se guardan en la carpeta 'carnets/'.
 -- ============================================================
+
+-- ============================================================
+-- FASE 3 · Config segura de notificaciones (Brevo)
+-- Solo el admin autenticado puede leer/escribir (la API key NO es pública)
+-- ============================================================
+create table if not exists notif_config (
+  key text primary key,
+  value text,
+  updated_at timestamptz default now()
+);
+
+alter table notif_config enable row level security;
+
+create policy "notif admin all" on notif_config
+  for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');

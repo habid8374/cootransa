@@ -99,7 +99,7 @@ export function generarCodigoCarnet(): string {
   return `COO-${s.slice(0, 4)}-${s.slice(4, 8)}`
 }
 
-// ── Config key/value helpers (tabla `config`) ───────────────────────────
+// ── Config key/value helpers (tabla `config`, lectura pública) ───────────
 export async function getConfig(key: string, fallback = ''): Promise<string> {
   const { data } = await supabase.from('config').select('value').eq('key', key).single()
   return data?.value ?? fallback
@@ -107,4 +107,14 @@ export async function getConfig(key: string, fallback = ''): Promise<string> {
 
 export async function setConfig(key: string, value: string): Promise<void> {
   await supabase.from('config').upsert({ key, value }, { onConflict: 'key' })
+}
+
+// ── Config SECRETA (tabla `notif_config`, solo admin autenticado) ────────
+export async function getSecret(key: string, fallback = ''): Promise<string> {
+  const { data } = await supabase.from('notif_config').select('value').eq('key', key).maybeSingle()
+  return data?.value ?? fallback
+}
+
+export async function setSecret(key: string, value: string): Promise<void> {
+  await supabase.from('notif_config').upsert({ key, value }, { onConflict: 'key' })
 }
