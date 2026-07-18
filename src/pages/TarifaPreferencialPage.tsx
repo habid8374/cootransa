@@ -17,7 +17,7 @@ export default function TarifaPreferencialPage() {
   const [error, setError] = useState('')
 
   const [form, setForm] = useState({
-    nombre: '', cedula: '', institucion: '', direccion: '',
+    nombre: '', tipo_documento: 'C.C.', cedula: '', institucion: '', direccion: '',
     codigo_postal: '', telefono: '', correo: '', categoria_id: '',
   })
   const [foto, setFoto] = useState<File | null>(null)
@@ -115,9 +115,19 @@ export default function TarifaPreferencialPage() {
             </motion.div>
           ) : (
             <form onSubmit={submit} className="space-y-4">
+              <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Nombre completo *</label><input required value={form.nombre} onChange={e => set('nombre', e.target.value)} className={inputCls}/></div>
               <div className="grid sm:grid-cols-2 gap-4">
-                <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Nombre completo *</label><input required value={form.nombre} onChange={e => set('nombre', e.target.value)} className={inputCls}/></div>
-                <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Cédula *</label><input required value={form.cedula} onChange={e => set('cedula', e.target.value)} className={inputCls}/></div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Tipo de documento *</label>
+                  <select required value={form.tipo_documento} onChange={e => set('tipo_documento', e.target.value)} className={inputCls}>
+                    <option value="C.C.">Cédula de ciudadanía</option>
+                    <option value="T.I.">Tarjeta de identidad</option>
+                    <option value="C.E.">Cédula de extranjería</option>
+                    <option value="PAS">Pasaporte</option>
+                    <option value="R.C.">Registro civil</option>
+                  </select>
+                </div>
+                <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Número de documento *</label><input required value={form.cedula} onChange={e => set('cedula', e.target.value)} className={inputCls}/></div>
               </div>
               <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Institución educativa (universidad / corporación / colegio) *</label><input required value={form.institucion} onChange={e => set('institucion', e.target.value)} className={inputCls}/></div>
               <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Dirección de residencia *</label><input required value={form.direccion} onChange={e => set('direccion', e.target.value)} className={inputCls}/></div>

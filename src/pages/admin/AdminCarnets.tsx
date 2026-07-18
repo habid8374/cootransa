@@ -118,7 +118,7 @@ function Solicitudes() {
 /* Modal de detalle + aprobar/rechazar/editar */
 function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClose: () => void; onChange: () => void }) {
   const [f, setF] = useState({
-    nombre: sol.nombre, cedula: sol.cedula, institucion: sol.institucion, direccion: sol.direccion,
+    nombre: sol.nombre, tipo_documento: sol.tipo_documento ?? 'C.C.', cedula: sol.cedula, institucion: sol.institucion, direccion: sol.direccion,
     telefono: sol.telefono, correo: sol.correo, codigo_postal: sol.codigo_postal ?? '',
     categoria_nombre: sol.categoria_nombre ?? '',
     vigencia_inicio: sol.vigencia_inicio ?? '', vigencia_fin: sol.vigencia_fin ?? '',
@@ -164,7 +164,7 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
         <div className="flex items-start justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
           <div className="flex items-center gap-3">
             {sol.foto_url && <img src={sol.foto_url} className="w-12 h-12 rounded-lg object-cover" />}
-            <div><h2 className="font-bold text-gray-900">{sol.nombre}</h2><p className="text-xs text-gray-400 capitalize">{sol.estado} · C.C. {sol.cedula}</p></div>
+            <div><h2 className="font-bold text-gray-900">{sol.nombre}</h2><p className="text-xs text-gray-400 capitalize">{sol.estado} · {sol.tipo_documento || 'C.C.'} {sol.cedula}</p></div>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"><X size={18}/></button>
         </div>
@@ -172,9 +172,14 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
         <div className="px-6 py-4 space-y-3 text-sm">
           {editando ? (
             <>
+              <div><label className="block text-[11px] text-gray-500 mb-1">Nombre</label><input value={f.nombre} onChange={e => set('nombre', e.target.value)} className={inp}/></div>
               <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-[11px] text-gray-500 mb-1">Nombre</label><input value={f.nombre} onChange={e => set('nombre', e.target.value)} className={inp}/></div>
-                <div><label className="block text-[11px] text-gray-500 mb-1">Cédula</label><input value={f.cedula} onChange={e => set('cedula', e.target.value)} className={inp}/></div>
+                <div><label className="block text-[11px] text-gray-500 mb-1">Tipo doc.</label>
+                  <select value={f.tipo_documento} onChange={e => set('tipo_documento', e.target.value)} className={inp}>
+                    <option value="C.C.">C.C.</option><option value="T.I.">T.I.</option><option value="C.E.">C.E.</option><option value="PAS">Pasaporte</option><option value="R.C.">R.C.</option>
+                  </select>
+                </div>
+                <div><label className="block text-[11px] text-gray-500 mb-1">N° documento</label><input value={f.cedula} onChange={e => set('cedula', e.target.value)} className={inp}/></div>
               </div>
               <div><label className="block text-[11px] text-gray-500 mb-1">Institución</label><input value={f.institucion} onChange={e => set('institucion', e.target.value)} className={inp}/></div>
               <div><label className="block text-[11px] text-gray-500 mb-1">Categoría</label><input value={f.categoria_nombre} onChange={e => set('categoria_nombre', e.target.value)} className={inp}/></div>

@@ -71,7 +71,8 @@ export interface CarnetSolicitud {
   id?: string
   codigo: string                 // código único para el QR
   nombre: string
-  cedula: string
+  tipo_documento?: string        // C.C., T.I., C.E., etc.
+  cedula: string                 // número del documento
   institucion: string
   direccion: string
   codigo_postal?: string

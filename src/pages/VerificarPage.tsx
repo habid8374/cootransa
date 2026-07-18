@@ -98,7 +98,7 @@ export default function VerificarPage() {
         {sol && (
           <div className="mt-7 w-full max-w-sm bg-white/12 backdrop-blur-sm rounded-2xl border border-white/20 p-5 space-y-3">
             {sol.foto_url && <img src={sol.foto_url} alt={sol.nombre} className="w-24 h-28 rounded-xl object-cover mx-auto border-2 border-white/40" />}
-            <div className="text-center"><p className="text-xl font-bold">{sol.nombre}</p><p className="text-white/80 text-sm">C.C. {sol.cedula}</p></div>
+            <div className="text-center"><p className="text-xl font-bold">{sol.nombre}</p><p className="text-white/80 text-sm">{sol.tipo_documento || 'C.C.'} {sol.cedula}</p></div>
             <div className="border-t border-white/20 pt-3 space-y-2 text-sm">
               <Row label="Institución" value={sol.institucion} />
               {sol.categoria_nombre && <Row label="Categoría" value={sol.categoria_nombre} />}

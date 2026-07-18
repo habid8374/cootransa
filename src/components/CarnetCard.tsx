@@ -50,7 +50,7 @@ export default function CarnetCard({
         <div className="min-w-0 flex-1">
           <p className="text-[9px] text-gray-400 uppercase tracking-wide">Titular</p>
           <p className="text-sm font-bold text-gray-900 leading-tight truncate">{s.nombre}</p>
-          <p className="text-[11px] text-gray-500 mt-0.5">C.C. {s.cedula}</p>
+          <p className="text-[11px] text-gray-500 mt-0.5">{s.tipo_documento || 'C.C.'} {s.cedula}</p>
 
           <p className="text-[9px] text-gray-400 uppercase tracking-wide mt-2">Institución</p>
           <p className="text-[11px] font-semibold text-gray-700 leading-tight line-clamp-2">{s.institucion}</p>
