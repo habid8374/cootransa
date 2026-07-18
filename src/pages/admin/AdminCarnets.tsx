@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase, type CarnetSolicitud, type CarnetCategoria, type CarnetDocumento, type EstadoSolicitud } from '../../lib/supabase'
 import { CreditCard, Tags, FileCheck2, Plus, Trash2, X, Check, Ban, ExternalLink, Copy, Search, FileText, Pencil, BarChart3 } from 'lucide-react'
 import { notificarCarnetAprobado } from '../../lib/notify'
+import ConfirmModal from '../../components/ConfirmModal'
 
 type Tab = 'solicitudes' | 'estadisticas' | 'categorias' | 'documentos'
 type Filtro = 'todas' | EstadoSolicitud
@@ -127,17 +128,20 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
   const [editando, setEditando] = useState(sol.estado === 'pendiente')
   const [busy, setBusy] = useState(false)
   const [copiado, setCopiado] = useState(false)
+  const [err, setErr] = useState('')
+  const [aviso, setAviso] = useState('')
+  const [confirmDel, setConfirmDel] = useState(false)
   const link = `${window.location.origin}/carnet/${sol.codigo}`
   const set = (k: string, v: string) => setF(p => ({ ...p, [k]: v }))
 
   const aprobar = async () => {
-    if (!f.vigencia_inicio || !f.vigencia_fin) return alert('Define la vigencia (inicio y fin).')
-    setBusy(true)
+    if (!f.vigencia_inicio || !f.vigencia_fin) { setErr('Define la vigencia (inicio y fin).'); return }
+    setErr(''); setBusy(true)
     await supabase.from('carnet_solicitudes').update({ ...f, estado: 'aprobado', aprobado_at: new Date().toISOString() }).eq('id', sol.id)
-    // Notifica al estudiante (correo/SMS) si Brevo está configurado
     const enviado = await notificarCarnetAprobado({ nombre: f.nombre, correo: f.correo, telefono: f.telefono, codigo: sol.codigo, vigencia_inicio: f.vigencia_inicio, vigencia_fin: f.vigencia_fin })
-    setBusy(false); onChange(); onClose()
-    if (!enviado) alert('Carnet aprobado ✓\n\nNota: el correo al estudiante no se pudo enviar (Brevo no configurado o error). Revisa Ajustes → Notificaciones → Probar el envío.')
+    setBusy(false); onChange()
+    if (enviado) onClose()
+    else setAviso('Carnet aprobado ✓ — pero el correo al estudiante no se pudo enviar (Brevo no configurado o error). Revisa Ajustes → Probar el envío.')
   }
   const rechazar = async () => {
     setBusy(true)
@@ -145,13 +149,12 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
     setBusy(false); onChange(); onClose()
   }
   const guardar = async () => {
-    if (!f.vigencia_inicio || !f.vigencia_fin) return alert('Define la vigencia (inicio y fin).')
-    setBusy(true)
+    if (!f.vigencia_inicio || !f.vigencia_fin) { setErr('Define la vigencia (inicio y fin).'); return }
+    setErr(''); setBusy(true)
     await supabase.from('carnet_solicitudes').update(f).eq('id', sol.id)
     setBusy(false); onChange(); onClose()
   }
   const eliminar = async () => {
-    if (!confirm('¿Eliminar esta solicitud/carnet definitivamente?')) return
     setBusy(true)
     await supabase.from('carnet_solicitudes').delete().eq('id', sol.id)
     setBusy(false); onChange(); onClose()
@@ -232,9 +235,19 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
           )}
         </div>
 
+        {/* Avisos inline */}
+        {(err || aviso) && (
+          <div className="px-6">
+            {err && <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{err}</p>}
+            {aviso && <p className="text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">{aviso}</p>}
+          </div>
+        )}
+
         {/* Footer */}
         <div className="px-6 py-4 border-t border-gray-100 flex flex-wrap gap-2 sticky bottom-0 bg-white">
-          {sol.estado === 'pendiente' ? (
+          {aviso ? (
+            <button onClick={onClose} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}>Entendido</button>
+          ) : sol.estado === 'pendiente' ? (
             <>
               <button onClick={rechazar} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 flex items-center justify-center gap-1.5"><Ban size={15}/> Rechazar</button>
               <button onClick={aprobar} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-1.5" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}><Check size={15}/> Aprobar</button>
@@ -246,12 +259,21 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
             </>
           ) : (
             <>
-              <button onClick={eliminar} disabled={busy} className="py-2.5 px-3 rounded-lg text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 flex items-center justify-center gap-1.5"><Trash2 size={15}/></button>
+              <button onClick={() => setConfirmDel(true)} disabled={busy} className="py-2.5 px-3 rounded-lg text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 flex items-center justify-center gap-1.5"><Trash2 size={15}/></button>
               <button onClick={() => setEditando(true)} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-1.5" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}><Pencil size={15}/> Editar datos / vigencia</button>
             </>
           )}
         </div>
       </div>
+
+      {confirmDel && (
+        <ConfirmModal
+          titulo="¿Eliminar esta solicitud?"
+          mensaje="Esta acción no se puede deshacer."
+          onConfirm={() => { setConfirmDel(false); eliminar() }}
+          onCancel={() => setConfirmDel(false)}
+        />
+      )}
     </div>
   )
 }
@@ -372,19 +394,21 @@ function Estadisticas() {
 /* ─────────────── CATEGORÍAS ─────────────── */
 function Categorias() {
   const [rows, setRows] = useState<CarnetCategoria[]>([])
+  const [delId, setDelId] = useState<string | null>(null)
   const load = () => supabase.from('carnet_categorias').select('*').order('nombre').then(({ data }) => setRows(data ?? []))
   useEffect(() => { load() }, [])
   const add = async () => { await supabase.from('carnet_categorias').insert({ nombre: 'Nueva categoría', activa: true }); load() }
   const upd = async (id: string, patch: Partial<CarnetCategoria>) => { await supabase.from('carnet_categorias').update(patch).eq('id', id); load() }
-  const del = async (id: string) => { if (confirm('¿Eliminar categoría?')) { await supabase.from('carnet_categorias').delete().eq('id', id); load() } }
+  const del = async (id: string) => { await supabase.from('carnet_categorias').delete().eq('id', id); load() }
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-50">
+      {delId && <ConfirmModal titulo="¿Eliminar categoría?" mensaje="Esta acción no se puede deshacer." onConfirm={() => { del(delId); setDelId(null) }} onCancel={() => setDelId(null)} />}
       {rows.map(c => (
         <div key={c.id} className="flex items-center gap-2 px-5 py-3">
           <input defaultValue={c.nombre} onBlur={e => upd(c.id!, { nombre: e.target.value })} className="flex-1 min-w-0 text-sm font-medium text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1.5 border border-transparent focus:border-green-200" />
           <button onClick={() => upd(c.id!, { activa: !c.activa })} className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full ${c.activa ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{c.activa ? '● Activa' : '○ Inactiva'}</button>
-          <button onClick={() => del(c.id!)} className="shrink-0 p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
+          <button onClick={() => setDelId(c.id!)} className="shrink-0 p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
         </div>
       ))}
       <button onClick={add} className="flex items-center gap-2 w-full px-5 py-3 text-sm font-semibold text-green-600 hover:bg-green-50 transition"><Plus size={15}/> Agregar categoría</button>
@@ -395,21 +419,23 @@ function Categorias() {
 /* ─────────────── DOCUMENTOS ─────────────── */
 function Documentos() {
   const [rows, setRows] = useState<CarnetDocumento[]>([])
+  const [delId, setDelId] = useState<string | null>(null)
   const load = () => supabase.from('carnet_documentos').select('*').order('orden').then(({ data }) => setRows(data ?? []))
   useEffect(() => { load() }, [])
   const add = async () => { await supabase.from('carnet_documentos').insert({ nombre: 'Nuevo documento', obligatorio: true, activo: true, orden: rows.length }); load() }
   const upd = async (id: string, patch: Partial<CarnetDocumento>) => { await supabase.from('carnet_documentos').update(patch).eq('id', id); load() }
-  const del = async (id: string) => { if (confirm('¿Eliminar documento?')) { await supabase.from('carnet_documentos').delete().eq('id', id); load() } }
+  const del = async (id: string) => { await supabase.from('carnet_documentos').delete().eq('id', id); load() }
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-50">
+      {delId && <ConfirmModal titulo="¿Eliminar documento?" mensaje="Esta acción no se puede deshacer." onConfirm={() => { del(delId); setDelId(null) }} onCancel={() => setDelId(null)} />}
       {rows.map(d => (
         <div key={d.id} className="px-5 py-3 space-y-2">
           <input defaultValue={d.nombre} onBlur={e => upd(d.id!, { nombre: e.target.value })} className="w-full text-sm font-semibold text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1.5 border border-transparent focus:border-green-200" />
           <div className="flex flex-wrap items-center gap-2 px-2">
             <button onClick={() => upd(d.id!, { obligatorio: !d.obligatorio })} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${d.obligatorio ? 'bg-amber-50 text-amber-700' : 'bg-gray-100 text-gray-500'}`}>{d.obligatorio ? 'Obligatorio' : 'Opcional'}</button>
             <button onClick={() => upd(d.id!, { activo: !d.activo })} className={`text-[11px] font-semibold px-2.5 py-1 rounded-full ${d.activo ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{d.activo ? '● Activo' : '○ Inactivo'}</button>
-            <button onClick={() => del(d.id!)} className="ml-auto p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
+            <button onClick={() => setDelId(d.id!)} className="ml-auto p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
           </div>
           <input defaultValue={d.descripcion ?? ''} onBlur={e => upd(d.id!, { descripcion: e.target.value })} placeholder="Descripción / instrucción (opcional)" className="w-full text-xs text-gray-500 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1" />
         </div>
