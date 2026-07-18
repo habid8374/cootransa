@@ -16,9 +16,9 @@ export default function AdminCarnets() {
         <h1 className="text-xl font-bold text-gray-900">Carnets — Tarifa Preferencial</h1>
         <p className="text-sm text-gray-500 mt-0.5">Solicitudes, categorías y documentos requeridos</p>
       </div>
-      <div className="flex gap-1 mb-5 bg-gray-100 p-1 rounded-lg w-fit overflow-x-auto">
+      <div className="flex flex-wrap gap-1 mb-5 bg-gray-100 p-1 rounded-lg w-fit max-w-full">
         {([['solicitudes', CreditCard, 'Solicitudes'], ['estadisticas', BarChart3, 'Estadísticas'], ['categorias', Tags, 'Categorías'], ['documentos', FileCheck2, 'Documentos']] as const).map(([k, Icon, label]) => (
-          <button key={k} onClick={() => setTab(k)} className={`px-4 py-1.5 rounded-md text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition ${tab === k ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}><Icon size={15}/> {label}</button>
+          <button key={k} onClick={() => setTab(k)} className={`px-3 sm:px-4 py-1.5 rounded-md text-sm font-medium flex items-center gap-1.5 whitespace-nowrap transition ${tab === k ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}><Icon size={15}/> {label}</button>
         ))}
       </div>
       {tab === 'solicitudes' && <Solicitudes />}
