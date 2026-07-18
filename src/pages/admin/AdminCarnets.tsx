@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase, type CarnetSolicitud, type CarnetCategoria, type CarnetDocumento, type EstadoSolicitud } from '../../lib/supabase'
-import { CreditCard, Tags, FileCheck2, Plus, Trash2, X, Check, Ban, ExternalLink, Copy, Search, FileText } from 'lucide-react'
+import { CreditCard, Tags, FileCheck2, Plus, Trash2, X, Check, Ban, ExternalLink, Copy, Search, FileText, Pencil } from 'lucide-react'
 
 type Tab = 'solicitudes' | 'categorias' | 'documentos'
 type Filtro = 'todas' | EstadoSolicitud
@@ -113,19 +113,25 @@ function Solicitudes() {
   )
 }
 
-/* Modal de detalle + aprobar/rechazar */
+/* Modal de detalle + aprobar/rechazar/editar */
 function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClose: () => void; onChange: () => void }) {
-  const [ini, setIni] = useState(sol.vigencia_inicio ?? '')
-  const [fin, setFin] = useState(sol.vigencia_fin ?? '')
+  const [f, setF] = useState({
+    nombre: sol.nombre, cedula: sol.cedula, institucion: sol.institucion, direccion: sol.direccion,
+    telefono: sol.telefono, correo: sol.correo, codigo_postal: sol.codigo_postal ?? '',
+    categoria_nombre: sol.categoria_nombre ?? '',
+    vigencia_inicio: sol.vigencia_inicio ?? '', vigencia_fin: sol.vigencia_fin ?? '',
+  })
   const [motivo, setMotivo] = useState(sol.motivo_rechazo ?? '')
+  const [editando, setEditando] = useState(sol.estado === 'pendiente')
   const [busy, setBusy] = useState(false)
   const [copiado, setCopiado] = useState(false)
   const link = `${window.location.origin}/carnet/${sol.codigo}`
+  const set = (k: string, v: string) => setF(p => ({ ...p, [k]: v }))
 
   const aprobar = async () => {
-    if (!ini || !fin) return alert('Define la vigencia (inicio y fin).')
+    if (!f.vigencia_inicio || !f.vigencia_fin) return alert('Define la vigencia (inicio y fin).')
     setBusy(true)
-    await supabase.from('carnet_solicitudes').update({ estado: 'aprobado', vigencia_inicio: ini, vigencia_fin: fin, aprobado_at: new Date().toISOString() }).eq('id', sol.id)
+    await supabase.from('carnet_solicitudes').update({ ...f, estado: 'aprobado', aprobado_at: new Date().toISOString() }).eq('id', sol.id)
     setBusy(false); onChange(); onClose()
   }
   const rechazar = async () => {
@@ -133,27 +139,64 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
     await supabase.from('carnet_solicitudes').update({ estado: 'rechazado', motivo_rechazo: motivo }).eq('id', sol.id)
     setBusy(false); onChange(); onClose()
   }
+  const guardar = async () => {
+    if (!f.vigencia_inicio || !f.vigencia_fin) return alert('Define la vigencia (inicio y fin).')
+    setBusy(true)
+    await supabase.from('carnet_solicitudes').update(f).eq('id', sol.id)
+    setBusy(false); onChange(); onClose()
+  }
+  const eliminar = async () => {
+    if (!confirm('¿Eliminar esta solicitud/carnet definitivamente?')) return
+    setBusy(true)
+    await supabase.from('carnet_solicitudes').delete().eq('id', sol.id)
+    setBusy(false); onChange(); onClose()
+  }
+
+  const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100'
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40" onClick={onClose}>
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg max-h-[92vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
-        <div className="flex items-start justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white">
+        <div className="flex items-start justify-between px-6 py-4 border-b border-gray-100 sticky top-0 bg-white z-10">
           <div className="flex items-center gap-3">
             {sol.foto_url && <img src={sol.foto_url} className="w-12 h-12 rounded-lg object-cover" />}
-            <div><h2 className="font-bold text-gray-900">{sol.nombre}</h2><p className="text-xs text-gray-400">C.C. {sol.cedula}</p></div>
+            <div><h2 className="font-bold text-gray-900">{sol.nombre}</h2><p className="text-xs text-gray-400 capitalize">{sol.estado} · C.C. {sol.cedula}</p></div>
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"><X size={18}/></button>
         </div>
 
         <div className="px-6 py-4 space-y-3 text-sm">
-          <Field label="Institución" value={sol.institucion} />
-          <Field label="Categoría" value={sol.categoria_nombre ?? '—'} />
-          <Field label="Dirección" value={sol.direccion} />
-          <div className="grid grid-cols-2 gap-3">
-            <Field label="Teléfono" value={sol.telefono} />
-            <Field label="Correo" value={sol.correo} />
-          </div>
-          {sol.codigo_postal && <Field label="Código postal" value={sol.codigo_postal} />}
+          {editando ? (
+            <>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-[11px] text-gray-500 mb-1">Nombre</label><input value={f.nombre} onChange={e => set('nombre', e.target.value)} className={inp}/></div>
+                <div><label className="block text-[11px] text-gray-500 mb-1">Cédula</label><input value={f.cedula} onChange={e => set('cedula', e.target.value)} className={inp}/></div>
+              </div>
+              <div><label className="block text-[11px] text-gray-500 mb-1">Institución</label><input value={f.institucion} onChange={e => set('institucion', e.target.value)} className={inp}/></div>
+              <div><label className="block text-[11px] text-gray-500 mb-1">Categoría</label><input value={f.categoria_nombre} onChange={e => set('categoria_nombre', e.target.value)} className={inp}/></div>
+              <div><label className="block text-[11px] text-gray-500 mb-1">Dirección</label><input value={f.direccion} onChange={e => set('direccion', e.target.value)} className={inp}/></div>
+              <div className="grid grid-cols-2 gap-3">
+                <div><label className="block text-[11px] text-gray-500 mb-1">Teléfono</label><input value={f.telefono} onChange={e => set('telefono', e.target.value)} className={inp}/></div>
+                <div><label className="block text-[11px] text-gray-500 mb-1">Correo</label><input value={f.correo} onChange={e => set('correo', e.target.value)} className={inp}/></div>
+              </div>
+              <div className="rounded-lg border border-green-100 bg-green-50/50 p-3 grid grid-cols-2 gap-3">
+                <div><label className="block text-[11px] font-semibold text-gray-600 mb-1">Vigencia inicio</label><input type="date" value={f.vigencia_inicio} onChange={e => set('vigencia_inicio', e.target.value)} className={inp}/></div>
+                <div><label className="block text-[11px] font-semibold text-gray-600 mb-1">Vigencia fin</label><input type="date" value={f.vigencia_fin} onChange={e => set('vigencia_fin', e.target.value)} className={inp}/></div>
+              </div>
+              {sol.estado === 'pendiente' && <input value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Motivo (solo si vas a rechazar)" className={inp}/>}
+            </>
+          ) : (
+            <>
+              <Field label="Institución" value={sol.institucion} />
+              <Field label="Categoría" value={sol.categoria_nombre ?? '—'} />
+              <Field label="Dirección" value={sol.direccion} />
+              <div className="grid grid-cols-2 gap-3">
+                <Field label="Teléfono" value={sol.telefono} />
+                <Field label="Correo" value={sol.correo} />
+              </div>
+              <Field label="Vigencia" value={`${sol.vigencia_inicio ?? '—'} → ${sol.vigencia_fin ?? '—'}`} />
+            </>
+          )}
 
           {/* Documentos */}
           {sol.documentos && sol.documentos.length > 0 && (
@@ -167,7 +210,7 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
             </div>
           )}
 
-          {sol.estado === 'aprobado' && (
+          {sol.estado === 'aprobado' && !editando && (
             <div className="rounded-lg bg-green-50 border border-green-100 p-3">
               <p className="text-xs font-semibold text-green-700 mb-1.5">Enlace del carnet</p>
               <div className="flex items-center gap-2">
@@ -177,25 +220,27 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
               {copiado && <p className="text-[11px] text-green-600 mt-1">¡Copiado!</p>}
             </div>
           )}
-
-          {sol.estado === 'pendiente' && (
-            <div className="rounded-lg border border-gray-100 p-3 space-y-3">
-              <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide">Vigencia del carnet</p>
-              <div className="grid grid-cols-2 gap-3">
-                <div><label className="block text-[11px] text-gray-500 mb-1">Inicio</label><input type="date" value={ini} onChange={e => setIni(e.target.value)} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm" /></div>
-                <div><label className="block text-[11px] text-gray-500 mb-1">Fin</label><input type="date" value={fin} onChange={e => setFin(e.target.value)} className="w-full border border-gray-200 rounded-lg px-2 py-1.5 text-sm" /></div>
-              </div>
-              <input value={motivo} onChange={e => setMotivo(e.target.value)} placeholder="Motivo (si rechazas)" className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
-            </div>
-          )}
         </div>
 
-        {sol.estado === 'pendiente' && (
-          <div className="px-6 py-4 border-t border-gray-100 flex gap-2 sticky bottom-0 bg-white">
-            <button onClick={rechazar} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 flex items-center justify-center gap-1.5"><Ban size={15}/> Rechazar</button>
-            <button onClick={aprobar} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-1.5" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}><Check size={15}/> Aprobar y generar carnet</button>
-          </div>
-        )}
+        {/* Footer */}
+        <div className="px-6 py-4 border-t border-gray-100 flex flex-wrap gap-2 sticky bottom-0 bg-white">
+          {sol.estado === 'pendiente' ? (
+            <>
+              <button onClick={rechazar} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 flex items-center justify-center gap-1.5"><Ban size={15}/> Rechazar</button>
+              <button onClick={aprobar} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-1.5" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}><Check size={15}/> Aprobar</button>
+            </>
+          ) : editando ? (
+            <>
+              <button onClick={() => setEditando(false)} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-gray-600 border border-gray-200 hover:bg-gray-50">Cancelar</button>
+              <button onClick={guardar} disabled={busy} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-1.5" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}><Check size={15}/> Guardar cambios</button>
+            </>
+          ) : (
+            <>
+              <button onClick={eliminar} disabled={busy} className="py-2.5 px-3 rounded-lg text-sm font-semibold text-red-600 border border-red-200 hover:bg-red-50 flex items-center justify-center gap-1.5"><Trash2 size={15}/></button>
+              <button onClick={() => setEditando(true)} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white flex items-center justify-center gap-1.5" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}><Pencil size={15}/> Editar datos / vigencia</button>
+            </>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -5,7 +5,7 @@ import { Loader2, CheckCircle2, XCircle, AlertTriangle, QrCode, Search, RotateCc
 import { supabase, type CarnetSolicitud } from '../lib/supabase'
 import Brand from '../components/Brand'
 
-type Estado = 'inicio' | 'buscando' | 'valido' | 'vencido' | 'invalido'
+type Estado = 'inicio' | 'buscando' | 'valido' | 'vencido' | 'no_iniciado' | 'invalido'
 
 function fmt(d?: string) {
   if (!d) return '—'
@@ -46,8 +46,9 @@ export default function VerificarPage() {
     const hoy = new Date(); hoy.setHours(0, 0, 0, 0)
     const ini = data.vigencia_inicio ? new Date(data.vigencia_inicio + 'T00:00:00') : null
     const fin = data.vigencia_fin ? new Date(data.vigencia_fin + 'T23:59:59') : null
-    const vigente = (!ini || hoy >= ini) && (!fin || hoy <= fin)
-    setEstado(vigente ? 'valido' : 'vencido')
+    if (ini && hoy < ini) setEstado('no_iniciado')
+    else if (fin && hoy > fin) setEstado('vencido')
+    else setEstado('valido')
   }
 
   const detener = async () => {
@@ -81,11 +82,12 @@ export default function VerificarPage() {
   const reiniciar = () => { setEstado('inicio'); setSol(null); setManual('') }
 
   // ── Pantalla de resultado ──
-  if (estado === 'valido' || estado === 'vencido' || estado === 'invalido') {
+  if (estado === 'valido' || estado === 'vencido' || estado === 'no_iniciado' || estado === 'invalido') {
     const cfg = {
-      valido:   { bg: 'from-green-600 to-emerald-500', Icon: CheckCircle2, t: 'CARNET VÁLIDO', s: 'Tarifa preferencial vigente' },
-      vencido:  { bg: 'from-orange-600 to-amber-500',  Icon: AlertTriangle, t: 'CARNET VENCIDO', s: 'La vigencia ha expirado' },
-      invalido: { bg: 'from-red-700 to-red-500',       Icon: XCircle,       t: 'NO VÁLIDO', s: 'Carnet no encontrado o no aprobado' },
+      valido:      { bg: 'from-green-600 to-emerald-500', Icon: CheckCircle2, t: 'CARNET VÁLIDO', s: 'Tarifa preferencial vigente' },
+      vencido:     { bg: 'from-orange-600 to-amber-500',  Icon: AlertTriangle, t: 'CARNET VENCIDO', s: 'La vigencia ha expirado' },
+      no_iniciado: { bg: 'from-blue-600 to-sky-500',      Icon: AlertTriangle, t: 'AÚN NO VIGENTE', s: 'La vigencia todavía no ha iniciado' },
+      invalido:    { bg: 'from-red-700 to-red-500',       Icon: XCircle,       t: 'NO VÁLIDO', s: 'Carnet no encontrado o no aprobado' },
     }[estado]
     const Icon = cfg.Icon
     return (
