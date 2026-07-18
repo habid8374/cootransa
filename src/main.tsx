@@ -27,6 +27,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/horarios" element={<HorariosPage />} />
         <Route path="/tarifa-preferencial" element={<TarifaPreferencialPage />} />
         <Route path="/carnet/:codigo" element={<CarnetPage />} />
+        <Route path="/verificar" element={<VerificarPage />} />
         <Route path="/verificar/:codigo" element={<VerificarPage />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
