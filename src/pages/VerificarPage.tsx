@@ -39,13 +39,13 @@ export default function VerificarPage() {
   const verificar = async (codigoRaw: string) => {
     const codigo = extraerCodigo(codigoRaw)
     setEstado('buscando'); setSol(null)
-    const { data } = await supabase.from('carnet_solicitudes').select('*')
-      .eq('codigo', codigo).eq('estado', 'aprobado').maybeSingle()
-    if (!data) { setEstado('invalido'); return }
-    setSol(data)
+    const { data } = await supabase.rpc('verificar_carnet', { p_codigo: codigo })
+    const row = Array.isArray(data) ? data[0] : data
+    if (!row) { setEstado('invalido'); return }
+    setSol(row)
     const hoy = new Date(); hoy.setHours(0, 0, 0, 0)
-    const ini = data.vigencia_inicio ? new Date(data.vigencia_inicio + 'T00:00:00') : null
-    const fin = data.vigencia_fin ? new Date(data.vigencia_fin + 'T23:59:59') : null
+    const ini = row.vigencia_inicio ? new Date(row.vigencia_inicio + 'T00:00:00') : null
+    const fin = row.vigencia_fin ? new Date(row.vigencia_fin + 'T23:59:59') : null
     if (ini && hoy < ini) setEstado('no_iniciado')
     else if (fin && hoy > fin) setEstado('vencido')
     else setEstado('valido')

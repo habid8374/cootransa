@@ -81,7 +81,7 @@ export interface CarnetSolicitud {
   categoria_id?: string
   categoria_nombre?: string      // desnormalizado para el carnet
   foto_url?: string
-  documentos?: { nombre: string; url: string }[]
+  documentos?: { nombre: string; path?: string; url?: string }[]
   estado: EstadoSolicitud
   motivo_rechazo?: string
   vigencia_inicio?: string

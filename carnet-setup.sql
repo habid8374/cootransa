@@ -106,3 +106,23 @@ alter table notif_config enable row level security;
 
 create policy "notif admin all" on notif_config
   for all using (auth.role() = 'authenticated') with check (auth.role() = 'authenticated');
+
+-- ============================================================
+-- SEGURIDAD (OWASP): función de verificación con campos mínimos
+-- y bucket privado para documentos. Ejecutar en Supabase.
+-- ============================================================
+create or replace function verificar_carnet(p_codigo text)
+returns table (codigo text, nombre text, tipo_documento text, cedula text, institucion text, categoria_nombre text, foto_url text, vigencia_inicio date, vigencia_fin date)
+language sql security definer set search_path = public as $$
+  select codigo, nombre, tipo_documento, cedula, institucion, categoria_nombre, foto_url, vigencia_inicio, vigencia_fin
+  from carnet_solicitudes where codigo = p_codigo and estado = 'aprobado' limit 1;
+$$;
+grant execute on function verificar_carnet(text) to anon, authenticated;
+
+-- Quitar la lectura pública masiva (ya no se necesita: se usa la función)
+drop policy if exists "sol lectura aprobadas" on carnet_solicitudes;
+
+-- Bucket privado para documentos sensibles
+insert into storage.buckets (id, name, public) values ('carnet-docs','carnet-docs', false) on conflict (id) do nothing;
+create policy "carnetdocs insert" on storage.objects for insert to anon, authenticated with check (bucket_id = 'carnet-docs');
+create policy "carnetdocs select admin" on storage.objects for select to authenticated using (bucket_id = 'carnet-docs');

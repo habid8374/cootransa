@@ -17,10 +17,11 @@ export default function CarnetPage() {
   useEffect(() => {
     window.scrollTo(0, 0)
     async function load() {
-      const { data } = await supabase.from('carnet_solicitudes').select('*').eq('codigo', codigo).eq('estado', 'aprobado').single()
-      setSol(data ?? null)
-      if (data) {
-        const url = `${window.location.origin}/verificar/${data.codigo}`
+      const { data } = await supabase.rpc('verificar_carnet', { p_codigo: codigo })
+      const row = Array.isArray(data) ? data[0] : data
+      setSol(row ?? null)
+      if (row) {
+        const url = `${window.location.origin}/verificar/${row.codigo}`
         setQr(await QRCode.toDataURL(url, { margin: 1, width: 240, color: { dark: '#0d3b1e', light: '#ffffff' } }))
       }
     }

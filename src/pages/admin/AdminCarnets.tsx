@@ -49,7 +49,10 @@ function Solicitudes() {
     if (filtro !== 'todas') query = query.eq('estado', filtro)
     if (desde) query = query.gte('created_at', desde)
     if (hasta) query = query.lte('created_at', hasta + 'T23:59:59')
-    if (q.trim()) query = query.or(`nombre.ilike.%${q}%,cedula.ilike.%${q}%`)
+    if (q.trim()) {
+      const safe = q.replace(/[%,()]/g, ' ').trim()   // evita inyección en el filtro PostgREST
+      query = query.or(`nombre.ilike.%${safe}%,cedula.ilike.%${safe}%`)
+    }
     query = query.order('created_at', { ascending: false }).range(page * PAGE, page * PAGE + PAGE - 1)
     const { data, count } = await query
     setRows(data ?? []); setTotal(count ?? 0); setLoading(false)
@@ -159,6 +162,15 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
     await supabase.from('carnet_solicitudes').delete().eq('id', sol.id)
     setBusy(false); onChange(); onClose()
   }
+  // Abre un documento: si está en el bucket privado (path), genera URL firmada temporal
+  const abrirDoc = async (d: { nombre: string; path?: string; url?: string }) => {
+    if (d.url) { window.open(d.url, '_blank'); return }
+    if (d.path) {
+      const { data } = await supabase.storage.from('carnet-docs').createSignedUrl(d.path, 300)
+      if (data?.signedUrl) window.open(data.signedUrl, '_blank')
+      else setErr('No se pudo abrir el documento.')
+    }
+  }
 
   const inp = 'w-full border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-900 outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100'
 
@@ -211,13 +223,13 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
             </>
           )}
 
-          {/* Documentos */}
+          {/* Documentos (URL firmada temporal si están en bucket privado) */}
           {sol.documentos && sol.documentos.length > 0 && (
             <div>
               <p className="text-[11px] font-semibold text-gray-500 uppercase tracking-wide mb-1.5">Documentos</p>
               <div className="space-y-1.5">
                 {sol.documentos.map((d, i) => (
-                  <a key={i} href={d.url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-sm text-green-700 hover:underline"><FileText size={14}/> {d.nombre} <ExternalLink size={12}/></a>
+                  <button key={i} onClick={() => abrirDoc(d)} className="flex items-center gap-2 text-sm text-green-700 hover:underline text-left"><FileText size={14}/> {d.nombre} <ExternalLink size={12}/></button>
                 ))}
               </div>
             </div>

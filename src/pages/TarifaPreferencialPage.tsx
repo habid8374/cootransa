@@ -6,7 +6,8 @@ import { supabase, generarCodigoCarnet, type CarnetCategoria, type CarnetDocumen
 import Brand from '../components/Brand'
 import Footer from '../components/Footer'
 
-const BUCKET = 'cootransa-media'
+const BUCKET = 'cootransa-media'        // público (fotos)
+const DOCS_BUCKET = 'carnet-docs'       // privado (documentos sensibles)
 
 export default function TarifaPreferencialPage() {
   const [categorias, setCategorias] = useState<CarnetCategoria[]>([])
@@ -40,12 +41,21 @@ export default function TarifaPreferencialPage() {
 
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
-  const subir = async (file: File, carpeta: string) => {
+  // Sube la FOTO al bucket público y devuelve su URL pública (se muestra en el carnet)
+  const subirFoto = async (file: File) => {
     const ext = file.name.split('.').pop()
-    const path = `carnets/${carpeta}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const path = `carnets/fotos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
     const { error } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true })
     if (error) throw error
     return supabase.storage.from(BUCKET).getPublicUrl(path).data.publicUrl
+  }
+  // Sube un DOCUMENTO al bucket privado y devuelve solo la ruta (no es público)
+  const subirDoc = async (file: File) => {
+    const ext = file.name.split('.').pop()
+    const path = `documentos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
+    const { error } = await supabase.storage.from(DOCS_BUCKET).upload(path, file, { upsert: true })
+    if (error) throw error
+    return path
   }
 
   const submit = async (e: React.FormEvent) => {
@@ -58,11 +68,11 @@ export default function TarifaPreferencialPage() {
     if (!foto) { setError('Debes subir tu foto.'); return }
     setEnviando(true)
     try {
-      const foto_url = await subir(foto, 'fotos')
-      const docsSubidos: { nombre: string; url: string }[] = []
+      const foto_url = await subirFoto(foto)
+      const docsSubidos: { nombre: string; path: string }[] = []
       for (const d of documentos) {
         const f = archivos[d.id!]
-        if (f) docsSubidos.push({ nombre: d.nombre, url: await subir(f, 'documentos') })
+        if (f) docsSubidos.push({ nombre: d.nombre, path: await subirDoc(f) })
       }
       const categoria = categorias.find(c => c.id === form.categoria_id)
       const { error: insErr } = await supabase.from('carnet_solicitudes').insert({
