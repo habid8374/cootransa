@@ -234,7 +234,7 @@ export default function NewsBanner() {
           ><ChevronRight size={20}/></button>
           <div
             ref={trackRef}
-            className="flex gap-5 px-4 sm:px-16 overflow-x-auto select-none cursor-grab active:cursor-grabbing"
+            className="flex gap-5 px-4 sm:px-16 overflow-x-auto select-none cursor-grab active:cursor-grabbing no-scrollbar"
             style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitUserSelect: 'none', userSelect: 'none' }}
             onMouseDown={onMouseDown}
             onMouseUp={onMouseUp}
