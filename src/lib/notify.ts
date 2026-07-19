@@ -36,9 +36,9 @@ function fmt(d?: string) {
  * Lee las credenciales de Brevo desde notif_config (solo admin autenticado).
  * Si Brevo no está configurado, no hace nada (retorna false).
  */
-export async function notificarCarnetAprobado(c: CarnetAprobado): Promise<boolean> {
+export async function notificarCarnetAprobado(c: CarnetAprobado): Promise<{ ok: boolean; detalle: string }> {
   const apiKey = await getSecret('brevo_api_key')
-  if (!apiKey) return false // Brevo aún no configurado
+  if (!apiKey) return { ok: false, detalle: 'Brevo no está configurado (falta la API Key en Ajustes).' }
 
   const senderEmail = await getSecret('brevo_sender_email', 'no-reply@cootransa.com')
   const senderName  = await getSecret('brevo_sender_name', 'COOTRANSA')
@@ -80,10 +80,10 @@ export async function notificarCarnetAprobado(c: CarnetAprobado): Promise<boolea
   try {
     const r = await llamarFuncion(body)
     const json = await r.json().catch(() => ({}))
-    if (!r.ok) console.error('Notificación falló:', r.status, json)
-    else console.log('Notificación:', json)
-    return r.ok && json?.results?.email === 'ok'
-  } catch (e) { console.error('Notificación error:', e); return false }
+    if (!r.ok) return { ok: false, detalle: `Error ${r.status}: ${JSON.stringify(json)}` }
+    if (json?.results?.email !== 'ok') return { ok: false, detalle: `Brevo respondió: ${json?.results?.email ?? JSON.stringify(json)}` }
+    return { ok: true, detalle: `Correo enviado a ${c.correo}` }
+  } catch (e: any) { return { ok: false, detalle: 'No se pudo llamar a la función: ' + (e?.message ?? e) } }
 }
 
 /** Envía un correo de prueba con las credenciales actuales y devuelve el resultado detallado (para diagnóstico). */

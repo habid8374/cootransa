@@ -141,10 +141,10 @@ function DetalleModal({ sol, onClose, onChange }: { sol: CarnetSolicitud; onClos
     if (!f.vigencia_inicio || !f.vigencia_fin) { setErr('Define la vigencia (inicio y fin).'); return }
     setErr(''); setBusy(true)
     await supabase.from('carnet_solicitudes').update({ ...f, estado: 'aprobado', aprobado_at: new Date().toISOString() }).eq('id', sol.id)
-    const enviado = await notificarCarnetAprobado({ nombre: f.nombre, correo: f.correo, telefono: f.telefono, codigo: sol.codigo, vigencia_inicio: f.vigencia_inicio, vigencia_fin: f.vigencia_fin })
+    const res = await notificarCarnetAprobado({ nombre: f.nombre, correo: f.correo, telefono: f.telefono, codigo: sol.codigo, vigencia_inicio: f.vigencia_inicio, vigencia_fin: f.vigencia_fin })
     setBusy(false); onChange()
-    if (enviado) onClose()
-    else setAviso('Carnet aprobado ✓ — pero el correo al estudiante no se pudo enviar (Brevo no configurado o error). Revisa Ajustes → Probar el envío.')
+    if (res.ok) onClose()
+    else setAviso(`Carnet aprobado ✓ — pero el correo NO se envió a ${f.correo}. Detalle: ${res.detalle}`)
   }
   const rechazar = async () => {
     setBusy(true)
