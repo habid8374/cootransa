@@ -17,6 +17,7 @@ import CarnetCTA from './components/CarnetCTA'
 import WhatsAppButton from './components/WhatsAppButton'
 import CarmenModal from './components/CarmenModal'
 import CarmenFloating from './components/CarmenFloating'
+import CookieConsent from './components/CookieConsent'
 
 function MainSite() {
   useLenis()
@@ -63,6 +64,7 @@ export default function App() {
       >
         <MainSite />
       </motion.div>
+      <CookieConsent ready={splashDone} />
     </>
   )
 }
