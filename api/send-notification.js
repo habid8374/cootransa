@@ -6,7 +6,18 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Método no permitido' })
 
   try {
-    const { apiKey, senderEmail, senderName, to, toName, subject, html, smsSender, smsTo, smsText } = req.body || {}
+    const { apiKey, senderEmail, senderName, to, toName, subject, html, smsSender, smsTo, smsText, supabaseUrl, anonKey } = req.body || {}
+
+    // Seguridad: solo un admin con sesión válida puede usar este endpoint
+    const authHeader = req.headers.authorization || ''
+    if (!authHeader.startsWith('Bearer ') || !supabaseUrl || !anonKey) {
+      return res.status(401).json({ error: 'No autorizado' })
+    }
+    const verify = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: { apikey: anonKey, Authorization: authHeader },
+    })
+    if (!verify.ok) return res.status(401).json({ error: 'Sesión inválida' })
+
     if (!apiKey) return res.status(400).json({ error: 'Falta la API Key de Brevo' })
 
     const results = {}

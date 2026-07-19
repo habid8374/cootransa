@@ -1,4 +1,21 @@
-import { getSecret } from './supabase'
+import { getSecret, supabase } from './supabase'
+
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string
+const ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY as string
+
+/** Llama a la función serverless con el token de la sesión del admin (autenticación). */
+async function llamarFuncion(payload: Record<string, unknown>) {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  return fetch('/api/send-notification', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+    body: JSON.stringify({ ...payload, supabaseUrl: SUPABASE_URL, anonKey: ANON_KEY }),
+  })
+}
 
 interface CarnetAprobado {
   nombre: string
@@ -61,9 +78,7 @@ export async function notificarCarnetAprobado(c: CarnetAprobado): Promise<boolea
   }
 
   try {
-    const r = await fetch('/api/send-notification', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
-    })
+    const r = await llamarFuncion(body)
     const json = await r.json().catch(() => ({}))
     if (!r.ok) console.error('Notificación falló:', r.status, json)
     else console.log('Notificación:', json)
@@ -80,14 +95,11 @@ export async function probarBrevo(destino: string): Promise<{ ok: boolean; detal
   if (!senderEmail) return { ok: false, detalle: 'Falta el correo remitente.' }
 
   try {
-    const r = await fetch('/api/send-notification', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        apiKey, senderEmail, senderName,
-        to: destino, toName: destino,
-        subject: 'Prueba de notificación · COOTRANSA',
-        html: '<p>Este es un <strong>correo de prueba</strong> de COOTRANSA. Si lo recibiste, la configuración de Brevo funciona correctamente. ✅</p>',
-      }),
+    const r = await llamarFuncion({
+      apiKey, senderEmail, senderName,
+      to: destino, toName: destino,
+      subject: 'Prueba de notificación · COOTRANSA',
+      html: '<p>Este es un <strong>correo de prueba</strong> de COOTRANSA. Si lo recibiste, la configuración de Brevo funciona correctamente. ✅</p>',
     })
     const json = await r.json().catch(() => ({}))
     if (!r.ok) return { ok: false, detalle: `Error ${r.status}: ${JSON.stringify(json)}` }
