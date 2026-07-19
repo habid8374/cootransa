@@ -22,6 +22,11 @@ const policiesItems = [
   { label: 'Salud Mental', href: '/politicas/salud-mental' },
 ]
 
+const carnetsItems = [
+  { label: 'Solicitar carnet', href: '/tarifa-preferencial' },
+  { label: 'Verificar carnet', href: '/verificar' },
+]
+
 const nosotrosItems = [
   { label: 'Historia', href: '/nosotros/historia' },
   { label: 'En la Actualidad', href: '/nosotros/actualidad' },
@@ -105,7 +110,7 @@ export default function Navbar() {
           </a>
 
           {/* Desktop nav links */}
-          <div className="hidden lg:flex items-center gap-7">
+          <div className="hidden lg:flex items-center gap-5 xl:gap-6">
             <a href="/#inicio" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Inicio
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
@@ -126,14 +131,18 @@ export default function Navbar() {
               Rutas
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
             </a>
-            <a href="/tarifa-preferencial" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
-              Tarifa Preferencial
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
-            </a>
-            <a href="/verificar" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
-              Verificar Carnet
-              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
-            </a>
+            <div className="relative group">
+              <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
+                Carnets <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
+              </button>
+              <div className="absolute left-1/2 -translate-x-1/2 top-full pt-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                <div className="w-52 rounded-2xl bg-white border border-gray-200 shadow-xl p-2">
+                  {carnetsItems.map(item => (
+                    <a key={item.href} href={item.href} className="block px-4 py-2.5 rounded-xl text-sm text-gray-600 hover:text-gray-900 hover:bg-green-50 transition-colors">{item.label}</a>
+                  ))}
+                </div>
+              </div>
+            </div>
             <div className="relative group">
               <button className={`flex items-center gap-1 ${link} text-sm font-medium transition-colors duration-200`}>
                 Nosotros <ChevronDown size={15} className="transition-transform duration-200 group-hover:rotate-180"/>
