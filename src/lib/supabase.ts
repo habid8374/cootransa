@@ -49,10 +49,14 @@ export interface Horario {
 // ── Carnets de tarifa preferencial ──────────────────────────────────────
 export type EstadoSolicitud = 'pendiente' | 'aprobado' | 'rechazado'
 
+export type TipoCobro = 'porcentaje' | 'valor' | 'gratis'
+
 export interface CarnetCategoria {
   id?: string
   nombre: string
   descripcion?: string
+  tipo_cobro?: TipoCobro   // cómo se cobra: % descuento, valor fijo de descuento, o gratis
+  valor?: number           // el % o el valor según tipo_cobro
   activa: boolean
   created_at?: string
 }
@@ -80,6 +84,8 @@ export interface CarnetSolicitud {
   correo: string
   categoria_id?: string
   categoria_nombre?: string      // desnormalizado para el carnet
+  categoria_tipo_cobro?: TipoCobro  // devuelto por verificar_carnet (config de la categoría)
+  categoria_valor?: number
   foto_url?: string
   documentos?: { nombre: string; path?: string; url?: string }[]
   estado: EstadoSolicitud

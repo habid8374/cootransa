@@ -409,20 +409,39 @@ function Categorias() {
   const [delId, setDelId] = useState<string | null>(null)
   const load = () => supabase.from('carnet_categorias').select('*').order('nombre').then(({ data }) => setRows(data ?? []))
   useEffect(() => { load() }, [])
-  const add = async () => { await supabase.from('carnet_categorias').insert({ nombre: 'Nueva categoría', activa: true }); load() }
+  const add = async () => { await supabase.from('carnet_categorias').insert({ nombre: 'Nueva categoría', activa: true, tipo_cobro: 'porcentaje', valor: 0 }); load() }
   const upd = async (id: string, patch: Partial<CarnetCategoria>) => { await supabase.from('carnet_categorias').update(patch).eq('id', id); load() }
   const del = async (id: string) => { await supabase.from('carnet_categorias').delete().eq('id', id); load() }
+  const inp = 'border border-gray-200 rounded-lg px-2 py-1.5 text-sm text-gray-800 outline-none focus:border-green-500'
 
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm divide-y divide-gray-50">
       {delId && <ConfirmModal titulo="¿Eliminar categoría?" mensaje="Esta acción no se puede deshacer." onConfirm={() => { del(delId); setDelId(null) }} onCancel={() => setDelId(null)} />}
-      {rows.map(c => (
-        <div key={c.id} className="flex items-center gap-2 px-5 py-3">
-          <input defaultValue={c.nombre} onBlur={e => upd(c.id!, { nombre: e.target.value })} className="flex-1 min-w-0 text-sm font-medium text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1.5 border border-transparent focus:border-green-200" />
-          <button onClick={() => upd(c.id!, { activa: !c.activa })} className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full ${c.activa ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{c.activa ? '● Activa' : '○ Inactiva'}</button>
-          <button onClick={() => setDelId(c.id!)} className="shrink-0 p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
+      {rows.map(c => {
+        const tipo = c.tipo_cobro ?? 'porcentaje'
+        return (
+        <div key={c.id} className="px-5 py-3 space-y-2">
+          <div className="flex items-center gap-2">
+            <input defaultValue={c.nombre} onBlur={e => upd(c.id!, { nombre: e.target.value })} className="flex-1 min-w-0 text-sm font-semibold text-gray-800 bg-transparent outline-none focus:bg-green-50 rounded px-2 py-1.5 border border-transparent focus:border-green-200" />
+            <button onClick={() => upd(c.id!, { activa: !c.activa })} className={`shrink-0 text-[11px] font-semibold px-2.5 py-1 rounded-full ${c.activa ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-500'}`}>{c.activa ? '● Activa' : '○ Inactiva'}</button>
+            <button onClick={() => setDelId(c.id!)} className="shrink-0 p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50"><Trash2 size={14}/></button>
+          </div>
+          <div className="flex items-center gap-2 pl-2 flex-wrap">
+            <span className="text-[11px] text-gray-400">Cobro:</span>
+            <select value={tipo} onChange={e => upd(c.id!, { tipo_cobro: e.target.value as any })} className={inp}>
+              <option value="porcentaje">Descuento %</option>
+              <option value="valor">Descuento fijo $</option>
+              <option value="gratis">Gratis (pase libre)</option>
+            </select>
+            {tipo !== 'gratis' && (
+              <div className="flex items-center gap-1">
+                <input type="number" defaultValue={c.valor ?? 0} onBlur={e => upd(c.id!, { valor: Number(e.target.value) || 0 })} className={`${inp} w-24`} placeholder={tipo === 'porcentaje' ? '50' : '5000'} />
+                <span className="text-xs text-gray-500">{tipo === 'porcentaje' ? '% de descuento' : '$ de descuento'}</span>
+              </div>
+            )}
+          </div>
         </div>
-      ))}
+      )})}
       <button onClick={add} className="flex items-center gap-2 w-full px-5 py-3 text-sm font-semibold text-green-600 hover:bg-green-50 transition"><Plus size={15}/> Agregar categoría</button>
     </div>
   )

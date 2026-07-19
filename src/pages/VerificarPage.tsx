@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Html5Qrcode } from 'html5-qrcode'
 import { Loader2, CheckCircle2, XCircle, AlertTriangle, QrCode, Search, RotateCcw, Camera } from 'lucide-react'
-import { supabase, type CarnetSolicitud } from '../lib/supabase'
+import { supabase, type CarnetSolicitud, type Tarifa } from '../lib/supabase'
 import Brand from '../components/Brand'
 
 type Estado = 'inicio' | 'buscando' | 'valido' | 'vencido' | 'no_iniciado' | 'invalido'
@@ -10,6 +10,18 @@ type Estado = 'inicio' | 'buscando' | 'valido' | 'vencido' | 'no_iniciado' | 'in
 function fmt(d?: string) {
   if (!d) return '—'
   return new Date(d + 'T12:00:00').toLocaleDateString('es-CO', { day: '2-digit', month: 'long', year: 'numeric' })
+}
+
+const toNum = (v?: string) => parseInt(String(v ?? '').replace(/[^\d]/g, ''), 10) || 0
+const pesos = (n: number) => '$' + n.toLocaleString('es-CO')
+
+// Calcula el valor a cobrar según el tipo de descuento de la categoría
+function calcularCobro(precio: number, tipo?: string, valor?: number) {
+  const v = valor ?? 0
+  if (tipo === 'gratis') return 0
+  if (tipo === 'valor') return Math.max(0, precio - v)
+  if (tipo === 'porcentaje') return Math.max(0, Math.round(precio * (1 - v / 100)))
+  return precio // sin descuento configurado
 }
 
 // Extrae el código de un texto QR (puede venir como URL completa o código suelto)
@@ -25,9 +37,24 @@ export default function VerificarPage() {
   const [sol, setSol] = useState<CarnetSolicitud | null>(null)
   const [escaneando, setEscaneando] = useState(false)
   const [manual, setManual] = useState('')
+  const [tarifas, setTarifas] = useState<Tarifa[]>([])
+  const [rutaId, setRutaId] = useState<string>('')
   const scannerRef = useRef<Html5Qrcode | null>(null)
 
   useEffect(() => { document.title = 'Verificar carnet – COOTRANSA' }, [])
+
+  // Carga tarifas (Barranquilla primero) para calcular el cobro
+  useEffect(() => {
+    supabase.from('tarifas').select('*').eq('activa', true).then(({ data }) => {
+      const orden = (data ?? []).slice().sort((a, b) => {
+        const ba = /barranquilla/i.test(a.destino) ? 0 : 1
+        const bb = /barranquilla/i.test(b.destino) ? 0 : 1
+        return ba - bb
+      })
+      setTarifas(orden)
+      if (orden[0]?.id) setRutaId(orden[0].id)
+    })
+  }, [])
 
   // Si llega por URL con código (escaneado con la cámara nativa), verifica directo
   useEffect(() => {
@@ -106,6 +133,31 @@ export default function VerificarPage() {
             </div>
           </div>
         )}
+
+        {/* Cobro según la tarifa de la ruta (solo si el carnet está vigente) */}
+        {estado === 'valido' && sol && tarifas.length > 0 && (() => {
+          const ruta = tarifas.find(t => t.id === rutaId)
+          const precio = toNum(ruta?.precio)
+          const cobro = calcularCobro(precio, sol.categoria_tipo_cobro, sol.categoria_valor)
+          const desc = precio - cobro
+          return (
+            <div className="mt-4 w-full max-w-sm bg-white rounded-2xl p-5 text-gray-800 shadow-xl">
+              <label className="block text-[11px] font-bold uppercase tracking-wide text-gray-400 mb-1.5">Ruta</label>
+              <select value={rutaId} onChange={e => setRutaId(e.target.value)} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-green-500 mb-3">
+                {tarifas.map(t => <option key={t.id} value={t.id}>{t.origen} → {t.destino} · {pesos(toNum(t.precio))}</option>)}
+              </select>
+              <div className="space-y-1.5 text-sm">
+                <div className="flex justify-between text-gray-500"><span>Tarifa normal</span><span className="tabular-nums">{pesos(precio)}</span></div>
+                {desc > 0 && <div className="flex justify-between text-gray-500"><span>Descuento</span><span className="tabular-nums text-red-500">−{pesos(desc)}</span></div>}
+              </div>
+              <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-600">A cobrar</span>
+                <span className="text-3xl font-black text-green-600 tabular-nums">{cobro === 0 ? 'GRATIS' : pesos(cobro)}</span>
+              </div>
+            </div>
+          )
+        })()}
+
         <button onClick={() => { reiniciar(); escanear() }} className="mt-7 inline-flex items-center gap-2 bg-white text-gray-800 font-bold text-sm px-6 py-3 rounded-full shadow-lg hover:scale-105 transition">
           <Camera size={18} /> Escanear otro carnet
         </button>
