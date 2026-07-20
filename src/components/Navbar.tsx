@@ -83,6 +83,7 @@ export default function Navbar() {
   const [mobileNosotros, setMobileNosotros] = useState(false)
   const [mobileServicios, setMobileServicios] = useState(false)
   const [mobilePoliticas, setMobilePoliticas] = useState(false)
+  const [mobileCarnets, setMobileCarnets] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40)
@@ -212,8 +213,18 @@ export default function Navbar() {
                 )}
               </AnimatePresence>
               <a href="/#rutas" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Rutas</a>
-              <a href="/tarifa-preferencial" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Tarifa Preferencial</a>
-              <a href="/verificar" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Verificar Carnet</a>
+              <button onClick={() => setMobileCarnets(!mobileCarnets)} className="flex items-center justify-between text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">
+                Carnets <ChevronDown size={16} className={`transition-transform ${mobileCarnets ? 'rotate-180' : ''}`}/>
+              </button>
+              <AnimatePresence>
+                {mobileCarnets && (
+                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} className="overflow-hidden pl-4 flex flex-col">
+                    {carnetsItems.map(item => (
+                      <a key={item.href} href={item.href} onClick={() => setMobileOpen(false)} className="text-gray-500 hover:text-green-600 text-sm py-2.5 transition-colors">{item.label}</a>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
               <button onClick={() => setMobileNosotros(!mobileNosotros)} className="flex items-center justify-between text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">
                 Nosotros <ChevronDown size={16} className={`transition-transform ${mobileNosotros ? 'rotate-180' : ''}`}/>
               </button>
