@@ -12,9 +12,10 @@ export default function CarmenModal() {
   const [verRecorrido, setVerRecorrido] = useState(false)
 
   useEffect(() => {
+    const FORZAR = true                    // ← poner en false para volver a mostrarlo solo el 16 de julio
     const hoy = new Date()
     const esDiaDelCarmen = hoy.getMonth() === 6 && hoy.getDate() === 16 // mes 6 = julio
-    if (esDiaDelCarmen) {
+    if (FORZAR || esDiaDelCarmen) {
       const t = setTimeout(() => setOpen(true), 900) // aparece tras el splash, cada vez que se abre/recarga
       return () => clearTimeout(t)
     }
