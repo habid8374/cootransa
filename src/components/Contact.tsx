@@ -4,6 +4,21 @@ import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle, Navigation, Clock
 import WhatsappIcon from './WhatsappIcon'
 import HabeasData from './HabeasData'
 import { supabase, getConfig, generarRadicado } from '../lib/supabase'
+import { festivosColombia } from '../lib/festivos'
+
+// Calcula si la sede está abierta ahora según el horario de atención
+function estadoSede() {
+  const ahora = new Date()
+  const dia = ahora.getDay()                 // 0 = domingo … 6 = sábado
+  const min = ahora.getHours() * 60 + ahora.getMinutes()
+  const iso = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`
+  const esFestivo = festivosColombia(ahora.getFullYear()).has(iso)
+  let franjas: [number, number][] = []
+  if (dia === 0 || esFestivo) franjas = []                          // domingo / festivo → cerrado
+  else if (dia === 6) franjas = [[8 * 60, 12 * 60 + 30]]            // sábado
+  else franjas = [[8 * 60, 12 * 60 + 30], [14 * 60, 17 * 60]]       // lunes a viernes
+  return { abierto: franjas.some(([a, b]) => min >= a && min < b) }
+}
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
@@ -133,7 +148,7 @@ export default function Contact() {
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-gray-600 font-medium">Lunes a Viernes</span>
-                  <span className="text-gray-900 font-semibold text-right">8:00 a.m. – 12:00 m.<br/>2:00 p.m. – 4:30 p.m.</span>
+                  <span className="text-gray-900 font-semibold text-right">8:00 a.m. – 12:30 p.m.<br/>2:00 p.m. – 5:00 p.m.</span>
                 </li>
                 <li className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-gray-600 font-medium">Sábados</span>
@@ -144,6 +159,21 @@ export default function Contact() {
                   <span className="text-red-500 font-semibold">Cerrado</span>
                 </li>
               </ul>
+              {(() => {
+                const { abierto } = estadoSede()
+                return (
+                  <div className="mt-auto pt-5">
+                    <div className={`flex items-center gap-2.5 rounded-xl px-4 py-3 border ${abierto ? 'bg-green-50 border-green-200' : 'bg-gray-50 border-gray-200'}`}>
+                      <span className="relative flex h-2.5 w-2.5">
+                        {abierto && <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />}
+                        <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${abierto ? 'bg-green-500' : 'bg-gray-400'}`} />
+                      </span>
+                      <span className={`text-sm font-bold ${abierto ? 'text-green-700' : 'text-gray-500'}`}>{abierto ? 'Abierto ahora' : 'Cerrado ahora'}</span>
+                    </div>
+                    <p className="text-[11px] text-gray-400 text-center mt-3">Te atendemos de forma presencial en nuestra sede principal.</p>
+                  </div>
+                )
+              })()}
             </div>
           </div>
         </motion.div>
