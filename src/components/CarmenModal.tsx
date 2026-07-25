@@ -12,7 +12,7 @@ export default function CarmenModal() {
   const [verRecorrido, setVerRecorrido] = useState(false)
 
   useEffect(() => {
-    const FORZAR = true                    // ← poner en false para volver a mostrarlo solo el 16 de julio
+    const FORZAR = false                   // ← poner en false para volver a mostrarlo solo el 16 de julio
     const hoy = new Date()
     const esDiaDelCarmen = hoy.getMonth() === 6 && hoy.getDate() === 16 // mes 6 = julio
     if (FORZAR || esDiaDelCarmen) {

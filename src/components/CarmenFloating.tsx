@@ -10,7 +10,7 @@ export default function CarmenFloating() {
   const [visible, setVisible] = useState(false)
 
   useEffect(() => {
-    const FORZAR = true                    // ← poner en false para volver a mostrarlo solo el 16 de julio
+    const FORZAR = false                   // ← poner en false para volver a mostrarlo solo el 16 de julio
     const hoy = new Date()
     if (FORZAR || (hoy.getMonth() === 6 && hoy.getDate() === 16)) {
       const t = setTimeout(() => setVisible(true), 1600) // tras el splash
