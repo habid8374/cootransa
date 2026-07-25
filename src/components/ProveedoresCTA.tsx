@@ -10,6 +10,9 @@ export default function ProveedoresCTA() {
           className="relative overflow-hidden rounded-3xl p-8 sm:p-12"
           style={{ background: 'linear-gradient(135deg,#1e1b4b,#4338ca)' }}
         >
+          {/* Imagen de fondo (trabajo en equipo) */}
+          <img src="/cta-proveedores.jpg" alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-center opacity-25 sm:opacity-30" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(115deg,#1e1b4b 30%,rgba(30,27,75,0.75) 55%,rgba(67,56,202,0.35) 100%)' }} />
           <div className="absolute -bottom-12 -left-12 w-56 h-56 rounded-full bg-white/10 blur-2xl" />
           <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between">
             <div className="max-w-xl">
