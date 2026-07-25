@@ -11,8 +11,8 @@ export default function CarnetCTA() {
           style={{ background: 'linear-gradient(135deg,#0d3b1e,#16a34a)' }}
         >
           {/* Imagen de fondo (estudiantes) */}
-          <img src="/cta-estudiantes.jpg" alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-center opacity-25 sm:opacity-30" />
-          <div className="absolute inset-0" style={{ background: 'linear-gradient(115deg,#0d3b1e 30%,rgba(13,59,30,0.75) 55%,rgba(22,163,74,0.35) 100%)' }} />
+          <img src="/cta-estudiantes.jpg" alt="" aria-hidden="true" loading="lazy" className="absolute inset-0 w-full h-full object-cover object-center opacity-70 sm:opacity-80" />
+          <div className="absolute inset-0" style={{ background: 'linear-gradient(100deg,rgba(13,59,30,0.96) 0%,rgba(13,59,30,0.82) 42%,rgba(13,59,30,0.20) 100%)' }} />
           <div className="absolute -top-12 -right-12 w-56 h-56 rounded-full bg-white/10 blur-2xl" />
           <div className="relative flex flex-col sm:flex-row items-start sm:items-center gap-6 justify-between">
             <div className="max-w-xl">
