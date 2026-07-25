@@ -1,6 +1,17 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Mail, Phone, Trash2, Inbox, X } from 'lucide-react'
+import { Mail, Phone, Trash2, Inbox, X, AlertOctagon } from 'lucide-react'
+
+// Etiqueta legible + estilo por tipo de motivo
+const esPQR = (s?: string) => (s ?? '').toLowerCase() === 'pqr'
+const servicioLabel = (s?: string) => {
+  const map: Record<string, string> = {
+    estudiantil: 'Servicio Estudiantil', empresarial: 'Servicio Empresarial',
+    turistico: 'Servicio Turístico', rutas: 'Rutas Intermunicipales',
+    convenio: 'Convenio Corporativo', pqr: "PQR's", otro: 'Otro',
+  }
+  return map[(s ?? '').toLowerCase()] ?? s
+}
 
 interface Mensaje {
   id: string
@@ -18,6 +29,7 @@ export default function AdminMensajes() {
   const [loading, setLoading] = useState(true)
   const [open, setOpen]       = useState<Mensaje | null>(null)
   const [delId, setDelId]     = useState<string | null>(null)
+  const [filtro, setFiltro]   = useState<'todos' | 'pqr' | 'otros'>('todos')
 
   const load = async () => {
     setLoading(true)
@@ -43,6 +55,8 @@ export default function AdminMensajes() {
 
   const fmt = (d?: string) => d ? new Date(d).toLocaleString('es-CO', { day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' }) : ''
   const noLeidos = rows.filter(r => !r.leido).length
+  const pqrCount = rows.filter(r => esPQR(r.servicio)).length
+  const visibles = rows.filter(r => filtro === 'todos' ? true : filtro === 'pqr' ? esPQR(r.servicio) : !esPQR(r.servicio))
 
   const replyHref = (m: Mensaje) => {
     const subject = 'Respuesta a su mensaje – COOTRANSA'
@@ -63,28 +77,45 @@ export default function AdminMensajes() {
         {noLeidos > 0 && <span className="text-xs font-bold px-3 py-1 rounded-full bg-green-50 text-green-700">{noLeidos} sin leer</span>}
       </div>
 
+      {/* Filtro por tipo */}
+      <div className="flex gap-1 mb-4 bg-gray-100 p-1 rounded-lg w-fit">
+        {([['todos', 'Todos'], ['pqr', "PQR's"], ['otros', 'Consultas']] as const).map(([k, label]) => (
+          <button key={k} onClick={() => setFiltro(k)} className={`px-3.5 py-1.5 rounded-md text-sm font-medium flex items-center gap-1.5 transition ${filtro === k ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500'}`}>
+            {k === 'pqr' && <AlertOctagon size={14} className="text-red-500" />}
+            {label}
+            {k === 'pqr' && pqrCount > 0 && <span className="text-[10px] font-bold text-white bg-red-500 rounded-full px-1.5">{pqrCount}</span>}
+          </button>
+        ))}
+      </div>
+
       {loading ? (
         <div className="text-center py-16 text-sm text-gray-400">Cargando mensajes...</div>
-      ) : rows.length === 0 ? (
+      ) : visibles.length === 0 ? (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm py-16 text-center">
           <Inbox size={36} className="text-gray-300 mx-auto mb-3" />
-          <p className="text-sm text-gray-400">Aún no hay mensajes recibidos.</p>
+          <p className="text-sm text-gray-400">{filtro === 'pqr' ? 'No hay PQR por el momento.' : 'Aún no hay mensajes recibidos.'}</p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden divide-y divide-gray-50">
-          {rows.map(m => (
-            <button key={m.id} onClick={() => openMsg(m)} className="w-full flex items-start gap-3 px-5 py-4 hover:bg-gray-50/60 transition text-left">
-              <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${m.leido ? '' : 'bg-green-500'}`} />
+          {visibles.map(m => {
+            const pqr = esPQR(m.servicio)
+            return (
+            <button key={m.id} onClick={() => openMsg(m)} className={`w-full flex items-start gap-3 px-5 py-4 transition text-left ${pqr ? 'bg-red-50/40 hover:bg-red-50/70' : 'hover:bg-gray-50/60'}`}>
+              <span className={`w-2 h-2 rounded-full shrink-0 mt-1.5 ${m.leido ? '' : pqr ? 'bg-red-500' : 'bg-green-500'}`} />
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <span className={`text-sm truncate ${m.leido ? 'font-medium text-gray-700' : 'font-bold text-gray-900'}`}>{m.nombre}</span>
-                  {m.servicio && <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 capitalize shrink-0">{m.servicio}</span>}
+                  {m.servicio && (
+                    pqr
+                      ? <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-700 shrink-0 inline-flex items-center gap-1"><AlertOctagon size={11}/> PQR's</span>
+                      : <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 shrink-0">{servicioLabel(m.servicio)}</span>
+                  )}
                   <span className="text-[11px] text-gray-400 shrink-0 ml-auto">{fmt(m.created_at)}</span>
                 </div>
                 <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{m.mensaje}</p>
               </div>
             </button>
-          ))}
+          )})}
         </div>
       )}
 
@@ -104,7 +135,11 @@ export default function AdminMensajes() {
                 <a href={`mailto:${open.email}`} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-green-600"><Mail size={14}/>{open.email}</a>
                 {open.telefono && <a href={`tel:${open.telefono}`} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-green-600"><Phone size={14}/>{open.telefono}</a>}
               </div>
-              {open.servicio && <p className="text-xs"><span className="font-semibold text-gray-500">Servicio:</span> <span className="capitalize text-gray-700">{open.servicio}</span></p>}
+              {open.servicio && (
+                esPQR(open.servicio)
+                  ? <div className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-red-100 text-red-700"><AlertOctagon size={14}/> PQR's — Petición, Queja o Reclamo</div>
+                  : <p className="text-xs"><span className="font-semibold text-gray-500">Motivo:</span> <span className="text-gray-700">{servicioLabel(open.servicio)}</span></p>
+              )}
               <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
                 <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{open.mensaje}</p>
               </div>
