@@ -127,6 +127,18 @@ export interface ProveedorPostulacion {
   created_at?: string
 }
 
+/** Genera un número de radicado para PQR: PQR-AAAAMMDD-XXXX */
+export function generarRadicado(): string {
+  const d = new Date()
+  const fecha = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`
+  const alfabeto = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+  let s = ''
+  const arr = new Uint32Array(4)
+  crypto.getRandomValues(arr)
+  for (let i = 0; i < 4; i++) s += alfabeto[arr[i] % alfabeto.length]
+  return `PQR-${fecha}-${s}`
+}
+
 // ── Config key/value helpers (tabla `config`, lectura pública) ───────────
 export async function getConfig(key: string, fallback = ''): Promise<string> {
   const { data } = await supabase.from('config').select('value').eq('key', key).single()

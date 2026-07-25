@@ -1,6 +1,21 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-import { Mail, Phone, Trash2, Inbox, X, AlertOctagon } from 'lucide-react'
+import { Mail, Phone, Trash2, Inbox, X, AlertOctagon, Hash, CalendarClock } from 'lucide-react'
+import { sumarDiasHabiles, diasHabilesEntre } from '../../lib/festivos'
+
+const fmtFecha = (d: Date) => d.toLocaleDateString('es-CO', { day: 'numeric', month: 'long', year: 'numeric' })
+
+// Calcula el estado del plazo de una PQR (15 días hábiles desde que llegó)
+function plazoPQR(createdAt?: string) {
+  const recibido = createdAt ? new Date(createdAt) : new Date()
+  const limite = sumarDiasHabiles(recibido, 15)
+  const restantes = diasHabilesEntre(new Date(), limite)
+  const estado =
+    restantes < 0 ? 'vencido' :
+    restantes === 0 ? 'hoy' :
+    restantes <= 3 ? 'proximo' : 'ok'
+  return { recibido, limite, restantes, estado }
+}
 
 // Etiqueta legible + estilo por tipo de motivo
 const esPQR = (s?: string) => (s ?? '').toLowerCase() === 'pqr'
@@ -20,6 +35,7 @@ interface Mensaje {
   telefono?: string
   servicio?: string
   mensaje: string
+  radicado?: string
   leido?: boolean
   created_at?: string
 }
@@ -112,6 +128,17 @@ export default function AdminMensajes() {
                   )}
                   <span className="text-[11px] text-gray-400 shrink-0 ml-auto">{fmt(m.created_at)}</span>
                 </div>
+                {pqr && (() => {
+                  const p = plazoPQR(m.created_at)
+                  const color = p.estado === 'vencido' ? 'text-red-600' : p.estado === 'hoy' || p.estado === 'proximo' ? 'text-amber-600' : 'text-gray-500'
+                  const txt = p.estado === 'vencido' ? `Vencida hace ${Math.abs(p.restantes)} día(s) hábil(es)` : p.estado === 'hoy' ? 'Vence hoy' : `Vence en ${p.restantes} día(s) hábil(es)`
+                  return (
+                    <div className="flex items-center gap-2 flex-wrap mt-1 text-[11px]">
+                      {m.radicado && <span className="inline-flex items-center gap-1 font-mono font-semibold text-gray-600"><Hash size={11}/>{m.radicado}</span>}
+                      <span className={`inline-flex items-center gap-1 font-semibold ${color}`}><CalendarClock size={11}/>{txt}</span>
+                    </div>
+                  )
+                })()}
                 <p className="text-xs text-gray-500 line-clamp-2 mt-0.5">{m.mensaje}</p>
               </div>
             </button>
@@ -135,11 +162,43 @@ export default function AdminMensajes() {
                 <a href={`mailto:${open.email}`} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-green-600"><Mail size={14}/>{open.email}</a>
                 {open.telefono && <a href={`tel:${open.telefono}`} className="inline-flex items-center gap-1.5 text-gray-600 hover:text-green-600"><Phone size={14}/>{open.telefono}</a>}
               </div>
-              {open.servicio && (
-                esPQR(open.servicio)
-                  ? <div className="inline-flex items-center gap-1.5 text-xs font-bold px-3 py-1.5 rounded-lg bg-red-100 text-red-700"><AlertOctagon size={14}/> PQR's — Petición, Queja o Reclamo</div>
-                  : <p className="text-xs"><span className="font-semibold text-gray-500">Motivo:</span> <span className="text-gray-700">{servicioLabel(open.servicio)}</span></p>
+              {open.servicio && !esPQR(open.servicio) && (
+                <p className="text-xs"><span className="font-semibold text-gray-500">Motivo:</span> <span className="text-gray-700">{servicioLabel(open.servicio)}</span></p>
               )}
+              {esPQR(open.servicio) && (() => {
+                const p = plazoPQR(open.created_at)
+                const tono = p.estado === 'vencido' ? 'bg-red-50 border-red-200' : p.estado === 'hoy' || p.estado === 'proximo' ? 'bg-amber-50 border-amber-200' : 'bg-green-50 border-green-200'
+                const chip = p.estado === 'vencido' ? 'bg-red-600' : p.estado === 'hoy' || p.estado === 'proximo' ? 'bg-amber-500' : 'bg-green-600'
+                const txt = p.estado === 'vencido' ? `Vencida hace ${Math.abs(p.restantes)} día(s) hábil(es)` : p.estado === 'hoy' ? 'Vence hoy' : `Faltan ${p.restantes} día(s) hábil(es)`
+                return (
+                  <div className={`rounded-xl border p-4 ${tono}`}>
+                    <div className="flex items-center gap-2 mb-3">
+                      <AlertOctagon size={15} className="text-red-600" />
+                      <span className="text-sm font-bold text-red-700">PQR's — Petición, Queja o Reclamo</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3 text-xs">
+                      {open.radicado && (
+                        <div className="col-span-2">
+                          <p className="font-semibold text-gray-500 uppercase tracking-wide">Radicado</p>
+                          <p className="font-mono font-bold text-gray-900 text-sm">{open.radicado}</p>
+                        </div>
+                      )}
+                      <div>
+                        <p className="font-semibold text-gray-500 uppercase tracking-wide">Recibida</p>
+                        <p className="text-gray-800 font-medium capitalize">{fmtFecha(p.recibido)}</p>
+                      </div>
+                      <div>
+                        <p className="font-semibold text-gray-500 uppercase tracking-wide">Fecha límite de respuesta</p>
+                        <p className="text-gray-800 font-medium capitalize">{fmtFecha(p.limite)}</p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2">
+                      <span className={`inline-flex items-center gap-1.5 text-xs font-bold text-white px-3 py-1.5 rounded-full ${chip}`}><CalendarClock size={13}/>{txt}</span>
+                      <span className="text-[11px] text-gray-500">Plazo legal: 15 días hábiles</span>
+                    </div>
+                  </div>
+                )
+              })()}
               <div className="rounded-xl bg-gray-50 border border-gray-100 p-4">
                 <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{open.mensaje}</p>
               </div>

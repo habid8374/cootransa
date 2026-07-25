@@ -3,13 +3,14 @@ import { motion } from 'framer-motion'
 import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle } from 'lucide-react'
 import WhatsappIcon from './WhatsappIcon'
 import HabeasData from './HabeasData'
-import { supabase, getConfig } from '../lib/supabase'
+import { supabase, getConfig, generarRadicado } from '../lib/supabase'
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
   const [habeas, setHabeas] = useState(false)
+  const [radicado, setRadicado] = useState('')
   const [waHref, setWaHref] = useState('https://wa.me/573000000000')
   const [formData, setFormData] = useState({ nombre:'', email:'', telefono:'', servicio:'', mensaje:'' })
 
@@ -23,15 +24,19 @@ export default function Contact() {
     e.preventDefault()
     if (!habeas) { setError('Debe autorizar el tratamiento de datos para continuar.'); return }
     setSending(true); setError('')
+    const esPQR = formData.servicio === 'pqr'
+    const rad = esPQR ? generarRadicado() : ''
     const { error } = await supabase.from('mensajes').insert({
       nombre: formData.nombre,
       email: formData.email,
       telefono: formData.telefono,
       servicio: formData.servicio,
       mensaje: formData.mensaje,
+      ...(esPQR ? { radicado: rad } : {}),
     })
     setSending(false)
     if (error) { setError('No se pudo enviar el mensaje. Intenta de nuevo.'); return }
+    setRadicado(rad)
     setSubmitted(true)
     setFormData({ nombre:'', email:'', telefono:'', servicio:'', mensaje:'' })
     setHabeas(false)
@@ -52,9 +57,16 @@ export default function Contact() {
             {submitted ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-12 rounded-2xl bg-white border border-green-200 shadow-md">
                 <CheckCircle size={56} className="text-green-500 mb-4"/>
-                <h3 className="text-2xl font-bold text-gray-900 mb-3">Mensaje recibido</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-3">{radicado ? 'PQR radicada' : 'Mensaje recibido'}</h3>
                 <p className="text-gray-500">Gracias por contactarnos. Nuestro equipo se comunicará con usted a la brevedad posible.</p>
-                <button onClick={() => setSubmitted(false)} className="mt-6 px-6 py-3 rounded-full bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors">Enviar otro mensaje</button>
+                {radicado && (
+                  <div className="mt-5 rounded-xl bg-green-50 border border-green-200 px-5 py-4">
+                    <p className="text-xs font-semibold text-green-700 uppercase tracking-wide">Número de radicado</p>
+                    <p className="text-lg font-black text-gray-900 tracking-wide mt-1">{radicado}</p>
+                    <p className="text-xs text-gray-500 mt-2">Guarde este número. Su PQR será respondida dentro de los <strong>15 días hábiles</strong> siguientes, conforme a la ley.</p>
+                  </div>
+                )}
+                <button onClick={() => { setSubmitted(false); setRadicado('') }} className="mt-6 px-6 py-3 rounded-full bg-green-600 hover:bg-green-500 text-white font-semibold transition-colors">Enviar otro mensaje</button>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-5">
