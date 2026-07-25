@@ -28,6 +28,15 @@ export default function CorralejasFloating() {
     { top: '78%', left: '38%', size: 8,  delay: 0.9  },
   ]
 
+  // Nubes de polvo que se levantan en la base del toro
+  const polvo = [
+    { left: '20%', size: 62, delay: 0,   dx: -14, dur: 3.2 },
+    { left: '38%', size: 82, delay: 0.5, dx: -6,  dur: 3.8 },
+    { left: '52%', size: 96, delay: 0.2, dx: 8,   dur: 3.4 },
+    { left: '66%', size: 74, delay: 0.9, dx: 16,  dur: 4.0 },
+    { left: '80%', size: 58, delay: 1.3, dx: 22,  dur: 3.6 },
+  ]
+
   return (
     <AnimatePresence>
       {visible && (
@@ -48,6 +57,29 @@ export default function CorralejasFloating() {
                 filter: 'blur(10px)',
               }}
             />
+
+            {/* Nube de polvo levantándose en la base */}
+            <div className="absolute inset-x-0 bottom-0 h-1/3 -z-10 pointer-events-none">
+              {polvo.map((p, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute bottom-0"
+                  style={{
+                    left: p.left, width: p.size, height: p.size, marginLeft: -p.size / 2,
+                    borderRadius: '50%',
+                    background: 'radial-gradient(circle at 50% 55%, rgba(198,168,110,0.55), rgba(168,137,90,0.28) 45%, transparent 72%)',
+                    filter: 'blur(6px)',
+                  }}
+                  animate={{
+                    opacity: [0, 0.9, 0],
+                    scale: [0.5, 1.15, 1.4],
+                    x: [0, p.dx, p.dx * 1.6],
+                    y: [10, -14, -30],
+                  }}
+                  transition={{ duration: p.dur, repeat: Infinity, delay: p.delay, ease: 'easeOut' }}
+                />
+              ))}
+            </div>
 
             {/* Destellos de polvo */}
             {sparkles.map((s, i) => (
