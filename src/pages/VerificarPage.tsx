@@ -93,16 +93,31 @@ export default function VerificarPage() {
     }
   }, [])
 
-  // Carga tarifas (Barranquilla primero) para calcular el cobro
+  // Carga tarifas (Barranquilla primero) para calcular el cobro.
+  // Usa caché local para respuesta instantánea y menor carga; refresca en segundo plano.
   useEffect(() => {
-    supabase.from('tarifas').select('*').eq('activa', true).then(({ data }) => {
-      const orden = (data ?? []).slice().sort((a, b) => {
-        const ba = /barranquilla/i.test(a.destino) ? 0 : 1
-        const bb = /barranquilla/i.test(b.destino) ? 0 : 1
-        return ba - bb
-      })
+    const CACHE_KEY = 'coo_tarifas_cache'
+    const ordenar = (data: Tarifa[]) => data.slice().sort((a, b) => {
+      const ba = /barranquilla/i.test(a.destino) ? 0 : 1
+      const bb = /barranquilla/i.test(b.destino) ? 0 : 1
+      return ba - bb
+    })
+    const aplicar = (data: Tarifa[]) => {
+      const orden = ordenar(data)
       setTarifas(orden)
-      if (orden[0]?.id) setRutaId(orden[0].id)
+      setRutaId(prev => prev || (orden[0]?.id ?? ''))
+    }
+    // 1) Pinta al instante desde la caché (si existe)
+    try {
+      const raw = localStorage.getItem(CACHE_KEY)
+      if (raw) { const cached = JSON.parse(raw) as Tarifa[]; if (Array.isArray(cached) && cached.length) aplicar(cached) }
+    } catch {}
+    // 2) Refresca desde el servidor y actualiza la caché
+    supabase.from('tarifas').select('*').eq('activa', true).then(({ data }) => {
+      if (data) {
+        aplicar(data)
+        try { localStorage.setItem(CACHE_KEY, JSON.stringify(data)) } catch {}
+      }
     })
   }, [])
 
