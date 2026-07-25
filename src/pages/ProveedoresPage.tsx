@@ -152,15 +152,21 @@ export default function ProveedoresPage() {
               {/* Propuestas en PDF */}
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">Propuesta / portafolio (PDF o imágenes)</label>
-                <input ref={fileRef} type="file" multiple accept="application/pdf,image/*" className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
-                <button
-                  type="button"
-                  onClick={() => fileRef.current?.click()}
-                  className={`w-full flex items-center gap-3 border border-dashed rounded-lg px-4 py-3 transition ${archivos.length > 0 ? 'border-green-400 bg-green-50/50' : 'border-gray-300 hover:border-green-400'}`}
-                >
-                  <Upload size={18} className={archivos.length > 0 ? 'text-green-600' : 'text-gray-400'} />
-                  <span className="text-sm text-gray-600">{archivos.length > 0 ? `Agregar más archivos (${archivos.length}/6)` : 'Seleccionar archivos (hasta 6)'}</span>
-                </button>
+                <div className={`rounded-lg border border-dashed px-4 py-4 transition ${archivos.length > 0 ? 'border-green-400 bg-green-50/50' : 'border-gray-300'}`}>
+                  <div className="flex items-center gap-2 text-gray-500 mb-2">
+                    <Upload size={18} className={archivos.length > 0 ? 'text-green-600' : 'text-gray-400'} />
+                    <span className="text-sm">Selecciona tus archivos (PDF o imágenes, hasta 6):</span>
+                  </div>
+                  <input
+                    ref={fileRef}
+                    type="file"
+                    multiple
+                    accept="application/pdf,image/*"
+                    onChange={e => { addFiles(e.target.files); e.target.value = '' }}
+                    className="block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700 cursor-pointer"
+                  />
+                  <p className="text-[11px] text-gray-400 mt-2">Si el botón no abre el explorador, abre esta página en <strong>Chrome</strong> o <strong>Safari</strong> (no dentro de Instagram/Facebook).</p>
+                </div>
                 {archivos.length > 0 && (
                   <>
                     <p className="mt-2 text-[12px] font-semibold text-green-700 flex items-center gap-1.5"><CheckCircle2 size={14}/> {archivos.length} archivo(s) adjunto(s) — se enviarán con tu postulación</p>
