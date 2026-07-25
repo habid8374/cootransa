@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle } from 'lucide-react'
+import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle, Navigation } from 'lucide-react'
 import WhatsappIcon from './WhatsappIcon'
 import HabeasData from './HabeasData'
 import { supabase, getConfig, generarRadicado } from '../lib/supabase'
@@ -98,6 +98,31 @@ export default function Contact() {
             </div>
           </motion.div>
         </div>
+
+        {/* Mapa de ubicación */}
+        <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.7 }} className="mt-14">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-5">
+            <div>
+              <span className="text-green-600 text-sm font-semibold tracking-widest uppercase">Nuestra sede</span>
+              <h3 className="text-2xl font-black font-display text-gray-900 mt-1">¿Dónde estamos?</h3>
+              <p className="text-gray-500 text-sm mt-1">Calle 27 No. 29 - 50 · Carretera La Cordialidad · Sabanalarga, Atlántico</p>
+            </div>
+            <a
+              href="https://www.google.com/maps/place/COOTRANSA/@10.6395571,-74.9228073,17z/data=!3m1!4b1!4m6!3m5!1s0x8ef5dfb36f6b1dd7:0x730f1948224f3d7e!8m2!3d10.6395571!4d-74.9228073"
+              target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105 shrink-0 self-start"
+            ><Navigation size={17}/> Cómo llegar</a>
+          </div>
+          <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-md">
+            <iframe
+              title="Ubicación de COOTRANSA en el mapa"
+              src="https://maps.google.com/maps?q=10.6395571,-74.9228073&z=16&hl=es&output=embed"
+              width="100%" height="420" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+              style={{ border: 0, display: 'block', filter: 'saturate(1.05)' }}
+              allowFullScreen
+            />
+          </div>
+        </motion.div>
       </div>
     </section>
   )
