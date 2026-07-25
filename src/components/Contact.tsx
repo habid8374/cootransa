@@ -123,7 +123,7 @@ export default function Contact() {
               <p className="text-gray-500 text-sm mt-1">Calle 27 No. 29 - 50 · Carretera La Cordialidad · Sabanalarga, Atlántico</p>
             </div>
             <a
-              href="https://www.google.com/maps/place/COOTRANSA/@10.6395571,-74.9228073,17z/data=!3m1!4b1!4m6!3m5!1s0x8ef5dfb36f6b1dd7:0x730f1948224f3d7e!8m2!3d10.6395571!4d-74.9228073"
+              href="https://www.google.com/maps/dir/?api=1&destination=COOTRANSA%2C%20Calle%2027%20%2329-50%2C%20Sabanalarga%2C%20Atl%C3%A1ntico"
               target="_blank" rel="noopener noreferrer"
               className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105 shrink-0 self-start"
             ><Navigation size={17}/> Cómo llegar</a>
