@@ -5,6 +5,7 @@ import { ArrowLeft, Upload, CheckCircle2, Loader2, CreditCard } from 'lucide-rea
 import { supabase, generarCodigoCarnet, type CarnetCategoria, type CarnetDocumento } from '../lib/supabase'
 import Brand from '../components/Brand'
 import Footer from '../components/Footer'
+import HabeasData from '../components/HabeasData'
 
 const BUCKET = 'cootransa-media'        // público (fotos)
 const DOCS_BUCKET = 'carnet-docs'       // privado (documentos sensibles)
@@ -16,6 +17,7 @@ export default function TarifaPreferencialPage() {
   const [enviando, setEnviando] = useState(false)
   const [enviado, setEnviado] = useState(false)
   const [error, setError] = useState('')
+  const [habeas, setHabeas] = useState(false)
 
   const [form, setForm] = useState({
     nombre: '', tipo_documento: 'C.C.', cedula: '', institucion: '', direccion: '',
@@ -66,6 +68,7 @@ export default function TarifaPreferencialPage() {
       if (!archivos[d.id!]) { setError(`Falta subir: ${d.nombre}`); return }
     }
     if (!foto) { setError('Debes subir tu foto.'); return }
+    if (!habeas) { setError('Debes autorizar el tratamiento de datos para continuar.'); return }
     setEnviando(true)
     try {
       const foto_url = await subirFoto(foto)
@@ -178,6 +181,8 @@ export default function TarifaPreferencialPage() {
                   </label>
                 </div>
               ))}
+
+              <div className="pt-1"><HabeasData checked={habeas} onChange={setHabeas} /></div>
 
               {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
 

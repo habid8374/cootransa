@@ -9,6 +9,7 @@ import AdminTarifas from './AdminTarifas'
 import AdminHorarios from './AdminHorarios'
 import AdminMensajes from './AdminMensajes'
 import AdminCarnets from './AdminCarnets'
+import AdminProveedores from './AdminProveedores'
 import AdminUsuarios from './AdminUsuarios'
 import AdminAjustes from './AdminAjustes'
 import type { Session } from '@supabase/supabase-js'
@@ -41,6 +42,7 @@ export default function AdminApp() {
         <Route path="horarios" element={<AdminHorarios />} />
         <Route path="mensajes" element={<AdminMensajes />} />
         <Route path="carnets"  element={<AdminCarnets />} />
+        <Route path="proveedores" element={<AdminProveedores />} />
         <Route path="usuarios" element={<AdminUsuarios />} />
         <Route path="ajustes"  element={<AdminAjustes />} />
         <Route path="*" element={<Navigate to="/admin" replace />} />

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import Brand from '../../components/Brand'
-import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink, CreditCard, QrCode } from 'lucide-react'
+import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink, CreditCard, QrCode, Building2 } from 'lucide-react'
 
 const ASISTENCIA_URL = 'https://cootransa-asistencia.vercel.app'
 
@@ -14,6 +14,7 @@ const navItems = [
   { to: '/admin/horarios', label: 'Horarios', icon: Clock },
   { to: '/admin/mensajes', label: 'Mensajes', icon: Mail },
   { to: '/admin/carnets',  label: 'Carnets',  icon: CreditCard },
+  { to: '/admin/proveedores', label: 'Proveedores', icon: Building2 },
 ]
 const configItems = [
   { to: '/admin/usuarios', label: 'Usuarios', icon: Users },
@@ -27,6 +28,7 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const [unread, setUnread] = useState(0)
   const [carnetsPend, setCarnetsPend] = useState(0)
+  const [provPend, setProvPend] = useState(0)
   const [toast, setToast] = useState<ToastData | null>(null)
 
   const beep = () => { try { new Audio('data:audio/wav;base64,UklGRl9vT19XQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQ==').play().catch(() => {}) } catch {} }
@@ -37,6 +39,8 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
       .then(({ count }) => setUnread(count ?? 0))
     supabase.from('carnet_solicitudes').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente')
       .then(({ count }) => setCarnetsPend(count ?? 0))
+    supabase.from('proveedor_postulaciones').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente')
+      .then(({ count }) => setProvPend(count ?? 0))
   }, [])
 
   // Realtime: mensajes
@@ -72,6 +76,25 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
       .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'carnet_solicitudes' }, () => {
         supabase.from('carnet_solicitudes').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente')
           .then(({ count }) => setCarnetsPend(count ?? 0))
+      })
+      .subscribe()
+    return () => { supabase.removeChannel(channel) }
+  }, [])
+
+  // Realtime: postulaciones de proveedores
+  useEffect(() => {
+    const channel = supabase
+      .channel('proveedores-realtime')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'proveedor_postulaciones' }, (payload) => {
+        const p = payload.new as { empresa: string; categoria: string }
+        setProvPend(n => n + 1)
+        setToast({ titulo: 'Nueva postulación de proveedor', nombre: p.empresa, mensaje: p.categoria, to: '/admin/proveedores' })
+        beep()
+        setTimeout(() => setToast(null), 6000)
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'proveedor_postulaciones' }, () => {
+        supabase.from('proveedor_postulaciones').select('id', { count: 'exact', head: true }).eq('estado', 'pendiente')
+          .then(({ count }) => setProvPend(count ?? 0))
       })
       .subscribe()
     return () => { supabase.removeChannel(channel) }
@@ -114,6 +137,9 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
             )}
             {to === '/admin/carnets' && carnetsPend > 0 && (
               <span className="ml-auto text-[10px] font-bold text-white bg-amber-500 rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">{carnetsPend}</span>
+            )}
+            {to === '/admin/proveedores' && provPend > 0 && (
+              <span className="ml-auto text-[10px] font-bold text-white bg-amber-500 rounded-full min-w-[18px] h-[18px] px-1 flex items-center justify-center">{provPend}</span>
             )}
           </NavLink>
         ))}
@@ -230,7 +256,7 @@ export default function AdminLayout({ userEmail }: { userEmail: string }) {
             className="w-full text-left bg-white rounded-xl shadow-2xl border border-gray-100 p-4 flex items-start gap-3 hover:shadow-xl transition"
           >
             <div className="w-9 h-9 rounded-full bg-green-50 flex items-center justify-center shrink-0">
-              {toast.to === '/admin/carnets' ? <CreditCard size={16} className="text-green-600" /> : <Mail size={16} className="text-green-600" />}
+              {toast.to === '/admin/carnets' ? <CreditCard size={16} className="text-green-600" /> : toast.to === '/admin/proveedores' ? <Building2 size={16} className="text-green-600" /> : <Mail size={16} className="text-green-600" />}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-bold text-green-600 uppercase tracking-wide">{toast.titulo}</p>

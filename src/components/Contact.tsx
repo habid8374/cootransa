@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle } from 'lucide-react'
 import WhatsappIcon from './WhatsappIcon'
+import HabeasData from './HabeasData'
 import { supabase, getConfig } from '../lib/supabase'
 
 export default function Contact() {
   const [submitted, setSubmitted] = useState(false)
   const [sending, setSending] = useState(false)
   const [error, setError] = useState('')
+  const [habeas, setHabeas] = useState(false)
   const [waHref, setWaHref] = useState('https://wa.me/573000000000')
   const [formData, setFormData] = useState({ nombre:'', email:'', telefono:'', servicio:'', mensaje:'' })
 
@@ -19,6 +21,7 @@ export default function Contact() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!habeas) { setError('Debe autorizar el tratamiento de datos para continuar.'); return }
     setSending(true); setError('')
     const { error } = await supabase.from('mensajes').insert({
       nombre: formData.nombre,
@@ -31,6 +34,7 @@ export default function Contact() {
     if (error) { setError('No se pudo enviar el mensaje. Intenta de nuevo.'); return }
     setSubmitted(true)
     setFormData({ nombre:'', email:'', telefono:'', servicio:'', mensaje:'' })
+    setHabeas(false)
   }
   const handleChange = (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|HTMLSelectElement>) => setFormData({...formData,[e.target.name]:e.target.value})
 
@@ -63,6 +67,7 @@ export default function Contact() {
                   <div><label className="block text-sm font-medium text-gray-700 mb-2">Motivo</label><select name="servicio" value={formData.servicio} onChange={handleChange} className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all"><option value="">Seleccionar...</option><option value="estudiantil">Servicio Estudiantil</option><option value="empresarial">Servicio Empresarial</option><option value="turistico">Servicio Turístico</option><option value="rutas">Rutas intermunicipales</option><option value="convenio">Convenio corporativo</option><option value="pqr">❗ PQR (Peticiones, Quejas y Reclamos)</option><option value="otro">Otro</option></select></div>
                 </div>
                 <div><label className="block text-sm font-medium text-gray-700 mb-2">Mensaje</label><textarea name="mensaje" value={formData.mensaje} onChange={handleChange} rows={4} placeholder="Cuéntenos sobre su necesidad de transporte..." className="w-full px-4 py-3 rounded-xl bg-white border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-green-500 focus:ring-1 focus:ring-green-500 transition-all resize-none"/></div>
+                <HabeasData checked={habeas} onChange={setHabeas} />
                 {error && <p className="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-4 py-2.5">{error}</p>}
                 <button type="submit" disabled={sending} className="w-full flex items-center justify-center gap-3 py-4 rounded-xl bg-gradient-to-r from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white font-semibold text-base shadow-lg shadow-green-500/25 hover:scale-[1.02] transition-all duration-200 disabled:opacity-60 disabled:hover:scale-100"><Send size={18}/>{sending ? 'Enviando...' : 'Enviar mensaje'}</button>
               </form>

@@ -106,6 +106,27 @@ export function generarCodigoCarnet(): string {
   return `COO-${s.slice(0, 4)}-${s.slice(4, 8)}`
 }
 
+// ── Proveedores (postulaciones de proveedores/contratistas) ──────────────
+export type EstadoProveedor = 'pendiente' | 'en_estudio' | 'seleccionado' | 'descartado'
+
+export interface ProveedorPostulacion {
+  id?: string
+  empresa: string
+  nit?: string
+  contacto: string               // nombre de la persona de contacto
+  cargo?: string
+  telefono: string
+  correo: string
+  ciudad?: string
+  categoria: string              // tipo de proveeduría: insumos, servicios, materiales, etc.
+  descripcion: string            // descripción de la propuesta / servicio
+  sitio_web?: string
+  documentos?: { nombre: string; path?: string; url?: string }[]  // PDFs de propuestas (bucket privado)
+  estado: EstadoProveedor
+  nota_interna?: string          // notas confidenciales del admin
+  created_at?: string
+}
+
 // ── Config key/value helpers (tabla `config`, lectura pública) ───────────
 export async function getConfig(key: string, fallback = ''): Promise<string> {
   const { data } = await supabase.from('config').select('value').eq('key', key).single()
