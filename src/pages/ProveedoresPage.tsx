@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Upload, CheckCircle2, Loader2, Building2, FileText, X } from 'lucide-react'
+import { ArrowLeft, Upload, CheckCircle2, Loader2, Building2, FileText, X, AlertTriangle } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 import Brand from '../components/Brand'
 import Footer from '../components/Footer'
@@ -29,6 +29,9 @@ export default function ProveedoresPage() {
   const [enviado, setEnviado] = useState(false)
   const [error, setError] = useState('')
   const [habeas, setHabeas] = useState(false)
+  const [progreso, setProgreso] = useState('')
+  const [avisarSinArchivo, setAvisarSinArchivo] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
 
   const [form, setForm] = useState({
     empresa: '', nit: '', contacto: '', cargo: '', telefono: '',
@@ -44,10 +47,13 @@ export default function ProveedoresPage() {
   const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }))
 
   const addFiles = (files: FileList | null) => {
-    if (!files) return
+    if (!files || files.length === 0) return
     setArchivos(prev => [...prev, ...Array.from(files)].slice(0, 6))
+    setAvisarSinArchivo(false)
+    setError('')
   }
   const quitar = (i: number) => setArchivos(prev => prev.filter((_, idx) => idx !== i))
+  const fmtTam = (b: number) => b < 1024 * 1024 ? `${Math.round(b / 1024)} KB` : `${(b / 1024 / 1024).toFixed(1)} MB`
 
   // Sube una propuesta al bucket privado y devuelve solo la ruta (no es pública)
   const subirDoc = async (file: File) => {
@@ -62,10 +68,16 @@ export default function ProveedoresPage() {
     e.preventDefault()
     setError('')
     if (!habeas) { setError('Debes autorizar el tratamiento de datos para continuar.'); return }
+    // Aviso: no adjuntó ninguna propuesta. Se debe confirmar antes de continuar.
+    if (archivos.length === 0 && !avisarSinArchivo) { setAvisarSinArchivo(true); return }
     setEnviando(true)
     try {
       const docsSubidos: { nombre: string; path: string }[] = []
-      for (const f of archivos) docsSubidos.push({ nombre: f.name, path: await subirDoc(f) })
+      for (let i = 0; i < archivos.length; i++) {
+        setProgreso(`Subiendo archivo ${i + 1} de ${archivos.length}…`)
+        docsSubidos.push({ nombre: archivos[i].name, path: await subirDoc(archivos[i]) })
+      }
+      setProgreso('Enviando postulación…')
       const { error: insErr } = await supabase.from('proveedor_postulaciones').insert({
         ...form,
         documentos: docsSubidos,
@@ -78,6 +90,7 @@ export default function ProveedoresPage() {
       setError('Ocurrió un error al enviar. Intenta de nuevo. ' + (err?.message ?? ''))
     } finally {
       setEnviando(false)
+      setProgreso('')
     }
   }
 
@@ -139,30 +152,45 @@ export default function ProveedoresPage() {
               {/* Propuestas en PDF */}
               <div>
                 <label className="block text-xs font-semibold text-gray-600 mb-1.5">Propuesta / portafolio (PDF o imágenes)</label>
-                <label className="flex items-center gap-3 border border-dashed border-gray-300 rounded-lg px-4 py-3 cursor-pointer hover:border-green-400 transition">
-                  <Upload size={18} className="text-gray-400" />
-                  <span className="text-sm text-gray-500">Subir archivos (hasta 6)</span>
-                  <input type="file" multiple accept="application/pdf,image/*" className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
-                </label>
+                <input ref={fileRef} type="file" multiple accept="application/pdf,image/*" className="hidden" onChange={e => { addFiles(e.target.files); e.target.value = '' }} />
+                <button
+                  type="button"
+                  onClick={() => fileRef.current?.click()}
+                  className={`w-full flex items-center gap-3 border border-dashed rounded-lg px-4 py-3 transition ${archivos.length > 0 ? 'border-green-400 bg-green-50/50' : 'border-gray-300 hover:border-green-400'}`}
+                >
+                  <Upload size={18} className={archivos.length > 0 ? 'text-green-600' : 'text-gray-400'} />
+                  <span className="text-sm text-gray-600">{archivos.length > 0 ? `Agregar más archivos (${archivos.length}/6)` : 'Seleccionar archivos (hasta 6)'}</span>
+                </button>
                 {archivos.length > 0 && (
-                  <ul className="mt-2 space-y-1.5">
-                    {archivos.map((f, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
-                        <FileText size={15} className="text-green-600 shrink-0" />
-                        <span className="truncate flex-1">{f.name}</span>
-                        <button type="button" onClick={() => quitar(i)} className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50"><X size={14}/></button>
-                      </li>
-                    ))}
-                  </ul>
+                  <>
+                    <p className="mt-2 text-[12px] font-semibold text-green-700 flex items-center gap-1.5"><CheckCircle2 size={14}/> {archivos.length} archivo(s) adjunto(s) — se enviarán con tu postulación</p>
+                    <ul className="mt-2 space-y-1.5">
+                      {archivos.map((f, i) => (
+                        <li key={i} className="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2">
+                          <FileText size={15} className="text-green-600 shrink-0" />
+                          <span className="truncate flex-1">{f.name}</span>
+                          <span className="text-[11px] text-gray-400 shrink-0">{fmtTam(f.size)}</span>
+                          <button type="button" onClick={() => quitar(i)} className="p-1 rounded text-gray-400 hover:text-red-500 hover:bg-red-50"><X size={14}/></button>
+                        </li>
+                      ))}
+                    </ul>
+                  </>
                 )}
               </div>
 
               <div className="pt-1"><HabeasData checked={habeas} onChange={setHabeas} /></div>
 
+              {avisarSinArchivo && archivos.length === 0 && (
+                <div className="text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2.5 flex items-start gap-2">
+                  <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-500" />
+                  <span>No adjuntaste ninguna propuesta o portafolio. Si tienes un PDF, agrégalo arriba para que sea estudiado. Si deseas continuar sin archivos, presiona <strong>“Enviar sin propuesta”</strong>.</span>
+                </div>
+              )}
+
               {error && <p className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">{error}</p>}
 
               <button type="submit" disabled={enviando} className="w-full py-3 rounded-full text-white text-sm font-semibold shadow-lg hover:scale-[1.01] transition disabled:opacity-60 flex items-center justify-center gap-2" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}>
-                {enviando ? <><Loader2 size={16} className="animate-spin"/> Enviando...</> : 'Enviar postulación'}
+                {enviando ? <><Loader2 size={16} className="animate-spin"/> {progreso || 'Enviando…'}</> : (avisarSinArchivo && archivos.length === 0 ? 'Enviar sin propuesta' : 'Enviar postulación')}
               </button>
             </form>
           )}
