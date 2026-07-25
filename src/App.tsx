@@ -15,6 +15,7 @@ import BusSplash from './components/BusSplash'
 import NewsBanner from './components/NewsBanner'
 import CarnetCTA from './components/CarnetCTA'
 import ProveedoresCTA from './components/ProveedoresCTA'
+import CorralejasBanner from './components/CorralejasBanner'
 import WhatsAppButton from './components/WhatsAppButton'
 import CarmenModal from './components/CarmenModal'
 import CarmenFloating from './components/CarmenFloating'
@@ -28,6 +29,7 @@ function MainSite() {
       <main>
         <section id="inicio"><Hero /></section>
         <NewsBanner />
+        <CorralejasBanner />
         <section id="stats"><Stats /></section>
         <section id="servicios"><Services /></section>
         <CarnetCTA />
