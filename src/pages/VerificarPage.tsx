@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { Html5Qrcode } from 'html5-qrcode'
-import { Loader2, CheckCircle2, XCircle, AlertTriangle, QrCode, Search, RotateCcw, Camera } from 'lucide-react'
+import { Loader2, CheckCircle2, XCircle, AlertTriangle, QrCode, Search, RotateCcw, Camera, Download, Share, Plus, X } from 'lucide-react'
 import { supabase, type CarnetSolicitud, type Tarifa } from '../lib/supabase'
 import Brand from '../components/Brand'
 
@@ -41,7 +41,57 @@ export default function VerificarPage() {
   const [rutaId, setRutaId] = useState<string>('')
   const scannerRef = useRef<Html5Qrcode | null>(null)
 
+  // ── PWA: instalar el verificador como app ──
+  const [deferred, setDeferred] = useState<any>(null)
+  const [instalado, setInstalado] = useState(false)
+  const [iosHelp, setIosHelp] = useState(false)
+  const isIOS = typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent)
+  const standalone = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true)
+  const puedeInstalar = !standalone && !instalado && (!!deferred || isIOS)
+
+  const instalar = async () => {
+    if (deferred) {
+      deferred.prompt()
+      try { await deferred.userChoice } catch {}
+      setDeferred(null)
+      return
+    }
+    if (isIOS) setIosHelp(true)
+  }
+
   useEffect(() => { document.title = 'Verificar carnet – COOTRANSA' }, [])
+
+  // Configura la PWA solo mientras se está en esta página
+  useEffect(() => {
+    const creados: HTMLElement[] = []
+    const addLink = (rel: string, href: string) => {
+      const l = document.createElement('link'); l.rel = rel; l.href = href
+      document.head.appendChild(l); creados.push(l)
+    }
+    addLink('manifest', '/verificar.webmanifest')
+    addLink('apple-touch-icon', '/icon-192.png')
+    let theme = document.querySelector('meta[name="theme-color"]') as HTMLMetaElement | null
+    const themePrev = theme?.getAttribute('content') ?? null
+    const themeCreado = !theme
+    if (!theme) { theme = document.createElement('meta'); theme.name = 'theme-color'; document.head.appendChild(theme) }
+    theme.setAttribute('content', '#16a34a')
+
+    const onBIP = (e: any) => { e.preventDefault(); setDeferred(e) }
+    const onInstalled = () => { setInstalado(true); setDeferred(null) }
+    window.addEventListener('beforeinstallprompt', onBIP)
+    window.addEventListener('appinstalled', onInstalled)
+
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/sw-verificar.js', { scope: '/verificar' }).catch(() => {})
+    }
+    return () => {
+      window.removeEventListener('beforeinstallprompt', onBIP)
+      window.removeEventListener('appinstalled', onInstalled)
+      creados.forEach(l => l.remove())
+      if (themeCreado) theme?.remove()
+      else if (theme && themePrev !== null) theme.setAttribute('content', themePrev)
+    }
+  }, [])
 
   // Carga tarifas (Barranquilla primero) para calcular el cobro
   useEffect(() => {
@@ -206,10 +256,35 @@ export default function VerificarPage() {
                 </div>
               </form>
             )}
+
+            {/* Instalar como app (PWA) */}
+            {!escaneando && puedeInstalar && (
+              <button onClick={instalar} className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-green-300 border border-green-400/40 bg-green-400/10 hover:bg-green-400/20 px-5 py-2.5 rounded-full transition">
+                <Download size={16} /> Instalar app en este celular
+              </button>
+            )}
           </>
         )}
       </main>
       <p className="text-center text-white/40 text-xs pb-6">COOTRANSA Ltda. · Verificación oficial de carnets</p>
+
+      {/* Ayuda para instalar en iPhone (iOS no permite instalación automática) */}
+      {iosHelp && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60" onClick={() => setIosHelp(false)}>
+          <div className="bg-white rounded-2xl w-full max-w-sm p-6 text-gray-800" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-bold text-lg">Instalar en iPhone</h3>
+              <button onClick={() => setIosHelp(false)} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"><X size={18} /></button>
+            </div>
+            <ol className="space-y-3 text-sm text-gray-600">
+              <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span> Toca el botón <strong>Compartir</strong> <Share size={15} className="inline text-blue-500" /> en la barra de Safari.</li>
+              <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span> Elige <strong>“Agregar a inicio”</strong> <Plus size={15} className="inline" />.</li>
+              <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span> Confirma con <strong>“Agregar”</strong>. ¡Listo!</li>
+            </ol>
+            <button onClick={() => setIosHelp(false)} className="mt-5 w-full py-3 rounded-full bg-green-600 text-white font-semibold text-sm">Entendido</button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
