@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle, Navigation } from 'lucide-react'
+import { MapPin, Mail, Instagram, Facebook, Send, CheckCircle, Navigation, Clock } from 'lucide-react'
 import WhatsappIcon from './WhatsappIcon'
 import HabeasData from './HabeasData'
 import { supabase, getConfig, generarRadicado } from '../lib/supabase'
@@ -113,14 +113,41 @@ export default function Contact() {
               className="inline-flex items-center gap-2 px-5 py-3 rounded-full bg-green-600 hover:bg-green-500 text-white text-sm font-semibold transition-all duration-200 shadow-lg shadow-green-500/25 hover:scale-105 shrink-0 self-start"
             ><Navigation size={17}/> Cómo llegar</a>
           </div>
-          <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-md">
-            <iframe
-              title="Ubicación de COOTRANSA en el mapa"
-              src="https://maps.google.com/maps?q=10.6395571,-74.9228073&z=16&hl=es&output=embed"
-              width="100%" height="420" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
-              style={{ border: 0, display: 'block', filter: 'saturate(1.05)' }}
-              allowFullScreen
-            />
+          <div className="grid lg:grid-cols-3 gap-5">
+            <div className="lg:col-span-2 rounded-2xl overflow-hidden border border-gray-200 shadow-md">
+              <iframe
+                title="Ubicación de COOTRANSA en el mapa"
+                src="https://maps.google.com/maps?q=10.6395571,-74.9228073&z=16&hl=es&output=embed"
+                width="100%" height="420" loading="lazy" referrerPolicy="no-referrer-when-downgrade"
+                style={{ border: 0, display: 'block', filter: 'saturate(1.05)' }}
+                allowFullScreen
+              />
+            </div>
+
+            {/* Horario de atención */}
+            <div className="rounded-2xl border border-gray-200 shadow-md bg-white p-6 flex flex-col">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-11 h-11 rounded-xl bg-green-50 border border-green-200 flex items-center justify-center flex-shrink-0"><Clock size={20} className="text-green-600"/></div>
+                <div className="text-gray-900 font-bold text-lg">Horario de atención</div>
+              </div>
+              <ul className="space-y-3 text-sm">
+                <li className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span className="text-gray-600 font-medium">Lunes a Viernes</span>
+                  <span className="text-gray-900 font-semibold text-right">7:00 a.m. – 12:00 m.<br/>2:00 p.m. – 6:00 p.m.</span>
+                </li>
+                <li className="flex items-center justify-between border-b border-gray-100 pb-3">
+                  <span className="text-gray-600 font-medium">Sábados</span>
+                  <span className="text-gray-900 font-semibold">8:00 a.m. – 12:00 m.</span>
+                </li>
+                <li className="flex items-center justify-between">
+                  <span className="text-gray-600 font-medium">Domingos y festivos</span>
+                  <span className="text-red-500 font-semibold">Cerrado</span>
+                </li>
+              </ul>
+              <div className="mt-auto pt-5">
+                <a href={waHref} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 font-medium text-sm"><WhatsappIcon size={16}/> Escríbenos por WhatsApp</a>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
