@@ -44,10 +44,10 @@ export default function VerificarPage() {
   // ── PWA: instalar el verificador como app ──
   const [deferred, setDeferred] = useState<any>(null)
   const [instalado, setInstalado] = useState(false)
-  const [iosHelp, setIosHelp] = useState(false)
+  const [ayuda, setAyuda] = useState<'' | 'ios' | 'android'>('')
   const isIOS = typeof navigator !== 'undefined' && /iphone|ipad|ipod/i.test(navigator.userAgent)
   const standalone = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (navigator as any).standalone === true)
-  const puedeInstalar = !standalone && !instalado && (!!deferred || isIOS)
+  const puedeInstalar = !standalone && !instalado
 
   const instalar = async () => {
     if (deferred) {
@@ -56,7 +56,7 @@ export default function VerificarPage() {
       setDeferred(null)
       return
     }
-    if (isIOS) setIosHelp(true)
+    setAyuda(isIOS ? 'ios' : 'android')   // sin prompt automático → mostramos la guía manual
   }
 
   useEffect(() => { document.title = 'Verificar carnet – COOTRANSA' }, [])
@@ -268,20 +268,29 @@ export default function VerificarPage() {
       </main>
       <p className="text-center text-white/40 text-xs pb-6">COOTRANSA Ltda. · Verificación oficial de carnets</p>
 
-      {/* Ayuda para instalar en iPhone (iOS no permite instalación automática) */}
-      {iosHelp && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60" onClick={() => setIosHelp(false)}>
+      {/* Guía manual para instalar (cuando el navegador no ofrece el aviso automático) */}
+      {ayuda && (
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-4 bg-black/60" onClick={() => setAyuda('')}>
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 text-gray-800" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-3">
-              <h3 className="font-bold text-lg">Instalar en iPhone</h3>
-              <button onClick={() => setIosHelp(false)} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"><X size={18} /></button>
+              <h3 className="font-bold text-lg">{ayuda === 'ios' ? 'Instalar en iPhone' : 'Instalar en Android'}</h3>
+              <button onClick={() => setAyuda('')} className="p-1.5 rounded-lg text-gray-400 hover:bg-gray-100"><X size={18} /></button>
             </div>
-            <ol className="space-y-3 text-sm text-gray-600">
-              <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span> Toca el botón <strong>Compartir</strong> <Share size={15} className="inline text-blue-500" /> en la barra de Safari.</li>
-              <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span> Elige <strong>“Agregar a inicio”</strong> <Plus size={15} className="inline" />.</li>
-              <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span> Confirma con <strong>“Agregar”</strong>. ¡Listo!</li>
-            </ol>
-            <button onClick={() => setIosHelp(false)} className="mt-5 w-full py-3 rounded-full bg-green-600 text-white font-semibold text-sm">Entendido</button>
+            {ayuda === 'ios' ? (
+              <ol className="space-y-3 text-sm text-gray-600">
+                <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span> Toca el botón <strong>Compartir</strong> <Share size={15} className="inline text-blue-500" /> en la barra de Safari.</li>
+                <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span> Elige <strong>“Agregar a inicio”</strong> <Plus size={15} className="inline" />.</li>
+                <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span> Confirma con <strong>“Agregar”</strong>. ¡Listo!</li>
+              </ol>
+            ) : (
+              <ol className="space-y-3 text-sm text-gray-600">
+                <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">1</span> Abre el menú <strong>⋮</strong> (arriba a la derecha de Chrome).</li>
+                <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">2</span> Toca <strong>“Instalar app”</strong> o <strong>“Agregar a pantalla principal”</strong> <Plus size={15} className="inline" />.</li>
+                <li className="flex items-center gap-3"><span className="w-6 h-6 rounded-full bg-green-600 text-white text-xs font-bold flex items-center justify-center shrink-0">3</span> Confirma con <strong>“Instalar”</strong>. ¡Listo!</li>
+              </ol>
+            )}
+            <p className="mt-4 text-[12px] text-gray-400">Debe abrirse desde <strong>Chrome</strong> o <strong>Safari</strong>, no dentro de Instagram o Facebook.</p>
+            <button onClick={() => setAyuda('')} className="mt-4 w-full py-3 rounded-full bg-green-600 text-white font-semibold text-sm">Entendido</button>
           </div>
         </div>
       )}
