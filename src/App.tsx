@@ -14,6 +14,7 @@ import Footer from './components/Footer'
 import BusSplash from './components/BusSplash'
 import NewsBanner from './components/NewsBanner'
 import CarnetCTA from './components/CarnetCTA'
+import ProveedoresCTA from './components/ProveedoresCTA'
 import WhatsAppButton from './components/WhatsAppButton'
 import CarmenModal from './components/CarmenModal'
 import CarmenFloating from './components/CarmenFloating'
@@ -32,6 +33,7 @@ function MainSite() {
         <CarnetCTA />
         <section id="rutas"><MapSection /></section>
         <section id="nosotros"><Fleet /><Impact /></section>
+        <section id="proveedores"><ProveedoresCTA /></section>
         <section id="politicas"><Policies /></section>
         <section id="contacto"><Contact /></section>
       </main>
