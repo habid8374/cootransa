@@ -133,20 +133,17 @@ export default function Contact() {
               <ul className="space-y-3 text-sm">
                 <li className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-gray-600 font-medium">Lunes a Viernes</span>
-                  <span className="text-gray-900 font-semibold text-right">7:00 a.m. – 12:00 m.<br/>2:00 p.m. – 6:00 p.m.</span>
+                  <span className="text-gray-900 font-semibold text-right">8:00 a.m. – 12:00 m.<br/>2:00 p.m. – 4:30 p.m.</span>
                 </li>
                 <li className="flex items-center justify-between border-b border-gray-100 pb-3">
                   <span className="text-gray-600 font-medium">Sábados</span>
-                  <span className="text-gray-900 font-semibold">8:00 a.m. – 12:00 m.</span>
+                  <span className="text-gray-900 font-semibold">8:00 a.m. – 12:30 p.m.</span>
                 </li>
                 <li className="flex items-center justify-between">
                   <span className="text-gray-600 font-medium">Domingos y festivos</span>
                   <span className="text-red-500 font-semibold">Cerrado</span>
                 </li>
               </ul>
-              <div className="mt-auto pt-5">
-                <a href={waHref} target="_blank" rel="noopener noreferrer" className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl bg-green-50 border border-green-200 text-green-700 hover:bg-green-100 transition-all duration-200 font-medium text-sm"><WhatsappIcon size={16}/> Escríbenos por WhatsApp</a>
-              </div>
             </div>
           </div>
         </motion.div>
