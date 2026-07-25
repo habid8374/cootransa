@@ -53,8 +53,8 @@ export default function TarifaPreferencialPage() {
   const subirDoc = async (file: File) => {
     const ext = file.name.split('.').pop()
     const path = `documentos/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`
-    const { error } = await supabase.storage.from(DOCS_BUCKET).upload(path, file, { upsert: true })
-    if (error) throw error
+    const { error } = await supabase.storage.from(DOCS_BUCKET).upload(path, file, { upsert: false })
+    if (error) throw new Error('No se pudo subir el documento. ' + error.message)
     return path
   }
 
