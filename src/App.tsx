@@ -15,8 +15,6 @@ import BusSplash from './components/BusSplash'
 import NewsBanner from './components/NewsBanner'
 import CarnetCTA from './components/CarnetCTA'
 import ProveedoresCTA from './components/ProveedoresCTA'
-import CorralejasModal from './components/CorralejasModal'
-import CorralejasFloating from './components/CorralejasFloating'
 import WhatsAppButton from './components/WhatsAppButton'
 import CarmenModal from './components/CarmenModal'
 import CarmenFloating from './components/CarmenFloating'
@@ -43,8 +41,6 @@ function MainSite() {
       <WhatsAppButton />
       <CarmenModal />
       <CarmenFloating />
-      <CorralejasModal />
-      <CorralejasFloating />
     </div>
   )
 }
