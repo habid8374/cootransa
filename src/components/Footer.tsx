@@ -67,7 +67,29 @@ export default function Footer() {
             </div>
           </div>
         </div>
-        <div className="mt-16 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
+        <div className="mt-14 pt-8 border-t border-white/5">
+          <p className="text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500 mb-5">Vigilados y regulados por</p>
+          <div className="flex flex-wrap items-center justify-center gap-4">
+            <a href="https://mintransporte.gov.co/" target="_blank" rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-5 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 hover:bg-white/[0.07] transition-all">
+              <span className="w-9 h-9 rounded-lg bg-white/90 flex items-center justify-center text-[#0d3b1e] font-black text-sm shrink-0">MT</span>
+              <span className="text-left">
+                <span className="block text-white text-sm font-semibold leading-tight">Ministerio de Transporte</span>
+                <span className="block text-zinc-500 text-[11px] group-hover:text-green-400 transition-colors">mintransporte.gov.co</span>
+              </span>
+            </a>
+            <a href="https://www.supertransporte.gov.co/" target="_blank" rel="noopener noreferrer"
+              className="group flex items-center gap-3 px-5 py-3 rounded-xl bg-white/5 border border-white/10 hover:border-white/25 hover:bg-white/[0.07] transition-all">
+              <span className="w-9 h-9 rounded-lg bg-white/90 flex items-center justify-center text-[#c0392b] font-black text-sm shrink-0">ST</span>
+              <span className="text-left">
+                <span className="block text-white text-sm font-semibold leading-tight">Superintendencia de Transporte</span>
+                <span className="block text-zinc-500 text-[11px] group-hover:text-green-400 transition-colors">supertransporte.gov.co</span>
+              </span>
+            </a>
+          </div>
+        </div>
+
+        <div className="mt-14 pt-8 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
           <p className="text-zinc-500 text-sm">© 2026 COOTRANSA Ltda® — Todos los derechos reservados.</p>
           <div className="flex items-center gap-4">
             <a
