@@ -4,6 +4,10 @@
   "framework": "vite",
   "rewrites": [
     { "source": "/noticias/:slug", "destination": "/api/og?slug=:slug" },
+    { "source": "/tarifa-preferencial", "destination": "/api/og?page=carnet" },
+    { "source": "/proveedores", "destination": "/api/og?page=proveedores" },
+    { "source": "/blog", "destination": "/api/og?page=blog" },
+    { "source": "/verificar", "destination": "/api/og?page=verificar" },
     { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
