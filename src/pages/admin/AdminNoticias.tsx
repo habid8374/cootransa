@@ -142,20 +142,21 @@ export default function AdminNoticias() {
                 </div>
                 <div className="col-span-2">
                   <span className="block text-xs font-semibold text-gray-600 mb-1.5">Fotos {imgs.length > 0 && <span className="text-gray-400 font-normal">({imgs.length})</span>}</span>
-                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
-                    {imgs.map((im, i) => (
-                      <div key={i} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-square bg-gray-50">
-                        <img src={im.preview} className="w-full h-full object-cover" alt={`foto ${i + 1}`} />
-                        {i === 0 && <span className="absolute bottom-1 left-1 text-[9px] font-semibold bg-black/60 text-white px-1.5 py-0.5 rounded">Portada</span>}
-                        <button type="button" onClick={() => removeImg(i)} className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow hover:bg-white"><X size={11}/></button>
-                      </div>
-                    ))}
-                    <div className="relative aspect-square border-2 border-dashed border-gray-200 rounded-lg text-gray-400 hover:border-green-400 hover:text-green-500 transition">
-                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 pointer-events-none">
-                        <Upload size={20}/><span className="text-[10px] font-medium">Agregar</span>
-                      </div>
-                      <input type="file" accept="image/*" multiple onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = '' }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="Agregar fotos" />
+                  {imgs.length > 0 && (
+                    <div className="grid grid-cols-3 sm:grid-cols-4 gap-2 mb-3">
+                      {imgs.map((im, i) => (
+                        <div key={i} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-square bg-gray-50">
+                          <img src={im.preview} className="w-full h-full object-cover" alt={`foto ${i + 1}`} />
+                          {i === 0 && <span className="absolute bottom-1 left-1 text-[9px] font-semibold bg-black/60 text-white px-1.5 py-0.5 rounded">Portada</span>}
+                          <button type="button" onClick={() => removeImg(i)} className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow hover:bg-white"><X size={11}/></button>
+                        </div>
+                      ))}
                     </div>
+                  )}
+                  <div className="rounded-lg border border-dashed border-gray-300 p-3">
+                    <div className="flex items-center gap-2 text-gray-500 mb-2"><Upload size={16}/><span className="text-xs">Selecciona una o varias fotos:</span></div>
+                    <input type="file" accept="image/*" multiple onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = '' }}
+                      className="block w-full text-sm text-gray-600 file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-600 file:text-white hover:file:bg-green-700 cursor-pointer" />
                   </div>
                   <p className="text-[11px] text-gray-400 mt-1.5">La <strong>primera foto</strong> es la portada. Puedes subir varias: se verán como carrusel deslizable en la publicación.</p>
                 </div>
