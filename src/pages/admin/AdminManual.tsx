@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import Brand from '../../components/Brand'
 import {
@@ -24,6 +24,23 @@ const secciones = [
 ]
 
 // — Bloques reutilizables —
+// Muestra la captura de pantalla /manual/<id>.png si existe; si no, no muestra nada.
+function Captura({ id, titulo }: { id: string; titulo: string }) {
+  const [ok, setOk] = useState(true)
+  if (!ok) return null
+  return (
+    <figure className="my-2">
+      <img
+        src={`/manual/${id}.png`}
+        onError={() => setOk(false)}
+        loading="lazy"
+        alt={`Captura de pantalla — ${titulo}`}
+        className="w-full rounded-xl border border-gray-200 shadow-sm"
+      />
+      <figcaption className="text-center text-[12px] text-gray-400 mt-2">Vista de la sección “{titulo}”</figcaption>
+    </figure>
+  )
+}
 function Seccion({ id, n, icon: Icon, titulo, children }: any) {
   return (
     <section id={id} className="scroll-mt-24 pt-10 first:pt-0">
@@ -32,6 +49,7 @@ function Seccion({ id, n, icon: Icon, titulo, children }: any) {
         <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2"><Icon size={20} className="text-green-600" /> {titulo}</h2>
       </div>
       <div className="space-y-4 text-[15px] text-gray-600 leading-relaxed">{children}</div>
+      <Captura id={id} titulo={titulo} />
     </section>
   )
 }
