@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase, type Noticia } from '../../lib/supabase'
 import { Plus, Pencil, Trash2, X, Upload, ExternalLink } from 'lucide-react'
 
@@ -16,7 +16,6 @@ export default function AdminNoticias() {
   const [saving, setSaving]   = useState(false)
   const [imgs, setImgs]       = useState<{ url?: string; file?: File; preview: string }[]>([])
   const [delId, setDelId]     = useState<string | null>(null)
-  const fileRef = useRef<HTMLInputElement>(null)
 
   const load = async () => {
     setLoading(true)
@@ -142,8 +141,7 @@ export default function AdminNoticias() {
                   </label>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Fotos {imgs.length > 0 && <span className="text-gray-400 font-normal">({imgs.length})</span>}</label>
-                  <input type="file" accept="image/*" multiple ref={fileRef} className="hidden" onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = '' }} />
+                  <span className="block text-xs font-semibold text-gray-600 mb-1.5">Fotos {imgs.length > 0 && <span className="text-gray-400 font-normal">({imgs.length})</span>}</span>
                   <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {imgs.map((im, i) => (
                       <div key={i} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-square bg-gray-50">
@@ -152,9 +150,10 @@ export default function AdminNoticias() {
                         <button type="button" onClick={() => removeImg(i)} className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow hover:bg-white"><X size={11}/></button>
                       </div>
                     ))}
-                    <button type="button" onClick={() => fileRef.current?.click()} className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-green-400 hover:text-green-500 transition">
+                    <label className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-green-400 hover:text-green-500 transition cursor-pointer">
                       <Upload size={20}/><span className="text-[10px] font-medium">Agregar</span>
-                    </button>
+                      <input type="file" accept="image/*" multiple className="hidden" onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = '' }} />
+                    </label>
                   </div>
                   <p className="text-[11px] text-gray-400 mt-1.5">La <strong>primera foto</strong> es la portada. Puedes subir varias: se verán como carrusel deslizable en la publicación.</p>
                 </div>
