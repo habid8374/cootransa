@@ -150,10 +150,12 @@ export default function AdminNoticias() {
                         <button type="button" onClick={() => removeImg(i)} className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow hover:bg-white"><X size={11}/></button>
                       </div>
                     ))}
-                    <label className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-green-400 hover:text-green-500 transition cursor-pointer">
-                      <Upload size={20}/><span className="text-[10px] font-medium">Agregar</span>
-                      <input type="file" accept="image/*" multiple className="hidden" onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = '' }} />
-                    </label>
+                    <div className="relative aspect-square border-2 border-dashed border-gray-200 rounded-lg text-gray-400 hover:border-green-400 hover:text-green-500 transition">
+                      <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 pointer-events-none">
+                        <Upload size={20}/><span className="text-[10px] font-medium">Agregar</span>
+                      </div>
+                      <input type="file" accept="image/*" multiple onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = '' }} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" aria-label="Agregar fotos" />
+                    </div>
                   </div>
                   <p className="text-[11px] text-gray-400 mt-1.5">La <strong>primera foto</strong> es la portada. Puedes subir varias: se verán como carrusel deslizable en la publicación.</p>
                 </div>
