@@ -16,6 +16,7 @@ export default function AdminNoticias() {
   const [saving, setSaving]   = useState(false)
   const [imgs, setImgs]       = useState<{ url?: string; file?: File; preview: string }[]>([])
   const [delId, setDelId]     = useState<string | null>(null)
+  const [err, setErr]         = useState('')
 
   const load = async () => {
     setLoading(true)
@@ -26,11 +27,11 @@ export default function AdminNoticias() {
 
   useEffect(() => { load() }, [])
 
-  const openNew = () => { setForm({ ...EMPTY }); setEditId(null); setImgs([]); setModal(true) }
+  const openNew = () => { setForm({ ...EMPTY }); setEditId(null); setImgs([]); setErr(''); setModal(true) }
   const openEdit = (n: Noticia) => {
     setForm({ slug: n.slug, eyebrow: n.eyebrow, title: n.title, summary: n.summary, image_url: n.image_url ?? '', note: n.note ?? '', estado: n.estado, seccion: n.seccion, en_banner: n.en_banner ?? false })
     const urls = (n.galeria && n.galeria.length > 0) ? n.galeria : (n.image_url ? [n.image_url] : [])
-    setEditId(n.id ?? null); setImgs(urls.map(url => ({ url, preview: url }))); setModal(true)
+    setEditId(n.id ?? null); setImgs(urls.map(url => ({ url, preview: url }))); setErr(''); setModal(true)
   }
 
   const handleFiles = (files: FileList) => setImgs(prev => [...prev, ...Array.from(files).map(f => ({ file: f, preview: URL.createObjectURL(f) }))])
@@ -40,24 +41,34 @@ export default function AdminNoticias() {
     title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
   const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault(); setSaving(true)
+    e.preventDefault(); setSaving(true); setErr('')
     // Sube las fotos nuevas y arma la galería (conservando las existentes)
     const galeria: string[] = []
+    let subidaErr = ''
     for (const im of imgs) {
       if (im.file) {
         const ext = im.file.name.split('.').pop()
         const path = `noticias/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`
         const { error: upErr } = await supabase.storage.from('cootransa-media').upload(path, im.file, { upsert: true })
-        if (!upErr) galeria.push(supabase.storage.from('cootransa-media').getPublicUrl(path).data.publicUrl)
+        if (upErr) subidaErr = upErr.message
+        else galeria.push(supabase.storage.from('cootransa-media').getPublicUrl(path).data.publicUrl)
       } else if (im.url) {
         galeria.push(im.url)
       }
     }
+    if (subidaErr) { setSaving(false); setErr('No se pudieron subir las fotos. ' + subidaErr); return }
+
     const image_url = galeria[0] ?? ''
-    const payload = { ...form, image_url, galeria, slug: form.slug || autoSlug(form.title), updated_at: new Date().toISOString() }
-    if (editId) { await supabase.from('noticias').update(payload).eq('id', editId) }
-    else { await supabase.from('noticias').insert(payload) }
-    setSaving(false); setModal(false); load()
+    const base = { ...form, image_url, slug: form.slug || autoSlug(form.title), updated_at: new Date().toISOString() }
+    const guardar = (p: any) => editId ? supabase.from('noticias').update(p).eq('id', editId) : supabase.from('noticias').insert(p)
+
+    let res = await guardar({ ...base, galeria })
+    // Si la columna galeria aún no existe en la base de datos, guarda sin ella
+    if (res.error && /galeria|column/i.test(res.error.message)) res = await guardar(base)
+
+    setSaving(false)
+    if (res.error) { setErr('No se pudo guardar la noticia. ' + res.error.message); return }
+    setModal(false); load()
   }
 
   const handleDelete = async () => {
@@ -161,6 +172,7 @@ export default function AdminNoticias() {
                   <p className="text-[11px] text-gray-400 mt-1.5">La <strong>primera foto</strong> es la portada. Puedes subir varias: se verán como carrusel deslizable en la publicación.</p>
                 </div>
               </div>
+              {err && <p className="text-sm text-red-600 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{err}</p>}
               <div className="flex gap-3 pt-2">
                 <button type="button" onClick={() => setModal(false)} className="flex-1 py-2.5 rounded-lg border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">Cancelar</button>
                 <button type="submit" disabled={saving} className="flex-1 py-2.5 rounded-lg text-sm font-semibold text-white transition disabled:opacity-60" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}>{saving ? 'Guardando...' : editId ? 'Guardar cambios' : 'Publicar noticia'}</button>
