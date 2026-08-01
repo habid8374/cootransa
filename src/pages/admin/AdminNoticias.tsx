@@ -34,7 +34,13 @@ export default function AdminNoticias() {
     setEditId(n.id ?? null); setImgs(urls.map(url => ({ url, preview: url }))); setErr(''); setModal(true)
   }
 
-  const handleFiles = (files: FileList) => setImgs(prev => [...prev, ...Array.from(files).map(f => ({ file: f, preview: URL.createObjectURL(f) }))])
+  const handleFiles = (files: FileList) => {
+    Array.from(files).forEach(file => {
+      const reader = new FileReader()
+      reader.onload = () => setImgs(prev => [...prev, { file, preview: String(reader.result) }])
+      reader.readAsDataURL(file)
+    })
+  }
   const removeImg = (i: number) => setImgs(prev => prev.filter((_, idx) => idx !== i))
 
   const autoSlug = (title: string) =>
