@@ -4,7 +4,7 @@ import { Plus, Pencil, Trash2, X, Upload, ExternalLink } from 'lucide-react'
 
 const SECCIONES = ['Noticias', 'Seguridad Vial', 'SST', 'Eventos', 'Capacitación', 'Convocatoria', 'RRHH', 'Tarifas', 'Horarios', 'General']
 const EMPTY: Omit<Noticia, 'id' | 'created_at' | 'updated_at'> = {
-  slug: '', eyebrow: '', title: '', summary: '', image_url: '', note: '', estado: 'publicado', seccion: 'General'
+  slug: '', eyebrow: '', title: '', summary: '', image_url: '', note: '', estado: 'publicado', seccion: 'General', en_banner: false
 }
 
 export default function AdminNoticias() {
@@ -30,7 +30,7 @@ export default function AdminNoticias() {
 
   const openNew = () => { setForm({ ...EMPTY }); setEditId(null); setImgFile(null); setImgPreview(''); setModal(true) }
   const openEdit = (n: Noticia) => {
-    setForm({ slug: n.slug, eyebrow: n.eyebrow, title: n.title, summary: n.summary, image_url: n.image_url ?? '', note: n.note ?? '', estado: n.estado, seccion: n.seccion })
+    setForm({ slug: n.slug, eyebrow: n.eyebrow, title: n.title, summary: n.summary, image_url: n.image_url ?? '', note: n.note ?? '', estado: n.estado, seccion: n.seccion, en_banner: n.en_banner ?? false })
     setEditId(n.id ?? null); setImgFile(null); setImgPreview(n.image_url ?? ''); setModal(true)
   }
 
@@ -125,6 +125,15 @@ export default function AdminNoticias() {
                 <div><label className="block text-xs font-semibold text-gray-600 mb-1.5">Estado</label><select value={form.estado} onChange={e => setForm(p => ({ ...p, estado: e.target.value as any }))} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition bg-white"><option value="publicado">Publicado</option><option value="borrador">Borrador</option></select></div>
                 <div className="col-span-2"><label className="block text-xs font-semibold text-gray-600 mb-1.5">Resumen</label><textarea value={form.summary} onChange={e => setForm(p => ({ ...p, summary: e.target.value }))} rows={3} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition resize-none"/></div>
                 <div className="col-span-2"><label className="block text-xs font-semibold text-gray-600 mb-1.5">Nota al pie</label><textarea value={form.note} onChange={e => setForm(p => ({ ...p, note: e.target.value }))} rows={2} className="w-full border border-gray-200 rounded-lg px-3 py-2.5 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 transition resize-none"/></div>
+                <div className="col-span-2">
+                  <label className="flex items-start gap-2.5 cursor-pointer select-none rounded-lg border border-gray-200 px-3 py-2.5 hover:bg-gray-50 transition">
+                    <input type="checkbox" checked={!!form.en_banner} onChange={e => setForm(p => ({ ...p, en_banner: e.target.checked }))} className="mt-0.5 h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500 accent-green-600" />
+                    <span className="text-sm text-gray-700 leading-snug">
+                      <span className="font-semibold">Mostrar en el banner de inicio</span>
+                      <span className="block text-[12px] text-gray-400">Si lo activas, aparece en el carrusel de la página principal. Todas las publicaciones salen en el <strong>Blog</strong> aunque no marques esto.</span>
+                    </span>
+                  </label>
+                </div>
                 <div className="col-span-2">
                   <label className="block text-xs font-semibold text-gray-600 mb-1.5">Imagen</label>
                   <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />

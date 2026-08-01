@@ -111,7 +111,7 @@ export default function NewsBanner() {
   useEffect(() => {
     async function load() {
       const [{ data: noticias }, { data: tarifas }, { data: horarios }] = await Promise.all([
-        supabase.from('noticias').select('*').eq('estado', 'publicado').order('created_at', { ascending: false }).limit(20),
+        supabase.from('noticias').select('*').eq('estado', 'publicado').eq('en_banner', true).order('created_at', { ascending: false }).limit(20),
         supabase.from('tarifas').select('*').eq('activa', true).limit(50),
         supabase.from('horarios').select('*').limit(50),
       ])

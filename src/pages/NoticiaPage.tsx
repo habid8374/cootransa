@@ -6,6 +6,7 @@ import { supabase } from '../lib/supabase'
 import { noticiaPages } from '../content/noticias'
 import Brand from '../components/Brand'
 import Footer from '../components/Footer'
+import BlogComentarios from '../components/BlogComentarios'
 import NotFound from './NotFound'
 
 interface PageData {
@@ -88,6 +89,7 @@ export default function NoticiaPage() {
           {page.note && <div className="mt-8 p-5 rounded-xl bg-gray-50 border border-gray-200"><p className="text-gray-500 text-sm leading-relaxed">{page.note}</p></div>}
         </motion.div>
       </main>
+      {page.slug && <BlogComentarios slug={page.slug} />}
       <Footer />
     </div>
   )

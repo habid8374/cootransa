@@ -18,6 +18,7 @@ export interface Noticia {
   note?: string
   estado: EstadoNoticia
   seccion: string
+  en_banner?: boolean       // si aparece en el banner rotativo del inicio (el Blog muestra todas)
   created_at?: string
   updated_at?: string
 }
@@ -137,6 +138,17 @@ export function generarRadicado(): string {
   crypto.getRandomValues(arr)
   for (let i = 0; i < 4; i++) s += alfabeto[arr[i] % alfabeto.length]
   return `PQR-${fecha}-${s}`
+}
+
+// ── Comentarios del Blog (moderados por el admin) ────────────────────────
+export interface Comentario {
+  id?: string
+  noticia_slug: string
+  nombre: string
+  email?: string
+  comentario: string
+  aprobado?: boolean
+  created_at?: string
 }
 
 // ── Config key/value helpers (tabla `config`, lectura pública) ───────────
