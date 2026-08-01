@@ -13,7 +13,8 @@ export interface Noticia {
   eyebrow: string
   title: string
   summary: string
-  image_url?: string
+  image_url?: string           // imagen de portada (primera de la galería)
+  galeria?: string[]           // varias fotos para el carrusel del blog
   schedule?: ScheduleRow[]
   note?: string
   estado: EstadoNoticia

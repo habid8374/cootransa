@@ -7,11 +7,12 @@ import { noticiaPages } from '../content/noticias'
 import Brand from '../components/Brand'
 import Footer from '../components/Footer'
 import BlogComentarios from '../components/BlogComentarios'
+import Galeria from '../components/Galeria'
 import NotFound from './NotFound'
 
 interface PageData {
   slug: string; eyebrow: string; title: string; summary: string
-  image_url?: string; image?: string
+  image_url?: string; image?: string; galeria?: string[]
   schedule?: { estacion: string; primera: string; ultima: string; frecuencia: string }[]
   note?: string
 }
@@ -63,7 +64,10 @@ export default function NoticiaPage() {
       </section>
       <main className="flex-1">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }} className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
-          {imageUrl && <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-xl bg-white"><img src={imageUrl} alt={page.title} className="w-full h-auto object-contain" onError={e => { (e.currentTarget as HTMLImageElement).style.display='none' }}/></div>}
+          {(() => {
+            const imgs = (page.galeria && page.galeria.length > 0) ? page.galeria : (imageUrl ? [imageUrl] : [])
+            return imgs.length > 0 ? <Galeria imagenes={imgs} alt={page.title} /> : null
+          })()}
           {page.schedule && (
             <div className="rounded-2xl overflow-hidden border border-gray-200 shadow-lg bg-white">
               <div className="overflow-x-auto">

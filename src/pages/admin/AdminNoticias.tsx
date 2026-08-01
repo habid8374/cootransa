@@ -14,8 +14,7 @@ export default function AdminNoticias() {
   const [form, setForm]       = useState({ ...EMPTY })
   const [editId, setEditId]   = useState<string | null>(null)
   const [saving, setSaving]   = useState(false)
-  const [imgFile, setImgFile] = useState<File | null>(null)
-  const [imgPreview, setImgPreview] = useState('')
+  const [imgs, setImgs]       = useState<{ url?: string; file?: File; preview: string }[]>([])
   const [delId, setDelId]     = useState<string | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
 
@@ -28,27 +27,35 @@ export default function AdminNoticias() {
 
   useEffect(() => { load() }, [])
 
-  const openNew = () => { setForm({ ...EMPTY }); setEditId(null); setImgFile(null); setImgPreview(''); setModal(true) }
+  const openNew = () => { setForm({ ...EMPTY }); setEditId(null); setImgs([]); setModal(true) }
   const openEdit = (n: Noticia) => {
     setForm({ slug: n.slug, eyebrow: n.eyebrow, title: n.title, summary: n.summary, image_url: n.image_url ?? '', note: n.note ?? '', estado: n.estado, seccion: n.seccion, en_banner: n.en_banner ?? false })
-    setEditId(n.id ?? null); setImgFile(null); setImgPreview(n.image_url ?? ''); setModal(true)
+    const urls = (n.galeria && n.galeria.length > 0) ? n.galeria : (n.image_url ? [n.image_url] : [])
+    setEditId(n.id ?? null); setImgs(urls.map(url => ({ url, preview: url }))); setModal(true)
   }
 
-  const handleFile = (f: File) => { setImgFile(f); setImgPreview(URL.createObjectURL(f)) }
+  const handleFiles = (files: FileList) => setImgs(prev => [...prev, ...Array.from(files).map(f => ({ file: f, preview: URL.createObjectURL(f) }))])
+  const removeImg = (i: number) => setImgs(prev => prev.filter((_, idx) => idx !== i))
 
   const autoSlug = (title: string) =>
     title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault(); setSaving(true)
-    let image_url = form.image_url
-    if (imgFile) {
-      const ext = imgFile.name.split('.').pop()
-      const path = `noticias/${Date.now()}.${ext}`
-      const { error: upErr } = await supabase.storage.from('cootransa-media').upload(path, imgFile, { upsert: true })
-      if (!upErr) { const { data } = supabase.storage.from('cootransa-media').getPublicUrl(path); image_url = data.publicUrl }
+    // Sube las fotos nuevas y arma la galería (conservando las existentes)
+    const galeria: string[] = []
+    for (const im of imgs) {
+      if (im.file) {
+        const ext = im.file.name.split('.').pop()
+        const path = `noticias/${Date.now()}-${Math.random().toString(36).slice(2, 7)}.${ext}`
+        const { error: upErr } = await supabase.storage.from('cootransa-media').upload(path, im.file, { upsert: true })
+        if (!upErr) galeria.push(supabase.storage.from('cootransa-media').getPublicUrl(path).data.publicUrl)
+      } else if (im.url) {
+        galeria.push(im.url)
+      }
     }
-    const payload = { ...form, image_url, slug: form.slug || autoSlug(form.title), updated_at: new Date().toISOString() }
+    const image_url = galeria[0] ?? ''
+    const payload = { ...form, image_url, galeria, slug: form.slug || autoSlug(form.title), updated_at: new Date().toISOString() }
     if (editId) { await supabase.from('noticias').update(payload).eq('id', editId) }
     else { await supabase.from('noticias').insert(payload) }
     setSaving(false); setModal(false); load()
@@ -135,18 +142,21 @@ export default function AdminNoticias() {
                   </label>
                 </div>
                 <div className="col-span-2">
-                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Imagen</label>
-                  <input type="file" accept="image/*" ref={fileRef} className="hidden" onChange={e => e.target.files?.[0] && handleFile(e.target.files[0])} />
-                  {imgPreview ? (
-                    <div className="relative rounded-xl overflow-hidden border border-gray-200">
-                      <img src={imgPreview} className="w-full h-40 object-cover" alt="preview" />
-                      <button type="button" onClick={() => { setImgFile(null); setImgPreview(''); setForm(p => ({ ...p, image_url: '' })) }} className="absolute top-2 right-2 p-1 bg-white/90 rounded-full shadow"><X size={12}/></button>
-                    </div>
-                  ) : (
-                    <button type="button" onClick={() => fileRef.current?.click()} className="w-full border-2 border-dashed border-gray-200 rounded-xl py-8 flex flex-col items-center gap-2 text-gray-400 hover:border-green-400 hover:text-green-500 transition">
-                      <Upload size={22}/><span className="text-xs font-medium">Haz clic para subir imagen</span><span className="text-[11px]">JPG, PNG — máx. 5 MB</span>
+                  <label className="block text-xs font-semibold text-gray-600 mb-1.5">Fotos {imgs.length > 0 && <span className="text-gray-400 font-normal">({imgs.length})</span>}</label>
+                  <input type="file" accept="image/*" multiple ref={fileRef} className="hidden" onChange={e => { if (e.target.files) handleFiles(e.target.files); e.target.value = '' }} />
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                    {imgs.map((im, i) => (
+                      <div key={i} className="relative rounded-lg overflow-hidden border border-gray-200 aspect-square bg-gray-50">
+                        <img src={im.preview} className="w-full h-full object-cover" alt={`foto ${i + 1}`} />
+                        {i === 0 && <span className="absolute bottom-1 left-1 text-[9px] font-semibold bg-black/60 text-white px-1.5 py-0.5 rounded">Portada</span>}
+                        <button type="button" onClick={() => removeImg(i)} className="absolute top-1 right-1 p-1 bg-white/90 rounded-full shadow hover:bg-white"><X size={11}/></button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={() => fileRef.current?.click()} className="aspect-square border-2 border-dashed border-gray-200 rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-green-400 hover:text-green-500 transition">
+                      <Upload size={20}/><span className="text-[10px] font-medium">Agregar</span>
                     </button>
-                  )}
+                  </div>
+                  <p className="text-[11px] text-gray-400 mt-1.5">La <strong>primera foto</strong> es la portada. Puedes subir varias: se verán como carrusel deslizable en la publicación.</p>
                 </div>
               </div>
               <div className="flex gap-3 pt-2">
