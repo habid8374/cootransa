@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { supabase } from '../../lib/supabase'
 import Brand from '../../components/Brand'
-import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink, CreditCard, QrCode, Building2, MessageCircle } from 'lucide-react'
+import { LayoutDashboard, Newspaper, DollarSign, Clock, Mail, Users, Settings, LogOut, Menu, X, Fingerprint, ExternalLink, CreditCard, QrCode, Building2, MessageCircle, BookOpen } from 'lucide-react'
 
 const ASISTENCIA_URL = 'https://cootransa-asistencia.vercel.app'
 
@@ -20,6 +20,7 @@ const navItems = [
 const configItems = [
   { to: '/admin/usuarios', label: 'Usuarios', icon: Users },
   { to: '/admin/ajustes',  label: 'Ajustes',  icon: Settings },
+  { to: '/admin/manual',   label: 'Manual de usuario', icon: BookOpen },
 ]
 
 interface ToastData { titulo: string; nombre: string; mensaje: string; to: string }

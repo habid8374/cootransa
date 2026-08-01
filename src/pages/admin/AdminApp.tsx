@@ -13,6 +13,7 @@ import AdminProveedores from './AdminProveedores'
 import AdminComentarios from './AdminComentarios'
 import AdminUsuarios from './AdminUsuarios'
 import AdminAjustes from './AdminAjustes'
+import AdminManual from './AdminManual'
 import type { Session } from '@supabase/supabase-js'
 
 export default function AdminApp() {
@@ -36,6 +37,7 @@ export default function AdminApp() {
 
   return (
     <Routes>
+      <Route path="manual" element={<AdminManual />} />
       <Route element={<AdminLayout userEmail={session.user.email ?? ''} />}>
         <Route index element={<AdminDashboard />} />
         <Route path="noticias" element={<AdminNoticias />} />
