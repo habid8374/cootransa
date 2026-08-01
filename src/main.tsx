@@ -12,6 +12,7 @@ import TarifaPreferencialPage from './pages/TarifaPreferencialPage'
 import CarnetPage from './pages/CarnetPage'
 import VerificarPage from './pages/VerificarPage'
 import ProveedoresPage from './pages/ProveedoresPage'
+import BlogPage from './pages/BlogPage'
 import AdminApp from './pages/admin/AdminApp'
 import './index.css'
 
@@ -31,6 +32,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <Route path="/verificar" element={<VerificarPage />} />
         <Route path="/verificar/:codigo" element={<VerificarPage />} />
         <Route path="/proveedores" element={<ProveedoresPage />} />
+        <Route path="/blog" element={<BlogPage />} />
         <Route path="/admin/*" element={<AdminApp />} />
       </Routes>
     </BrowserRouter>

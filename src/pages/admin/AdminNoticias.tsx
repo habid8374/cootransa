@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react'
 import { supabase, type Noticia } from '../../lib/supabase'
 import { Plus, Pencil, Trash2, X, Upload, ExternalLink } from 'lucide-react'
 
-const SECCIONES = ['Tarifas', 'Noticias', 'Horarios', 'Convocatoria', 'RRHH', 'General']
+const SECCIONES = ['Noticias', 'Seguridad Vial', 'SST', 'Eventos', 'Capacitación', 'Convocatoria', 'RRHH', 'Tarifas', 'Horarios', 'General']
 const EMPTY: Omit<Noticia, 'id' | 'created_at' | 'updated_at'> = {
   slug: '', eyebrow: '', title: '', summary: '', image_url: '', note: '', estado: 'publicado', seccion: 'General'
 }
@@ -65,7 +65,7 @@ export default function AdminNoticias() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-xl font-bold text-gray-900">Noticias</h1>
-          <p className="text-sm text-gray-500 mt-0.5">Gestiona las publicaciones del sitio</p>
+          <p className="text-sm text-gray-500 mt-0.5">Gestiona las publicaciones del sitio y del Blog (usa la sección como categoría)</p>
         </div>
         <button onClick={openNew} className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white transition hover:opacity-90" style={{ background: 'linear-gradient(135deg,#16a34a,#22c55e)' }}>
           <Plus size={15} /> Nueva noticia

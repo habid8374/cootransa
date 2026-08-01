@@ -168,6 +168,10 @@ export default function Navbar() {
                 </div>
               </div>
             </div>
+            <a href="/blog" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
+              Blog
+              <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
+            </a>
             <a href="/proveedores" className={`${link} text-sm font-medium transition-colors duration-200 relative group`}>
               Proveedores
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-green-500 group-hover:w-full transition-all duration-300" />
@@ -253,6 +257,7 @@ export default function Navbar() {
                   </motion.div>
                 )}
               </AnimatePresence>
+              <a href="/blog" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Blog</a>
               <a href="/proveedores" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Proveedores</a>
               <a href="/#contacto" onClick={() => setMobileOpen(false)} className="text-gray-700 hover:text-green-600 font-medium py-3 transition-colors">Contacto</a>
               <a href="/#contacto" onClick={() => setMobileOpen(false)} className="mt-3 px-5 py-3 rounded-full bg-gradient-to-r from-green-600 to-green-500 text-white font-semibold text-center">Solicitar Servicio</a>
