@@ -69,15 +69,14 @@ export default function Footer() {
         </div>
         <div className="mt-14 pt-8 border-t border-white/5">
           <p className="text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-zinc-500 mb-5">Vigilados y regulados por</p>
-          <div className="mx-auto w-fit max-w-full bg-white rounded-2xl shadow-xl px-8 sm:px-14 py-6 flex flex-wrap items-center justify-center gap-x-12 sm:gap-x-16 gap-y-6">
+          <div className="flex flex-wrap items-center justify-center gap-x-12 sm:gap-x-20 gap-y-6">
             <a href="https://mintransporte.gov.co/" target="_blank" rel="noopener noreferrer" title="Ministerio de Transporte"
-              className="flex items-center transition-transform hover:scale-105">
-              <img src="/logo-mintransporte.webp" alt="Ministerio de Transporte de Colombia" className="h-16 sm:h-20 w-auto object-contain" loading="lazy" />
+              className="transition-transform hover:scale-105">
+              <img src="/logo-mintransporte.webp" alt="Ministerio de Transporte de Colombia" className="h-20 sm:h-28 w-auto object-contain" loading="lazy" />
             </a>
-            <span className="hidden sm:block w-px h-14 bg-gray-200" />
             <a href="https://www.supertransporte.gov.co/" target="_blank" rel="noopener noreferrer" title="Superintendencia de Transporte"
-              className="flex items-center transition-transform hover:scale-105">
-              <img src="/logo-supertransporte.webp" alt="Superintendencia de Transporte" className="h-16 sm:h-20 w-auto object-contain" loading="lazy" />
+              className="transition-transform hover:scale-105">
+              <img src="/logo-supertransporte.webp" alt="Superintendencia de Transporte" className="h-20 sm:h-28 w-auto object-contain" loading="lazy" />
             </a>
           </div>
         </div>
