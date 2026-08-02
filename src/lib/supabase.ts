@@ -118,7 +118,9 @@ export interface ProveedorPostulacion {
   contacto: string               // nombre de la persona de contacto
   cargo?: string
   telefono: string
+  celular?: string
   correo: string
+  direccion?: string
   ciudad?: string
   categoria: string              // tipo de proveeduría: insumos, servicios, materiales, etc.
   descripcion: string            // descripción de la propuesta / servicio

@@ -157,10 +157,14 @@ function DetalleModal({ p, onClose, onChange }: { p: ProveedorPostulacion; onClo
             <Field label="Cargo" value={p.cargo || '—'} />
           </div>
           <div className="grid grid-cols-2 gap-3">
-            <Field label="Teléfono" value={p.telefono} />
-            <Field label="Correo" value={p.correo} />
+            <Field label="Teléfono" value={p.telefono || '—'} />
+            <Field label="Celular" value={p.celular || '—'} />
           </div>
-          {p.ciudad && <Field label="Ciudad" value={p.ciudad} />}
+          <Field label="Correo" value={p.correo} />
+          <div className="grid grid-cols-2 gap-3">
+            {p.direccion && <Field label="Dirección" value={p.direccion} />}
+            {p.ciudad && <Field label="Ciudad" value={p.ciudad} />}
+          </div>
           {p.sitio_web && (
             <div>
               <p className="text-[11px] font-semibold text-gray-400 uppercase tracking-wide">Sitio web</p>
